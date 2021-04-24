@@ -1,4 +1,7 @@
-class MissingConfiguration implements Exception {}
+class MissingConfiguration implements Exception {
+  final String message;
+  MissingConfiguration(this.message);
+}
 
 class ObjectAlreadyExists implements Exception {}
 
