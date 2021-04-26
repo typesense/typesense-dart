@@ -144,13 +144,13 @@ void main() {
           host: 'localhost',
           path: '/path/to/service',
         ),
-        nodes: [
+        nodes: {
           Node(
             protocol: 'https',
             host: 'localhost',
             path: '/path/to/service',
           ),
-        ],
+        },
         numRetries: 5,
         retryIntervalSeconds: Duration(seconds: 3),
         sendApiKeyAsQueryParam: true,
@@ -192,13 +192,13 @@ void main() {
         apiKey: 'abc123',
         connectionTimeout: Duration(seconds: 10),
         healthcheckInterval: Duration(seconds: 5),
-        nodes: [
+        nodes: {
           Node(
             protocol: 'https',
             host: 'localhost',
             path: '/path/to/service',
           ),
-        ],
+        },
         numRetries: 5,
         retryIntervalSeconds: Duration(seconds: 3),
         sendApiKeyAsQueryParam: true,
@@ -215,13 +215,13 @@ void main() {
           host: 'localhost',
           path: '/path/to/service',
         ),
-        nodes: [
+        nodes: {
           Node(
             protocol: 'https',
             host: 'localhost',
             path: '/path/to/service',
           ),
-        ],
+        },
         numRetries: 5,
         retryIntervalSeconds: Duration(seconds: 3),
         sendApiKeyAsQueryParam: true,
@@ -239,13 +239,13 @@ void main() {
           host: 'localhost',
           path: '/path/to/service',
         ),
-        nodes: [
+        nodes: {
           Node(
             protocol: 'https',
             host: 'localhost',
             path: '/path/to/service',
           ),
-        ],
+        },
         numRetries: 5,
         retryIntervalSeconds: Duration(seconds: 3),
         sendApiKeyAsQueryParam: true,
@@ -264,13 +264,13 @@ void main() {
           host: 'localhost',
           path: '/path/to/service',
         ),
-        nodes: [
+        nodes: {
           Node(
             protocol: 'https',
             host: 'localhost',
             path: '/path/to/service',
           ),
-        ],
+        },
         retryIntervalSeconds: Duration(seconds: 3),
         sendApiKeyAsQueryParam: true,
       );
@@ -288,13 +288,13 @@ void main() {
           host: 'localhost',
           path: '/path/to/service',
         ),
-        nodes: [
+        nodes: {
           Node(
             protocol: 'https',
             host: 'localhost',
             path: '/path/to/service',
           ),
-        ],
+        },
         numRetries: 5,
         sendApiKeyAsQueryParam: true,
       );
@@ -312,13 +312,13 @@ void main() {
           host: 'localhost',
           path: '/path/to/service',
         ),
-        nodes: [
+        nodes: {
           Node(
             protocol: 'https',
             host: 'localhost',
             path: '/path/to/service',
           ),
-        ],
+        },
         numRetries: 5,
         retryIntervalSeconds: Duration(seconds: 3),
       );
@@ -358,13 +358,13 @@ void main() {
             host: 'localhost',
             path: '/path/to/service',
           ),
-          nodes: [
+          nodes: {
             Node(
               protocol: 'https',
               host: 'localhost',
               path: '/path/to/service',
             ),
-          ],
+          },
           numRetries: 5,
           retryIntervalSeconds: Duration(seconds: 3),
           sendApiKeyAsQueryParam: true,
