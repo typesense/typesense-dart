@@ -1,7 +1,7 @@
 import 'exceptions.dart' show MissingConfiguration;
 
 class Configuration {
-  final List<Node> nodes;
+  final Set<Node> nodes;
   final Node nearestNode;
   final Duration connectionTimeout;
   final Duration healthcheckInterval;
@@ -20,52 +20,75 @@ class Configuration {
     this.apiKey,
     this.sendApiKeyAsQueryParam = false,
   }) {
-    if (nodes == null || nodes.isEmpty)
+    if (nodes == null || nodes.isEmpty) {
       throw MissingConfiguration('Ensure that Configuration.nodes is set');
+    }
 
-    if (numRetries == null)
+    if (numRetries == null) {
       numRetries = nodes.length + (nearestNode == null ? 0 : 1);
+    }
 
-    if (apiKey == null || apiKey.isEmpty)
+    if (apiKey == null || apiKey.isEmpty) {
       throw MissingConfiguration('Ensure that Configuration.apiKey is set');
+    }
   }
 }
 
 class Node {
   final String protocol;
   final String host;
-  int port;
+  int _port;
   final String path;
+  String _url;
   bool isHealthy = true;
 
   Node({
     this.protocol,
     this.host,
-    this.port,
+    int port,
     this.path = '',
   }) {
-    if (protocol == null)
+    if (protocol == null) {
       throw MissingConfiguration('Ensure that Node.protocol is set');
+    }
 
-    if (host == null)
+    if (host == null) {
       throw MissingConfiguration('Ensure that Node.host is set');
+    }
 
     if (port == null) {
       switch (protocol) {
         case 'https':
-          port = 443;
+          _port = 443;
           break;
         case 'http':
-          port = 80;
+          _port = 80;
           break;
         default:
           throw MissingConfiguration('Ensure that Node.protocol is valid');
       }
+    } else {
+      _port = port;
     }
 
-    if (path == null)
+    if (path == null) {
       throw MissingConfiguration('Ensure that Node.path is set');
+    }
+
+    _url = '$protocol://$host:$_port$path';
   }
 
-  String get url => '$protocol://$host:$port$path';
+  int get port => _port;
+
+  String get url => _url;
+
+  @override
+  int get hashCode => url.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) || (other is Node && this.url == other.url);
+
+  @override
+  String toString() => url;
 }
