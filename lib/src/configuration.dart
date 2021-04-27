@@ -40,7 +40,12 @@ class Node {
   int _port;
   final String path;
   String _url;
+
   bool isHealthy = true;
+
+  /// Records the latest timestamp when the [Node] was accessed to complete a
+  /// request.
+  DateTime lastAccessTimestamp;
 
   Node({
     this.protocol,

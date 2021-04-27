@@ -33,6 +33,12 @@ void main() {
     test('has a isHealthy field', () {
       expect(node.isHealthy, isTrue);
     });
+    test('has a lastAccessTimestamp field', () {
+      final dateTime = DateTime.now();
+      expect(node.lastAccessTimestamp, isNull);
+      node.lastAccessTimestamp = dateTime;
+      expect(node.lastAccessTimestamp, equals(dateTime));
+    });
   });
   group('Node initialization', () {
     test('with missing port and http protocol, sets port to 80', () {
