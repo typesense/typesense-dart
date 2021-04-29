@@ -1,4 +1,5 @@
 import 'package:test/test.dart';
+import 'package:http/http.dart' as http;
 
 import 'package:typesense/src/configuration.dart';
 import 'package:typesense/src/exceptions.dart' show MissingConfiguration;
@@ -10,8 +11,9 @@ void main() {
       node = Node(
         protocol: 'http',
         host: 'localhost',
-        port: 80,
+        port: 8080,
         path: '/path/to/service',
+        client: http.Client(),
       );
     });
 
@@ -22,13 +24,14 @@ void main() {
       expect(node.host, equals('localhost'));
     });
     test('has a port field', () {
-      expect(node.port, equals(80));
+      expect(node.port, equals(8080));
     });
     test('has a path field', () {
       expect(node.path, equals('/path/to/service'));
     });
-    test('has a url field', () {
-      expect(node.url, equals('http://localhost:80/path/to/service'));
+    test('has a uri field', () {
+      expect(
+          node.uri.toString(), equals('http://localhost:8080/path/to/service'));
     });
     test('has a isHealthy field', () {
       expect(node.isHealthy, isTrue);
@@ -39,7 +42,11 @@ void main() {
       node.lastAccessTimestamp = dateTime;
       expect(node.lastAccessTimestamp, equals(dateTime));
     });
+    test('has a client field', () {
+      expect(node.client, isA<http.BaseClient>());
+    });
   });
+
   group('Node initialization', () {
     test('with missing port and http protocol, sets port to 80', () {
       final node = Node(
@@ -165,12 +172,15 @@ void main() {
     test('has a nodes field', () {
       expect(config.nodes, isNotEmpty);
       expect(config.nodes.length, equals(1));
-      expect(config.nodes.first.url,
-          equals('https://localhost:443/path/to/service'));
+
+      expect(config.nodes.first.uri.port, equals(443));
+      expect(config.nodes.first.uri.toString(),
+          equals('https://localhost/path/to/service'));
     });
     test('has a nearestNode field', () {
-      expect(config.nearestNode.url,
-          equals('http://localhost:80/path/to/service'));
+      expect(config.nearestNode.uri.port, equals(80));
+      expect(config.nearestNode.uri.toString(),
+          equals('http://localhost/path/to/service'));
     });
     test('has a connectionTimeout field', () {
       expect(config.connectionTimeout, equals(Duration(seconds: 10)));
