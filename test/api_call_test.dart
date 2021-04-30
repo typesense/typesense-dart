@@ -26,7 +26,7 @@ void main() {
           ),
         },
         numRetries: 5,
-        retryIntervalSeconds: Duration(seconds: 3),
+        retryInterval: Duration(seconds: 3),
         sendApiKeyAsQueryParam: true,
       );
       apiCall = ApiCall(config);

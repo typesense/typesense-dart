@@ -165,7 +165,7 @@ void main() {
           ),
         },
         numRetries: 5,
-        retryIntervalSeconds: Duration(seconds: 3),
+        retryInterval: Duration(seconds: 3),
         sendApiKeyAsQueryParam: true,
       );
     });
@@ -192,7 +192,7 @@ void main() {
       expect(config.numRetries, equals(5));
     });
     test('has a retryIntervalSeconds field', () {
-      expect(config.retryIntervalSeconds, equals(Duration(seconds: 3)));
+      expect(config.retryInterval, equals(Duration(seconds: 3)));
     });
     test('has a apiKey field', () {
       expect(config.apiKey, equals('abc123'));
@@ -216,7 +216,7 @@ void main() {
           ),
         },
         numRetries: 5,
-        retryIntervalSeconds: Duration(seconds: 3),
+        retryInterval: Duration(seconds: 3),
         sendApiKeyAsQueryParam: true,
       );
       expect(config.nearestNode, isNull);
@@ -239,7 +239,7 @@ void main() {
           ),
         },
         numRetries: 5,
-        retryIntervalSeconds: Duration(seconds: 3),
+        retryInterval: Duration(seconds: 3),
         sendApiKeyAsQueryParam: true,
       );
       expect(config.connectionTimeout, equals(Duration(seconds: 10)));
@@ -263,7 +263,7 @@ void main() {
           ),
         },
         numRetries: 5,
-        retryIntervalSeconds: Duration(seconds: 3),
+        retryInterval: Duration(seconds: 3),
         sendApiKeyAsQueryParam: true,
       );
       expect(config.healthcheckInterval, equals(Duration(seconds: 15)));
@@ -287,7 +287,7 @@ void main() {
             path: '/path/to/service',
           ),
         },
-        retryIntervalSeconds: Duration(seconds: 3),
+        retryInterval: Duration(seconds: 3),
         sendApiKeyAsQueryParam: true,
       );
       expect(config.numRetries, equals(config.nodes.length + 1));
@@ -314,7 +314,7 @@ void main() {
         numRetries: 5,
         sendApiKeyAsQueryParam: true,
       );
-      expect(config.retryIntervalSeconds, equals(Duration(milliseconds: 100)));
+      expect(config.retryInterval, equals(Duration(milliseconds: 100)));
     });
     test(
         'with missing sendApiKeyAsQueryParam, sets sendApiKeyAsQueryParam to false',
@@ -336,7 +336,7 @@ void main() {
           ),
         },
         numRetries: 5,
-        retryIntervalSeconds: Duration(seconds: 3),
+        retryInterval: Duration(seconds: 3),
       );
       expect(config.sendApiKeyAsQueryParam, isFalse);
     });
@@ -352,7 +352,7 @@ void main() {
             path: '/path/to/service',
           ),
           numRetries: 5,
-          retryIntervalSeconds: Duration(seconds: 3),
+          retryInterval: Duration(seconds: 3),
           sendApiKeyAsQueryParam: true,
         ),
         throwsA(
@@ -382,7 +382,7 @@ void main() {
             ),
           },
           numRetries: 5,
-          retryIntervalSeconds: Duration(seconds: 3),
+          retryInterval: Duration(seconds: 3),
           sendApiKeyAsQueryParam: true,
         ),
         throwsA(

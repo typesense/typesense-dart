@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
@@ -8,7 +9,7 @@ import 'exceptions.dart' hide MissingConfiguration;
 class ApiCall {
   final Configuration _config;
   List<Node> _nodes;
-  int _nodeIndex = 0;
+  int _nodeIndex = -1;
   bool _nearestNodeIsPresent;
 
   ApiCall(this._config) {
@@ -20,24 +21,73 @@ class ApiCall {
     }
   }
 
-  Future<String> get(String endpoint) async {
-    final node = _getNextNode();
-    final response =
-        await node.client.get(Uri.parse('${node.uri}$endpoint'), headers: {});
-    return _handleNodeResponse(node, response);
+  Future<String> get(String endpoint,
+      {Map<String, String> queryParams = const {}}) async {
+    http.Response response;
+    for (var triesLeft = _config.numRetries;; --triesLeft) {
+      final node = _nextNode();
+      try {
+        response = await node.client
+            .get(
+              _requestUri(node, endpoint, queryParams),
+              headers: _defaultHeaders(),
+            )
+            .timeout(
+              _config.connectionTimeout,
+            );
+        return _handleNodeResponse(node, response);
+      } catch (e) {
+        if (triesLeft - 1 == 0) {
+          // We've exhausted our tries, rethrow.
+          rethrow;
+        }
+
+        if (!(e is TimeoutException) && response.statusCode < 500) {
+          // If response is anything but 5xx, rethrow.
+          rethrow;
+        } else {
+          // Retry all other HTTP errors (HTTPStatus > 500) after [retryInterval].
+          await Future.delayed(_config.retryInterval);
+        }
+      }
+    }
   }
 
-  Future<String> post(String endpoint, Object bodyParameters) async {
-    final node = _getNextNode();
-    final response = await node.client.post(Uri.parse('${node.uri}$endpoint'));
-    return _handleNodeResponse(node, response);
+  Uri _requestUri(
+    Node node,
+    String endpoint,
+    Map<String, String> queryParams,
+  ) =>
+      Uri(
+        scheme: node.uri.scheme,
+        host: node.uri.host,
+        port: node.uri.port,
+        path: '${node.uri.path}$endpoint',
+        queryParameters: {..._defaultQueryParameters(), ...queryParams},
+      );
+
+  Map<String, String> _defaultHeaders() {
+    final defaultHeaders = <String, String>{};
+    if (!_config.sendApiKeyAsQueryParam) {
+      defaultHeaders['X-TYPESENSE-API-KEY'] = _config.apiKey;
+    }
+    defaultHeaders['Content-Type'] = 'application/json';
+    return defaultHeaders;
+  }
+
+  Map<String, String> _defaultQueryParameters() {
+    final defaultQueryParameters = <String, String>{};
+    if (_config.sendApiKeyAsQueryParam) {
+      defaultQueryParameters['x-typesense-api-key'] = _config.apiKey;
+    }
+    return defaultQueryParameters;
   }
 
   /// Attempts to find a healthy node, looping through the list of nodes
   /// once. But if no healthy nodes are found, it will just return the next
   /// node, even if it's unhealthy so we can try the request for good measure,
   /// in case that node has become healthy since.
-  Node _getNextNode() {
+  Node _nextNode() {
     if (_nearestNodeIsPresent && _canUse(_config.nearestNode)) {
       return _config.nearestNode;
     } else {
@@ -62,27 +112,25 @@ class ApiCall {
   bool _canUse(Node node) =>
       node.isHealthy || node.isDueForHealthCheck(_config.healthcheckInterval);
 
+  /// Handels the [response] from the [node] for a request.
+  ///
+  /// The [response.body] is parsed as JSON and returned if no exceptions are
+  /// raised.
   String _handleNodeResponse(Node node, http.Response response) {
-    for (var tries = 0; tries < _config.numRetries; tries++) {
-      try {
-        if (response.statusCode >= 1 && response.statusCode <= 499) {
-          // Treat any status code > 0 and < 500 to be an indication that node is healthy.
-          // We exclude 0 since some clients return 0 when request fails.
-          _setNodeHealthStatus(node, true);
-        }
-
-        if (response.statusCode >= 200 && response.statusCode < 300) {
-          // If response is 2xx return a resolved promise
-          return response.body;
-        } else if (response.statusCode < 500) {
-          // Next, if response is anything but 5xx, don't retry.
-          return '';
-        } else {
-          // Retry all other HTTP errors (HTTPStatus > 500)
-          // This will get caught by the catch block below
-          throw _customExceptionForResponse(response);
-        }
-      } catch (e) {}
+    final responseBody = json.decode(response.body),
+        responseStatus = response.statusCode;
+    if (responseStatus >= 1 && responseStatus <= 499) {
+      // Treat any status code > 0 and < 500 to be an indication that node is healthy.
+      // We exclude 0 since some clients return 0 when request fails.
+      _setNodeHealthStatus(node, true);
+    } else {
+      _setNodeHealthStatus(node, false);
+    }
+    if (responseStatus >= 200 && responseStatus < 300) {
+      // If response is 2xx return the body.
+      return responseBody;
+    } else {
+      throw _customExceptionForResponse(responseBody, responseStatus);
     }
   }
 
@@ -91,22 +139,21 @@ class ApiCall {
     node.lastAccessTimestamp = DateTime.now();
   }
 
-  Exception _customExceptionForResponse(http.Response response) {
-    final status = response.statusCode;
+  Exception _customExceptionForResponse(String body, int status) {
     if (status == 400) {
-      return RequestMalformed(json.decode(response.body), status);
+      return RequestMalformed(body, status);
     } else if (status == 401) {
-      return RequestUnauthorized(json.decode(response.body), status);
+      return RequestUnauthorized(body, status);
     } else if (status == 404) {
-      return ObjectNotFound(json.decode(response.body), status);
+      return ObjectNotFound(body, status);
     } else if (status == 409) {
-      return ObjectAlreadyExists(json.decode(response.body), status);
+      return ObjectAlreadyExists(body, status);
     } else if (status == 422) {
-      return ObjectUnprocessable(json.decode(response.body), status);
+      return ObjectUnprocessable(body, status);
     } else if (status >= 500 && status <= 599) {
-      return ServerError(json.decode(response.body), status);
+      return ServerError(body, status);
     } else {
-      return HttpError(json.decode(response.body), status);
+      return HttpError(body, status);
     }
   }
 }

@@ -8,7 +8,7 @@ class Configuration {
   final Duration connectionTimeout;
   final Duration healthcheckInterval;
   int numRetries;
-  final Duration retryIntervalSeconds;
+  final Duration retryInterval;
   final String apiKey;
   final bool sendApiKeyAsQueryParam;
 
@@ -18,7 +18,7 @@ class Configuration {
     this.connectionTimeout = const Duration(seconds: 10),
     this.healthcheckInterval = const Duration(seconds: 15),
     this.numRetries,
-    this.retryIntervalSeconds = const Duration(milliseconds: 100),
+    this.retryInterval = const Duration(milliseconds: 100),
     this.apiKey,
     this.sendApiKeyAsQueryParam = false,
   }) {
