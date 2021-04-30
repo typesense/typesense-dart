@@ -21,7 +21,7 @@ class ApiCall {
     }
   }
 
-  Future<String> get(String endpoint,
+  Future<Map<String, dynamic>> get(String endpoint,
       {Map<String, String> queryParams = const {}}) async {
     http.Response response;
     for (var triesLeft = _config.numRetries;; --triesLeft) {
@@ -116,7 +116,7 @@ class ApiCall {
   ///
   /// The [response.body] is parsed as JSON and returned if no exceptions are
   /// raised.
-  String _handleNodeResponse(Node node, http.Response response) {
+  Map<String, dynamic> _handleNodeResponse(Node node, http.Response response) {
     final responseBody = json.decode(response.body),
         responseStatus = response.statusCode;
     if (responseStatus >= 1 && responseStatus <= 499) {
