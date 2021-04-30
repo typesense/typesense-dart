@@ -16,8 +16,8 @@ class ApiCall {
     _nodes = List.from(_config.nodes);
 
     _nearestNodeIsPresent = _config.nearestNode != null;
-    if (_config.nearestNode != null) {
-      _config.nearestNode.client = http.Client();
+    if (_nearestNodeIsPresent) {
+      _config.nearestNode.client ??= http.Client();
     }
   }
 
