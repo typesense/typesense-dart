@@ -24,7 +24,7 @@ class ApiCall {
   Future<Map<String, dynamic>> get(String endpoint,
       {Map<String, String> queryParams = const {}}) async {
     http.Response response;
-    for (var triesLeft = _config.numRetries;; --triesLeft) {
+    for (var triesLeft = _config.numRetries;;) {
       final node = _nextNode();
       try {
         response = await node.client
@@ -37,7 +37,148 @@ class ApiCall {
             );
         return _handleNodeResponse(node, response);
       } catch (e) {
-        if (triesLeft - 1 == 0) {
+        if (--triesLeft == 0) {
+          // We've exhausted our tries, rethrow.
+          rethrow;
+        }
+
+        if (!(e is TimeoutException) && response.statusCode < 500) {
+          // If response is anything but 5xx, rethrow.
+          rethrow;
+        } else {
+          // Retry all other HTTP errors (HTTPStatus > 500) after [retryInterval].
+          await Future.delayed(_config.retryInterval);
+        }
+      }
+    }
+  }
+
+  Future<Map<String, dynamic>> delete(String endpoint,
+      {Map<String, String> queryParams = const {}}) async {
+    http.Response response;
+    for (var triesLeft = _config.numRetries;;) {
+      final node = _nextNode();
+      try {
+        response = await node.client
+            .delete(
+              _requestUri(node, endpoint, queryParams),
+              headers: _defaultHeaders(),
+            )
+            .timeout(
+              _config.connectionTimeout,
+            );
+        return _handleNodeResponse(node, response);
+      } catch (e) {
+        if (--triesLeft == 0) {
+          // We've exhausted our tries, rethrow.
+          rethrow;
+        }
+
+        if (!(e is TimeoutException) && response.statusCode < 500) {
+          // If response is anything but 5xx, rethrow.
+          rethrow;
+        } else {
+          // Retry all other HTTP errors (HTTPStatus > 500) after [retryInterval].
+          await Future.delayed(_config.retryInterval);
+        }
+      }
+    }
+  }
+
+  Future<Map<String, dynamic>> post(
+    String endpoint, {
+    Map<String, String> queryParams = const {},
+    Map<String, String> additionalHeaders = const {},
+    Map<String, String> bodyParameters = const {},
+  }) async {
+    http.Response response;
+    for (var triesLeft = _config.numRetries;;) {
+      final node = _nextNode();
+      try {
+        response = await node.client
+            .post(
+              _requestUri(node, endpoint, queryParams),
+              headers: {..._defaultHeaders(), ...additionalHeaders},
+              body: bodyParameters,
+            )
+            .timeout(
+              _config.connectionTimeout,
+            );
+        return _handleNodeResponse(node, response);
+      } catch (e) {
+        if (--triesLeft == 0) {
+          // We've exhausted our tries, rethrow.
+          rethrow;
+        }
+
+        if (!(e is TimeoutException) && response.statusCode < 500) {
+          // If response is anything but 5xx, rethrow.
+          rethrow;
+        } else {
+          // Retry all other HTTP errors (HTTPStatus > 500) after [retryInterval].
+          await Future.delayed(_config.retryInterval);
+        }
+      }
+    }
+  }
+
+  Future<Map<String, dynamic>> put(
+    String endpoint, {
+    Map<String, String> queryParams = const {},
+    Map<String, String> bodyParameters = const {},
+  }) async {
+    http.Response response;
+    for (var triesLeft = _config.numRetries;;) {
+      final node = _nextNode();
+      try {
+        response = await node.client
+            .put(
+              _requestUri(node, endpoint, queryParams),
+              headers: _defaultHeaders(),
+              body: bodyParameters,
+            )
+            .timeout(
+              _config.connectionTimeout,
+            );
+        return _handleNodeResponse(node, response);
+      } catch (e) {
+        if (--triesLeft == 0) {
+          // We've exhausted our tries, rethrow.
+          rethrow;
+        }
+
+        if (!(e is TimeoutException) && response.statusCode < 500) {
+          // If response is anything but 5xx, rethrow.
+          rethrow;
+        } else {
+          // Retry all other HTTP errors (HTTPStatus > 500) after [retryInterval].
+          await Future.delayed(_config.retryInterval);
+        }
+      }
+    }
+  }
+
+  Future<Map<String, dynamic>> patch(
+    String endpoint, {
+    Map<String, String> queryParams = const {},
+    Map<String, String> bodyParameters = const {},
+  }) async {
+    http.Response response;
+    for (var triesLeft = _config.numRetries;;) {
+      final node = _nextNode();
+      try {
+        response = await node.client
+            .patch(
+              _requestUri(node, endpoint, queryParams),
+              headers: _defaultHeaders(),
+              body: bodyParameters,
+            )
+            .timeout(
+              _config.connectionTimeout,
+            );
+        return _handleNodeResponse(node, response);
+      } catch (e) {
+        if (--triesLeft == 0) {
           // We've exhausted our tries, rethrow.
           rethrow;
         }
