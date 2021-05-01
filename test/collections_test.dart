@@ -17,10 +17,10 @@ void main() {
 
   group('Collections', () {
     test('has a RESOURCEPATH', () {
-      expect(collections.RESOURCEPATH, equals('/collections'));
+      expect(Collections.RESOURCEPATH, equals('/collections'));
     });
 
-    test('retrieve() calls ApiCall.get()', () {
+    test('retrieve() calls ApiCall.get()', () async {
       final map = {
         "name": "companies",
         "num_documents": 0,
@@ -33,7 +33,7 @@ void main() {
       };
       when(mock.get('/collections'))
           .thenAnswer((realInvocation) => Future.value(map));
-      expect(collections.retrieve(), equals(map));
+      expect(await collections.retrieve(), equals(map));
     });
   });
 }
