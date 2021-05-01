@@ -1,3 +1,5 @@
+import 'package:http/http.dart' as http;
+
 import 'exceptions.dart' show MissingConfiguration;
 
 class Configuration {
@@ -6,7 +8,7 @@ class Configuration {
   final Duration connectionTimeout;
   final Duration healthcheckInterval;
   int numRetries;
-  final Duration retryIntervalSeconds;
+  final Duration retryInterval;
   final String apiKey;
   final bool sendApiKeyAsQueryParam;
 
@@ -16,7 +18,7 @@ class Configuration {
     this.connectionTimeout = const Duration(seconds: 10),
     this.healthcheckInterval = const Duration(seconds: 15),
     this.numRetries,
-    this.retryIntervalSeconds = const Duration(milliseconds: 100),
+    this.retryInterval = const Duration(milliseconds: 100),
     this.apiKey,
     this.sendApiKeyAsQueryParam = false,
   }) {
@@ -39,7 +41,7 @@ class Node {
   final String host;
   int _port;
   final String path;
-  String _url;
+  Uri _uri;
 
   bool isHealthy = true;
 
@@ -47,11 +49,15 @@ class Node {
   /// request.
   DateTime lastAccessTimestamp;
 
+  /// http [client] associated with the [Node], used to complete requests.
+  http.Client client;
+
   Node({
     this.protocol,
     this.host,
     int port,
     this.path = '',
+    this.client,
   }) {
     if (protocol == null) {
       throw MissingConfiguration('Ensure that Node.protocol is set');
@@ -80,20 +86,23 @@ class Node {
       throw MissingConfiguration('Ensure that Node.path is set');
     }
 
-    _url = '$protocol://$host:$_port$path';
+    _uri = Uri.parse('$protocol://$host:$_port$path');
   }
 
   int get port => _port;
 
-  String get url => _url;
+  Uri get uri => _uri;
 
   @override
-  int get hashCode => url.hashCode;
+  int get hashCode => uri.hashCode;
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) || (other is Node && this.url == other.url);
+      identical(this, other) || (other is Node && this.uri == other.uri);
 
   @override
-  String toString() => url;
+  String toString() => uri.toString();
+
+  bool isDueForHealthCheck(Duration healthcheckInterval) =>
+      DateTime.now().difference(lastAccessTimestamp) > healthcheckInterval;
 }
