@@ -4,15 +4,17 @@ class Collections {
   ApiCall _apicall;
   static const String RESOURCEPATH = '/collections';
 
-  Collections(apicall) {
+  Collections(ApiCall apicall) {
     this._apicall = apicall;
   }
 
-  retrieve() {
+  Future<Map<String, dynamic>> retrieve() async {
     return this._apicall.get(Collections.RESOURCEPATH);
   }
 
-  create(schema) {
-    return this._apicall.post(Collections.RESOURCEPATH, bodyParameters: schema);
+  Future<Map<String, dynamic>> create(Map<String, dynamic> schema) async {
+    return await this
+        ._apicall
+        .post(Collections.RESOURCEPATH, bodyParameters: schema);
   }
 }
