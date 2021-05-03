@@ -12,7 +12,7 @@ class ApiCall {
   int _nodeIndex = -1;
   bool _nearestNodeIsPresent;
 
-  ApiCall(this._config) {
+  ApiCall(Configuration config) : _config = config {
     _nodes = List.from(_config.nodes);
 
     _nearestNodeIsPresent = _config.nearestNode != null;
