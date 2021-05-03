@@ -12,7 +12,7 @@ class Configuration {
   final String apiKey;
   final bool sendApiKeyAsQueryParam;
 
-  Configuration._({
+  const Configuration._({
     this.nodes,
     this.nearestNode,
     this.connectionTimeout,
@@ -21,15 +21,7 @@ class Configuration {
     this.retryInterval,
     this.apiKey,
     this.sendApiKeyAsQueryParam,
-  }) {
-    if (nodes == null || nodes.isEmpty) {
-      throw MissingConfiguration('Ensure that Configuration.nodes is set');
-    }
-
-    if (apiKey == null || apiKey.isEmpty) {
-      throw MissingConfiguration('Ensure that Configuration.apiKey is set');
-    }
-  }
+  });
 
   factory Configuration({
     Set<Node> nodes,
@@ -40,17 +32,25 @@ class Configuration {
     Duration retryInterval,
     String apiKey,
     bool sendApiKeyAsQueryParam,
-  }) =>
-      Configuration._(
-        nodes: nodes,
-        nearestNode: nearestNode,
-        connectionTimeout: connectionTimeout ??= Duration(seconds: 10),
-        healthcheckInterval: healthcheckInterval ??= Duration(seconds: 15),
-        numRetries: numRetries ??= nodes.length + (nearestNode == null ? 0 : 1),
-        retryInterval: retryInterval ??= Duration(milliseconds: 100),
-        apiKey: apiKey,
-        sendApiKeyAsQueryParam: sendApiKeyAsQueryParam ??= false,
-      );
+  }) {
+    if (nodes == null || nodes.isEmpty) {
+      throw MissingConfiguration('Ensure that Configuration.nodes is set');
+    }
+
+    if (apiKey == null || apiKey.isEmpty) {
+      throw MissingConfiguration('Ensure that Configuration.apiKey is set');
+    }
+    return Configuration._(
+      nodes: nodes,
+      nearestNode: nearestNode,
+      connectionTimeout: connectionTimeout ??= Duration(seconds: 10),
+      healthcheckInterval: healthcheckInterval ??= Duration(seconds: 15),
+      numRetries: numRetries ??= nodes.length + (nearestNode == null ? 0 : 1),
+      retryInterval: retryInterval ??= Duration(milliseconds: 100),
+      apiKey: apiKey,
+      sendApiKeyAsQueryParam: sendApiKeyAsQueryParam ??= false,
+    );
+  }
 }
 
 class Node {
