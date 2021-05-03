@@ -7,33 +7,50 @@ class Configuration {
   final Node nearestNode;
   final Duration connectionTimeout;
   final Duration healthcheckInterval;
-  int numRetries;
+  final int numRetries;
   final Duration retryInterval;
   final String apiKey;
   final bool sendApiKeyAsQueryParam;
 
-  Configuration({
+  Configuration._({
     this.nodes,
     this.nearestNode,
-    this.connectionTimeout = const Duration(seconds: 10),
-    this.healthcheckInterval = const Duration(seconds: 15),
+    this.connectionTimeout,
+    this.healthcheckInterval,
     this.numRetries,
-    this.retryInterval = const Duration(milliseconds: 100),
+    this.retryInterval,
     this.apiKey,
-    this.sendApiKeyAsQueryParam = false,
+    this.sendApiKeyAsQueryParam,
   }) {
     if (nodes == null || nodes.isEmpty) {
       throw MissingConfiguration('Ensure that Configuration.nodes is set');
-    }
-
-    if (numRetries == null) {
-      numRetries = nodes.length + (nearestNode == null ? 0 : 1);
     }
 
     if (apiKey == null || apiKey.isEmpty) {
       throw MissingConfiguration('Ensure that Configuration.apiKey is set');
     }
   }
+
+  factory Configuration({
+    Set<Node> nodes,
+    Node nearestNode,
+    Duration connectionTimeout,
+    Duration healthcheckInterval,
+    int numRetries,
+    Duration retryInterval,
+    String apiKey,
+    bool sendApiKeyAsQueryParam,
+  }) =>
+      Configuration._(
+        nodes: nodes,
+        nearestNode: nearestNode,
+        connectionTimeout: connectionTimeout ??= Duration(seconds: 10),
+        healthcheckInterval: healthcheckInterval ??= Duration(seconds: 15),
+        numRetries: numRetries ??= nodes.length + (nearestNode == null ? 0 : 1),
+        retryInterval: retryInterval ??= Duration(milliseconds: 100),
+        apiKey: apiKey,
+        sendApiKeyAsQueryParam: sendApiKeyAsQueryParam ??= false,
+      );
 }
 
 class Node {
