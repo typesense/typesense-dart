@@ -12,6 +12,8 @@ const protocol = 'http',
     collections = '/collections';
 
 class ConfigurationFactory {
+  ConfigurationFactory._();
+
   static Configuration withNearestNode({
     Node nearestNode,
     Set<Node> nodes,

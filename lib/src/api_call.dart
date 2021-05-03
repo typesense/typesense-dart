@@ -37,7 +37,7 @@ class ApiCall {
             );
         return _handleNodeResponse(node, response);
       } catch (e) {
-        if (--triesLeft == 0) {
+        if (--triesLeft <= 0) {
           // We've exhausted our tries, rethrow.
           rethrow;
         }
@@ -210,7 +210,7 @@ class ApiCall {
   Map<String, String> _defaultHeaders() {
     final defaultHeaders = <String, String>{};
     if (!_config.sendApiKeyAsQueryParam) {
-      defaultHeaders['X-TYPESENSE-API-KEY'] = _config.apiKey;
+      defaultHeaders['x-typesense-api-key'] = _config.apiKey;
     }
     defaultHeaders['Content-Type'] = 'application/json';
     return defaultHeaders;

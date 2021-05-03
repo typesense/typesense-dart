@@ -5,6 +5,7 @@ import 'package:test/test.dart';
 
 import 'package:typesense/src/api_call.dart';
 import 'package:typesense/src/configuration.dart';
+import 'package:typesense/src/exceptions.dart';
 
 import 'config_factory.dart';
 
@@ -14,9 +15,9 @@ void main() {
 
     setUp(() async {
       print('');
-      unresponsiveServer = await HttpServer.bind(host, unresponsiveServerPort);
       nearestMockServer = await HttpServer.bind(host, nearestServerPort);
       mockServer = await HttpServer.bind(host, mockServerPort);
+      unresponsiveServer = await HttpServer.bind(host, unresponsiveServerPort);
       handleRequests(nearestMockServer);
       handleRequests(mockServer);
       handleRequests(unresponsiveServer);
@@ -44,10 +45,24 @@ void main() {
       expect(res.isNotEmpty, isTrue);
       expect((res['fields'] as List).isNotEmpty, isTrue);
     });
-    test('requests the nodes if nearest node is not present', () async {
+    test('requests the nodes when nearest node is not present', () async {
       final config = ConfigurationFactory.withoutNearestNode(),
           res = await ApiCall(config).get(collections);
 
+      expect(res.isNotEmpty, isTrue);
+      expect((res['fields'] as List).isNotEmpty, isTrue);
+    });
+    test('sends api key in the header or query according to the configuration',
+        () async {
+      // Defaults to sending api key in the header
+      var config = ConfigurationFactory.withNearestNode(),
+          res = await ApiCall(config).get(collections);
+      expect(res.isNotEmpty, isTrue);
+      expect((res['fields'] as List).isNotEmpty, isTrue);
+
+      config =
+          ConfigurationFactory.withNearestNode(sendApiKeyAsQueryParam: true);
+      res = await ApiCall(config).get(collections);
       expect(res.isNotEmpty, isTrue);
       expect((res['fields'] as List).isNotEmpty, isTrue);
     });
@@ -71,16 +86,106 @@ void main() {
       expect(res.isNotEmpty, isTrue);
       expect((res['fields'] as List).isNotEmpty, isTrue);
     });
+    test('throws if a request fails with response code < 500', () {
+      final config = ConfigurationFactory.withoutNearestNode(nodes: {
+        Node(
+          protocol: protocol,
+          host: host,
+          port: mockServerPort,
+          path: '/wrong/path',
+        ),
+      });
+
+      expect(
+        () async {
+          var res = await ApiCall(config).get(collections);
+          print(res);
+        },
+        throwsA(
+          isA<RequestMalformed>()
+              .having(
+                (e) => e.message,
+                'message',
+                equals('{}'),
+              )
+              .having(
+                (e) => e.statusCode,
+                'statusCode',
+                equals(400),
+              ),
+        ),
+      );
+    });
+    test('throws RequestUnauthorized when apiKey is incorrect', () {
+      final config =
+          ConfigurationFactory.withoutNearestNode(apiKey: 'wrongKey');
+
+      expect(
+        () async {
+          var res = await ApiCall(config).get(collections);
+          print(res);
+        },
+        throwsA(
+          isA<RequestUnauthorized>()
+              .having(
+                (e) => e.message,
+                'message',
+                equals('{}'),
+              )
+              .having(
+                (e) => e.statusCode,
+                'statusCode',
+                equals(401),
+              ),
+        ),
+      );
+    });
+    test('throws ServerError for response code 5xx', () {
+      final config = ConfigurationFactory.withoutNearestNode(
+        nodes: {
+          Node(
+            protocol: protocol,
+            host: host,
+            port: unresponsiveServerPort,
+            path: pathToService,
+          )
+        },
+        numRetries: 0, // To avoid retrying the only node multiple times.
+      );
+
+      expect(
+        () async {
+          var res = await ApiCall(config).get(collections);
+          print(res);
+        },
+        throwsA(
+          isA<ServerError>()
+              .having(
+                (e) => e.message,
+                'message',
+                equals('{}'),
+              )
+              .having(
+                (e) => e.statusCode,
+                'statusCode',
+                equals(503),
+              ),
+        ),
+      );
+    });
   });
 }
 
 Future<void> handleRequests(HttpServer server) async {
   await for (final HttpRequest request in server) {
-    final port = request.connectionInfo.localPort, url = request.uri.toString();
+    final port = request.connectionInfo.localPort,
+        path = request.uri.path,
+        headers = request.headers,
+        host = headers['host']?.first,
+        _headerApiKey = headers['x-typesense-api-key']?.first;
 
-    assert(request.headers['x-typesense-api-key'].first == apiKey);
-
-    print('Incoming request for port: $port and resource: $url');
+    print(
+        'Requested host: $host  headerkey: $_headerApiKey  path: $path  queryparams: ${request.uri.queryParameters}');
 
     if (port == unresponsiveServerPort) {
       request.response
@@ -90,9 +195,18 @@ Future<void> handleRequests(HttpServer server) async {
       return;
     }
 
+    if (_headerApiKey != apiKey &&
+        request.uri.queryParameters['x-typesense-api-key'] != apiKey) {
+      request.response
+        ..statusCode = HttpStatus.unauthorized
+        ..write('{}')
+        ..close();
+      return;
+    }
+
     switch (request.method) {
       case 'GET':
-        if (url == '/path/to/service/collections?') {
+        if (path == '/path/to/service/collections') {
           final jsonString = jsonEncode({
             "name": "companies",
             "num_documents": 0,
