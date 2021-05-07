@@ -1,5 +1,7 @@
 import 'package:typesense/src/api_call.dart';
 
+import 'models/schema.dart';
+
 class Collections {
   final ApiCall _apicall;
   static const String RESOURCEPATH = '/collections';
@@ -10,7 +12,7 @@ class Collections {
     return await _apicall.get(RESOURCEPATH);
   }
 
-  Future<Map<String, dynamic>> create(Map<String, dynamic> schema) async {
-    return await _apicall.post(RESOURCEPATH, bodyParameters: schema);
+  Future<Map<String, dynamic>> create(Schema schema) async {
+    return await _apicall.post(RESOURCEPATH, bodyParameters: schema.toMap());
   }
 }
