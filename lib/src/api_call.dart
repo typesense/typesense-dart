@@ -9,7 +9,7 @@ import 'exceptions.dart' hide MissingConfiguration;
 class ApiCall {
   final Configuration _config;
   List<Node> _nodes;
-  int _nodeIndex = -1;
+  int _nodeIndex = 0;
   bool _nearestNodeIsPresent;
 
   ApiCall(this._config) {
@@ -37,7 +37,7 @@ class ApiCall {
             );
         return _handleNodeResponse(node, response);
       } catch (e) {
-        if (--triesLeft == 0) {
+        if (--triesLeft <= 0) {
           // We've exhausted our tries, rethrow.
           rethrow;
         }
@@ -210,7 +210,7 @@ class ApiCall {
   Map<String, String> _defaultHeaders() {
     final defaultHeaders = <String, String>{};
     if (!_config.sendApiKeyAsQueryParam) {
-      defaultHeaders['X-TYPESENSE-API-KEY'] = _config.apiKey;
+      defaultHeaders['x-typesense-api-key'] = _config.apiKey;
     }
     defaultHeaders['Content-Type'] = 'application/json';
     return defaultHeaders;
@@ -232,8 +232,7 @@ class ApiCall {
     if (_nearestNodeIsPresent && _canUse(_config.nearestNode)) {
       return _config.nearestNode;
     } else {
-      for (var i = 0; i < _nodes.length; i++) {
-        _nodeIndex = (_nodeIndex + 1) % _nodes.length;
+      for (var i = 0; i < _nodes.length; i++, _incrementNodeIndex()) {
         final candidateNode = _nodes[_nodeIndex]..client ??= http.Client();
 
         if (_canUse(candidateNode)) {
@@ -243,7 +242,8 @@ class ApiCall {
     }
 
     // None of the nodes can be used, returning the next node.
-    return _nodes[++_nodeIndex];
+    _incrementNodeIndex();
+    return _nodes[_nodeIndex];
   }
 
   /// Returns if the [node] can be used to complete the request.
@@ -252,6 +252,8 @@ class ApiCall {
   /// passed since the last request was failed by the [node].
   bool _canUse(Node node) =>
       node.isHealthy || node.isDueForHealthCheck(_config.healthcheckInterval);
+
+  void _incrementNodeIndex() => _nodeIndex = (_nodeIndex + 1) % _nodes.length;
 
   /// Handels the [response] from the [node] for a request.
   ///
@@ -271,7 +273,8 @@ class ApiCall {
       // If response is 2xx return the body.
       return responseBody;
     } else {
-      throw _customExceptionForResponse(responseBody, responseStatus);
+      throw _customExceptionForResponse(
+          responseBody.toString(), responseStatus);
     }
   }
 
