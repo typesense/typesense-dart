@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:test/test.dart';
 
 import 'package:typesense/src/api_call.dart';
-import 'package:typesense/src/configuration.dart';
+import 'package:typesense/src/models/node.dart';
 import 'package:typesense/src/exceptions.dart';
 
 import 'config_factory.dart';
@@ -14,7 +14,7 @@ void main() {
     HttpServer nearestMockServer, mockServer, unresponsiveServer;
 
     setUp(() async {
-      print('');
+      // print('');
       nearestMockServer = await HttpServer.bind(host, nearestServerPort);
       mockServer = await HttpServer.bind(host, mockServerPort);
       unresponsiveServer = await HttpServer.bind(host, unresponsiveServerPort);
@@ -184,8 +184,8 @@ Future<void> handleRequests(HttpServer server) async {
         host = headers['host']?.first,
         _headerApiKey = headers['x-typesense-api-key']?.first;
 
-    print(
-        'Requested host: $host  headerkey: $_headerApiKey  path: $path  queryparams: ${request.uri.queryParameters}');
+    // print(
+    //     'Requested host: $host  headerkey: $_headerApiKey  path: $path  queryparams: ${request.uri.queryParameters}');
 
     if (port == unresponsiveServerPort) {
       request.response

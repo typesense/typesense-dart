@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:typesense/src/configuration.dart';
+import 'package:typesense/src/models/node.dart';
 
 String host = InternetAddress.loopbackIPv4.address;
 const protocol = 'http',

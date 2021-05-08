@@ -40,13 +40,14 @@ class Field {
 
   @override
   bool operator ==(Object o) =>
-      o is Field &&
-      runtimeType == o.runtimeType &&
-      name == o.name &&
-      type == o.type &&
-      isOptional == o.isOptional &&
-      isFacetable == o.isFacetable &&
-      isMultivalued == o.isMultivalued;
+      identical(this, o) ||
+      (o is Field &&
+          runtimeType == o.runtimeType &&
+          name == o.name &&
+          type == o.type &&
+          isOptional == o.isOptional &&
+          isFacetable == o.isFacetable &&
+          isMultivalued == o.isMultivalued);
 }
 
 enum Type { string, int32, int64, float, bool }
