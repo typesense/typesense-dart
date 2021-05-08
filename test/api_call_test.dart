@@ -10,25 +10,24 @@ import 'package:typesense/src/exceptions.dart';
 import 'config_factory.dart';
 
 void main() {
+  HttpServer nearestMockServer, mockServer, unresponsiveServer;
+
+  setUp(() async {
+    // print('');
+    nearestMockServer = await HttpServer.bind(host, nearestServerPort);
+    mockServer = await HttpServer.bind(host, mockServerPort);
+    unresponsiveServer = await HttpServer.bind(host, unresponsiveServerPort);
+    handleRequests(nearestMockServer);
+    handleRequests(mockServer);
+    handleRequests(unresponsiveServer);
+  });
+
+  tearDown(() async {
+    await nearestMockServer.close();
+    await mockServer.close();
+    await unresponsiveServer.close();
+  });
   group('ApiCall', () {
-    HttpServer nearestMockServer, mockServer, unresponsiveServer;
-
-    setUp(() async {
-      // print('');
-      nearestMockServer = await HttpServer.bind(host, nearestServerPort);
-      mockServer = await HttpServer.bind(host, mockServerPort);
-      unresponsiveServer = await HttpServer.bind(host, unresponsiveServerPort);
-      handleRequests(nearestMockServer);
-      handleRequests(mockServer);
-      handleRequests(unresponsiveServer);
-    });
-
-    tearDown(() async {
-      await nearestMockServer.close();
-      await mockServer.close();
-      await unresponsiveServer.close();
-    });
-
     test('requests the nearest node, if present.', () async {
       final config = ConfigurationFactory.withNearestNode(
             nodes: {
@@ -86,7 +85,10 @@ void main() {
       expect(res.isNotEmpty, isTrue);
       expect((res['fields'] as List).isNotEmpty, isTrue);
     });
-    test('throws if a request fails with response code < 500', () {
+  });
+
+  group('ApiCall throws', () {
+    test('if a request fails with response code < 500', () {
       final config = ConfigurationFactory.withoutNearestNode(nodes: {
         Node(
           protocol: protocol,
@@ -116,7 +118,7 @@ void main() {
         ),
       );
     });
-    test('throws RequestUnauthorized when apiKey is incorrect', () {
+    test('RequestUnauthorized when apiKey is incorrect', () {
       final config =
           ConfigurationFactory.withoutNearestNode(apiKey: 'wrongKey');
 
@@ -140,7 +142,7 @@ void main() {
         ),
       );
     });
-    test('throws ServerError for response code 5xx', () {
+    test('ServerError for response code 5xx', () {
       final config = ConfigurationFactory.withoutNearestNode(
         nodes: {
           Node(
@@ -181,6 +183,7 @@ Future<void> handleRequests(HttpServer server) async {
     final port = request.connectionInfo.localPort,
         path = request.uri.path,
         headers = request.headers,
+        // ignore: unused_local_variable
         host = headers['host']?.first,
         _headerApiKey = headers['x-typesense-api-key']?.first;
 

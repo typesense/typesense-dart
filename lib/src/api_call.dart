@@ -11,31 +11,101 @@ class ApiCall {
   final Configuration _config;
   List<Node> _nodes;
   int _nodeIndex = 0;
-  bool _nearestNodeIsPresent;
+  bool _isNearestNodePresent;
+  Map<String, String> _defaultHeaders;
+  Map<String, String> _defaultQueryParameters;
 
   ApiCall(Configuration config) : _config = config {
     _nodes = List.from(_config.nodes);
 
-    _nearestNodeIsPresent = _config.nearestNode != null;
-    if (_nearestNodeIsPresent) {
+    _isNearestNodePresent = _config.nearestNode != null;
+    if (_isNearestNodePresent) {
       _config.nearestNode.client ??= http.Client();
     }
+
+    _defaultHeaders = _getDefaultHeaders();
+    _defaultQueryParameters = _getDefaultQueryParameters();
   }
 
-  Future<Map<String, dynamic>> get(String endpoint,
-      {Map<String, String> queryParams = const {}}) async {
+  Map<String, String> _getDefaultHeaders() {
+    final defaultHeaders = <String, String>{};
+    if (!_config.sendApiKeyAsQueryParam) {
+      defaultHeaders['x-typesense-api-key'] = _config.apiKey;
+    }
+    defaultHeaders['Content-Type'] = 'application/json';
+    return defaultHeaders;
+  }
+
+  Map<String, String> _getDefaultQueryParameters() {
+    final defaultQueryParameters = <String, String>{};
+    if (_config.sendApiKeyAsQueryParam) {
+      defaultQueryParameters['x-typesense-api-key'] = _config.apiKey;
+    }
+    return defaultQueryParameters;
+  }
+
+  Future<Map<String, dynamic>> get(
+    String endpoint, {
+    Map<String, String> queryParams = const {},
+  }) =>
+      _requestCore((node) => node.client.get(
+            _requestUri(node, endpoint, queryParams),
+            headers: _defaultHeaders,
+          ));
+
+  Future<Map<String, dynamic>> delete(
+    String endpoint, {
+    Map<String, String> queryParams = const {},
+  }) =>
+      _requestCore((node) => node.client.delete(
+            _requestUri(node, endpoint, queryParams),
+            headers: _defaultHeaders,
+          ));
+
+  Future<Map<String, dynamic>> post(
+    String endpoint, {
+    Map<String, String> queryParams = const {},
+    Map<String, String> additionalHeaders = const {},
+    Map<String, String> bodyParameters = const {},
+  }) =>
+      _requestCore((node) => node.client.post(
+            _requestUri(node, endpoint, queryParams),
+            headers: {..._defaultHeaders, ...additionalHeaders},
+            body: bodyParameters,
+          ));
+
+  Future<Map<String, dynamic>> put(
+    String endpoint, {
+    Map<String, String> queryParams = const {},
+    Map<String, String> bodyParameters = const {},
+  }) =>
+      _requestCore((node) => node.client.put(
+            _requestUri(node, endpoint, queryParams),
+            headers: _defaultHeaders,
+            body: bodyParameters,
+          ));
+
+  Future<Map<String, dynamic>> patch(
+    String endpoint, {
+    Map<String, String> queryParams = const {},
+    Map<String, String> bodyParameters = const {},
+  }) =>
+      _requestCore((node) => node.client.patch(
+            _requestUri(node, endpoint, queryParams),
+            headers: _defaultHeaders,
+            body: bodyParameters,
+          ));
+
+  Future<Map<String, dynamic>> _requestCore(
+    Future<http.Response> Function(Node) predicate,
+  ) async {
     http.Response response;
     for (var triesLeft = _config.numRetries;;) {
       final node = _nextNode();
       try {
-        response = await node.client
-            .get(
-              _requestUri(node, endpoint, queryParams),
-              headers: _defaultHeaders(),
-            )
-            .timeout(
-              _config.connectionTimeout,
-            );
+        response = await predicate(node).timeout(
+          _config.connectionTimeout,
+        );
         return _handleNodeResponse(node, response);
       } catch (e) {
         if (--triesLeft <= 0) {
@@ -43,148 +113,7 @@ class ApiCall {
           rethrow;
         }
 
-        if (!(e is TimeoutException) && response.statusCode < 500) {
-          // If response is anything but 5xx, rethrow.
-          rethrow;
-        } else {
-          // Retry all other HTTP errors (HTTPStatus > 500) after [retryInterval].
-          await Future.delayed(_config.retryInterval);
-        }
-      }
-    }
-  }
-
-  Future<Map<String, dynamic>> delete(String endpoint,
-      {Map<String, String> queryParams = const {}}) async {
-    http.Response response;
-    for (var triesLeft = _config.numRetries;;) {
-      final node = _nextNode();
-      try {
-        response = await node.client
-            .delete(
-              _requestUri(node, endpoint, queryParams),
-              headers: _defaultHeaders(),
-            )
-            .timeout(
-              _config.connectionTimeout,
-            );
-        return _handleNodeResponse(node, response);
-      } catch (e) {
-        if (--triesLeft == 0) {
-          // We've exhausted our tries, rethrow.
-          rethrow;
-        }
-
-        if (!(e is TimeoutException) && response.statusCode < 500) {
-          // If response is anything but 5xx, rethrow.
-          rethrow;
-        } else {
-          // Retry all other HTTP errors (HTTPStatus > 500) after [retryInterval].
-          await Future.delayed(_config.retryInterval);
-        }
-      }
-    }
-  }
-
-  Future<Map<String, dynamic>> post(
-    String endpoint, {
-    Map<String, String> queryParams = const {},
-    Map<String, String> additionalHeaders = const {},
-    Map<String, String> bodyParameters = const {},
-  }) async {
-    http.Response response;
-    for (var triesLeft = _config.numRetries;;) {
-      final node = _nextNode();
-      try {
-        response = await node.client
-            .post(
-              _requestUri(node, endpoint, queryParams),
-              headers: {..._defaultHeaders(), ...additionalHeaders},
-              body: bodyParameters,
-            )
-            .timeout(
-              _config.connectionTimeout,
-            );
-        return _handleNodeResponse(node, response);
-      } catch (e) {
-        if (--triesLeft == 0) {
-          // We've exhausted our tries, rethrow.
-          rethrow;
-        }
-
-        if (!(e is TimeoutException) && response.statusCode < 500) {
-          // If response is anything but 5xx, rethrow.
-          rethrow;
-        } else {
-          // Retry all other HTTP errors (HTTPStatus > 500) after [retryInterval].
-          await Future.delayed(_config.retryInterval);
-        }
-      }
-    }
-  }
-
-  Future<Map<String, dynamic>> put(
-    String endpoint, {
-    Map<String, String> queryParams = const {},
-    Map<String, String> bodyParameters = const {},
-  }) async {
-    http.Response response;
-    for (var triesLeft = _config.numRetries;;) {
-      final node = _nextNode();
-      try {
-        response = await node.client
-            .put(
-              _requestUri(node, endpoint, queryParams),
-              headers: _defaultHeaders(),
-              body: bodyParameters,
-            )
-            .timeout(
-              _config.connectionTimeout,
-            );
-        return _handleNodeResponse(node, response);
-      } catch (e) {
-        if (--triesLeft == 0) {
-          // We've exhausted our tries, rethrow.
-          rethrow;
-        }
-
-        if (!(e is TimeoutException) && response.statusCode < 500) {
-          // If response is anything but 5xx, rethrow.
-          rethrow;
-        } else {
-          // Retry all other HTTP errors (HTTPStatus > 500) after [retryInterval].
-          await Future.delayed(_config.retryInterval);
-        }
-      }
-    }
-  }
-
-  Future<Map<String, dynamic>> patch(
-    String endpoint, {
-    Map<String, String> queryParams = const {},
-    Map<String, String> bodyParameters = const {},
-  }) async {
-    http.Response response;
-    for (var triesLeft = _config.numRetries;;) {
-      final node = _nextNode();
-      try {
-        response = await node.client
-            .patch(
-              _requestUri(node, endpoint, queryParams),
-              headers: _defaultHeaders(),
-              body: bodyParameters,
-            )
-            .timeout(
-              _config.connectionTimeout,
-            );
-        return _handleNodeResponse(node, response);
-      } catch (e) {
-        if (--triesLeft == 0) {
-          // We've exhausted our tries, rethrow.
-          rethrow;
-        }
-
-        if (!(e is TimeoutException) && response.statusCode < 500) {
+        if (e is RequestException && response.statusCode < 500) {
           // If response is anything but 5xx, rethrow.
           rethrow;
         } else {
@@ -205,32 +134,15 @@ class ApiCall {
         host: node.uri.host,
         port: node.uri.port,
         path: '${node.uri.path}$endpoint',
-        queryParameters: {..._defaultQueryParameters(), ...queryParams},
+        queryParameters: {..._defaultQueryParameters, ...queryParams},
       );
-
-  Map<String, String> _defaultHeaders() {
-    final defaultHeaders = <String, String>{};
-    if (!_config.sendApiKeyAsQueryParam) {
-      defaultHeaders['x-typesense-api-key'] = _config.apiKey;
-    }
-    defaultHeaders['Content-Type'] = 'application/json';
-    return defaultHeaders;
-  }
-
-  Map<String, String> _defaultQueryParameters() {
-    final defaultQueryParameters = <String, String>{};
-    if (_config.sendApiKeyAsQueryParam) {
-      defaultQueryParameters['x-typesense-api-key'] = _config.apiKey;
-    }
-    return defaultQueryParameters;
-  }
 
   /// Attempts to find a healthy node, looping through the list of nodes
   /// once. But if no healthy nodes are found, it will just return the next
   /// node, even if it's unhealthy so we can try the request for good measure,
   /// in case that node has become healthy since.
   Node _nextNode() {
-    if (_nearestNodeIsPresent && _canUse(_config.nearestNode)) {
+    if (_isNearestNodePresent && _canUse(_config.nearestNode)) {
       return _config.nearestNode;
     } else {
       for (var i = 0; i < _nodes.length; i++, _incrementNodeIndex()) {
