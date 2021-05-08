@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 import 'configuration.dart';
+import 'models/node.dart';
 import 'exceptions.dart' hide MissingConfiguration;
 
 class ApiCall {
