@@ -77,7 +77,7 @@ class ApiCall {
   Future<Map<String, dynamic>> put(
     String endpoint, {
     Map<String, String> queryParams = const {},
-    Map<String, String> bodyParameters = const {},
+    Object bodyParameters,
   }) =>
       _requestCore((node) => node.client.put(
             _requestUri(node, endpoint, queryParams),
