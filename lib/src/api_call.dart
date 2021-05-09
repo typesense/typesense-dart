@@ -10,7 +10,7 @@ import 'exceptions.dart' hide MissingConfiguration;
 class ApiCall {
   final Configuration _config;
   List<Node> _nodes;
-  int _nodeIndex = 0;
+  int _nodeIndex = -1;
   bool _isNearestNodePresent;
   Map<String, String> _defaultHeaders;
   Map<String, String> _defaultQueryParameters;
@@ -145,6 +145,7 @@ class ApiCall {
     if (_isNearestNodePresent && _canUse(_config.nearestNode)) {
       return _config.nearestNode;
     } else {
+      _incrementNodeIndex(); // Keep rotating the nodes for each request.
       for (var i = 0; i < _nodes.length; i++, _incrementNodeIndex()) {
         final candidateNode = _nodes[_nodeIndex]..client ??= http.Client();
 
@@ -155,7 +156,6 @@ class ApiCall {
     }
 
     // None of the nodes can be used, returning the next node.
-    _incrementNodeIndex();
     return _nodes[_nodeIndex];
   }
 
