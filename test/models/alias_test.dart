@@ -1,14 +1,22 @@
 import 'package:test/test.dart';
+import 'package:mockito/mockito.dart';
 
+import 'package:typesense/src/api_call.dart';
 import 'package:typesense/src/models/alias.dart';
+
+class MockApiCall extends Mock implements ApiCall {}
 
 void main() {
   group('Alias', () {
     Alias alias;
+    MockApiCall mock;
+
     setUp(() {
+      mock = MockApiCall();
       alias = Alias(
         'companies',
-        'companies_june11',
+        collectionName: 'companies_june11',
+        apiCall: mock,
       );
     });
 
@@ -25,6 +33,28 @@ void main() {
             "collection_name": "companies_june11",
           }));
     });
+    test('delete() calls ApiCall.delete()', () async {
+      when(
+        mock.delete(
+          '/aliases/companies',
+        ),
+      ).thenAnswer((realInvocation) => Future.value({
+            "name": "companies",
+            "collection_name": "companies_june11",
+          }));
+      expect(await alias.delete(), equals(alias));
+    });
+    test('retrieve() calls ApiCall.get()', () async {
+      when(
+        mock.get(
+          '/aliases/companies',
+        ),
+      ).thenAnswer((realInvocation) => Future.value({
+            "name": "companies",
+            "collection_name": "companies_june11",
+          }));
+      expect(await alias.retrieve(), equals(alias));
+    });
   });
 
   group('Alias initialization', () {
@@ -40,7 +70,7 @@ void main() {
       expect(
         () => Alias(
           null,
-          'companies_june11',
+          collectionName: 'companies_june11',
         ),
         throwsA(
           isA<ArgumentError>().having(
@@ -53,41 +83,13 @@ void main() {
       expect(
         () => Alias(
           '',
-          'companies_june11',
+          collectionName: 'companies_june11',
         ),
         throwsA(
           isA<ArgumentError>().having(
             (e) => e.message,
             'message',
             'Ensure Alias.name is set',
-          ),
-        ),
-      );
-    });
-    test('with null/empty collectionName throws', () {
-      expect(
-        () => Alias(
-          'companies',
-          null,
-        ),
-        throwsA(
-          isA<ArgumentError>().having(
-            (e) => e.message,
-            'message',
-            'Ensure Alias.collectionName is set',
-          ),
-        ),
-      );
-      expect(
-        () => Alias(
-          'companies',
-          '',
-        ),
-        throwsA(
-          isA<ArgumentError>().having(
-            (e) => e.message,
-            'message',
-            'Ensure Alias.collectionName is set',
           ),
         ),
       );
@@ -97,11 +99,11 @@ void main() {
   test('Alias are equatable', () {
     final a1 = Alias(
           'companies',
-          'companies_june11',
+          collectionName: 'companies_june11',
         ),
         a2 = Alias(
           'companies',
-          'companies_june11',
+          collectionName: 'companies_june11',
         );
     expect(a1 == a2, isTrue);
   });
