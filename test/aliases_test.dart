@@ -11,7 +11,7 @@ class MockApiCall extends Mock implements ApiCall {}
 void main() {
   Aliases aliases;
   MockApiCall mock;
-  Alias companies = Alias("companies", "companies_june11");
+  Alias companies = Alias("companies", collectionName: "companies_june11");
 
   setUp(() {
     mock = MockApiCall();
@@ -32,29 +32,7 @@ void main() {
           }));
       expect(await aliases.upsert(companies), equals(companies));
     });
-    test('delete() calls ApiCall.delete()', () async {
-      when(
-        mock.delete(
-          '/aliases/companies',
-        ),
-      ).thenAnswer((realInvocation) => Future.value({
-            "name": "companies",
-            "collection_name": "companies_june11",
-          }));
-      expect(await aliases.delete('companies'), equals(companies));
-    });
     test('retrieve() calls ApiCall.get()', () async {
-      when(
-        mock.get(
-          '/aliases/companies',
-        ),
-      ).thenAnswer((realInvocation) => Future.value({
-            "name": "companies",
-            "collection_name": "companies_june11",
-          }));
-      expect(await aliases.retrieve('companies'), equals(companies));
-    });
-    test('retrieveAll() calls ApiCall.get()', () async {
       when(
         mock.get(
           '/aliases',
@@ -65,8 +43,12 @@ void main() {
               {"name": "employees", "collection_name": "employees_june11"}
             ]
           }));
-      expect(await aliases.retrieveAll(),
-          equals({companies, Alias("employees", "employees_june11")}));
+      expect(
+          await aliases.retrieve(),
+          equals({
+            companies,
+            Alias("employees", collectionName: "employees_june11")
+          }));
     });
   });
 }
