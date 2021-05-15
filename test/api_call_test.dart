@@ -9,8 +9,20 @@ import 'package:typesense/src/exceptions.dart';
 
 import 'config_factory.dart';
 
+final companyCollection = {
+  "name": "companies",
+  "num_documents": 0,
+  "fields": [
+    {"name": "company_name", "type": "string"},
+    {"name": "num_employees", "type": "int32"},
+    {"name": "country", "type": "string", "facet": true}
+  ],
+  "default_sorting_field": "num_employees"
+};
+
 void main() {
   HttpServer nearestMockServer, mockServer, unresponsiveServer;
+  final companiesCollectionEndpoint = '$collections/companies';
 
   setUp(() async {
     // print('');
@@ -27,6 +39,36 @@ void main() {
     await mockServer.close();
     await unresponsiveServer.close();
   });
+
+  group('ApiCall', () {
+    final config = ConfigurationFactory.withNearestNode(),
+        companiesAlias = {
+          'name': 'companies',
+          'collection_name': 'companies_june11',
+        };
+    test('has a get method', () async {
+      final res = await ApiCall(config).get(companiesCollectionEndpoint);
+
+      expect(res, equals(companyCollection));
+    });
+    test('has a put method', () async {
+      final res = await ApiCall(config).put(
+        '$aliases/companies',
+        bodyParameters: {'collection_name': 'companies_june11'},
+      );
+
+      expect(res, equals(companiesAlias));
+    });
+    test('has a delete method', () async {
+      await ApiCall(config).put(
+        '$aliases/companies',
+        bodyParameters: {'collection_name': 'companies_june11'},
+      );
+      final res = await ApiCall(config).delete('$aliases/companies');
+
+      expect(res, equals(companiesAlias));
+    });
+  });
   group('ApiCall', () {
     test('requests the nearest node, if present.', () async {
       final config = ConfigurationFactory.withNearestNode(
@@ -39,31 +81,27 @@ void main() {
               ),
             },
           ),
-          res = await ApiCall(config).get(collections);
+          res = await ApiCall(config).get(companiesCollectionEndpoint);
 
-      expect(res.isNotEmpty, isTrue);
-      expect((res['fields'] as List).isNotEmpty, isTrue);
+      expect(res, equals(companyCollection));
     });
     test('requests the nodes when nearest node is not present', () async {
       final config = ConfigurationFactory.withoutNearestNode(),
-          res = await ApiCall(config).get(collections);
+          res = await ApiCall(config).get(companiesCollectionEndpoint);
 
-      expect(res.isNotEmpty, isTrue);
-      expect((res['fields'] as List).isNotEmpty, isTrue);
+      expect(res, equals(companyCollection));
     });
     test('sends api key in the header or query according to the configuration',
         () async {
       // Defaults to sending api key in the header
       var config = ConfigurationFactory.withNearestNode(),
-          res = await ApiCall(config).get(collections);
-      expect(res.isNotEmpty, isTrue);
-      expect((res['fields'] as List).isNotEmpty, isTrue);
+          res = await ApiCall(config).get(companiesCollectionEndpoint);
+      expect(res, equals(companyCollection));
 
       config =
           ConfigurationFactory.withNearestNode(sendApiKeyAsQueryParam: true);
-      res = await ApiCall(config).get(collections);
-      expect(res.isNotEmpty, isTrue);
-      expect((res['fields'] as List).isNotEmpty, isTrue);
+      res = await ApiCall(config).get(companiesCollectionEndpoint);
+      expect(res, equals(companyCollection));
     });
     test('loops through the nodes to complete the request', () async {
       final config = ConfigurationFactory.withoutNearestNode(nodes: {
@@ -80,10 +118,9 @@ void main() {
               path: pathToService, // Would receive the data.
             ),
           }),
-          res = await ApiCall(config).get(collections);
+          res = await ApiCall(config).get(companiesCollectionEndpoint);
 
-      expect(res.isNotEmpty, isTrue);
-      expect((res['fields'] as List).isNotEmpty, isTrue);
+      expect(res, equals(companyCollection));
     });
   });
 
@@ -100,8 +137,7 @@ void main() {
 
       expect(
         () async {
-          var res = await ApiCall(config).get(collections);
-          print(res);
+          await ApiCall(config).get(companiesCollectionEndpoint);
         },
         throwsA(
           isA<RequestMalformed>()
@@ -124,8 +160,7 @@ void main() {
 
       expect(
         () async {
-          var res = await ApiCall(config).get(collections);
-          print(res);
+          await ApiCall(config).get(companiesCollectionEndpoint);
         },
         throwsA(
           isA<RequestUnauthorized>()
@@ -157,8 +192,7 @@ void main() {
 
       expect(
         () async {
-          var res = await ApiCall(config).get(collections);
-          print(res);
+          await ApiCall(config).get(companiesCollectionEndpoint);
         },
         throwsA(
           isA<ServerError>()
@@ -179,6 +213,7 @@ void main() {
 }
 
 Future<void> handleRequests(HttpServer server) async {
+  final aliases = <String, Map<String, String>>{};
   await for (final HttpRequest request in server) {
     final port = request.connectionInfo.localPort,
         path = request.uri.path,
@@ -209,21 +244,17 @@ Future<void> handleRequests(HttpServer server) async {
 
     switch (request.method) {
       case 'GET':
-        if (path == '/path/to/service/collections') {
-          final jsonString = jsonEncode({
-            "name": "companies",
-            "num_documents": 0,
-            "fields": [
-              {"name": "company_name", "type": "string"},
-              {"name": "num_employees", "type": "int32"},
-              {"name": "country", "type": "string", "facet": true}
-            ],
-            "default_sorting_field": "num_employees"
-          });
+        if (path == '/path/to/service/collections/companies') {
           request.response
             ..statusCode = HttpStatus.ok
             ..headers.contentType = ContentType.json
-            ..write(jsonString)
+            ..write(jsonEncode(companyCollection))
+            ..close();
+        } else if (aliases.containsKey(path)) {
+          request.response
+            ..statusCode = HttpStatus.ok
+            ..headers.contentType = ContentType.json
+            ..write(json.encode(aliases[path]))
             ..close();
         } else {
           request.response
@@ -233,10 +264,29 @@ Future<void> handleRequests(HttpServer server) async {
         }
         break;
       case 'DELETE':
+        if (aliases.containsKey(path)) {
+          final map = aliases[path];
+          aliases.remove(path);
+          request.response
+            ..statusCode = HttpStatus.ok
+            ..headers.contentType = ContentType.json
+            ..write(json.encode(map))
+            ..close();
+        }
         break;
       case 'POST':
         break;
       case 'PUT':
+        final map = (jsonDecode(await utf8.decoder.bind(request).join()) as Map)
+            .cast<String, String>();
+        map['name'] = request.uri.pathSegments.last;
+        aliases[path] = map;
+
+        request.response
+          ..statusCode = HttpStatus.ok
+          ..headers.contentType = ContentType.json
+          ..write(json.encode(map))
+          ..close();
         break;
       case 'PATCH':
         break;
