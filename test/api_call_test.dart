@@ -46,6 +46,10 @@ void main() {
           'name': 'companies',
           'collection_name': 'companies_june11',
         };
+
+    test('has a CONTENT_TYPE', () {
+      expect(ApiCall.CONTENT_TYPE, equals('Content-Type'));
+    });
     test('has a get method', () async {
       final res = await ApiCall(config).get(companiesCollectionEndpoint);
 
