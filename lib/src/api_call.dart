@@ -64,9 +64,9 @@ class ApiCall {
 
   Future<Map<String, dynamic>> post(
     String endpoint, {
-    Map<String, String> queryParams = const {},
-    Map<String, String> additionalHeaders = const {},
-    Map<String, String> bodyParameters = const {},
+    Map<String, dynamic> queryParams = const {},
+    Map<String, dynamic> additionalHeaders = const {},
+    Map<String, dynamic> bodyParameters = const {},
   }) =>
       _requestCore((node) => node.client.post(
             _requestUri(node, endpoint, queryParams),
