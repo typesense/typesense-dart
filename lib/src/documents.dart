@@ -12,8 +12,11 @@ class Documents {
 
   Future<Map<String, dynamic>> create(Map<String, dynamic> document,
       {Map<String, dynamic> options = const {}}) async {
+    Map<String, dynamic> ops = new Map<String, dynamic>.from(options)
+      ..addAll({"action": "create"});
+    ops["action"] = "create";
     return await _apicall.post(_endPoint(),
-        bodyParameters: document, queryParams: options);
+        bodyParameters: document, queryParams: ops);
   }
 
   Future<Map<String, dynamic>> upsert(Map<String, dynamic> document,
