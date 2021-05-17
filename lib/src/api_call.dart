@@ -71,18 +71,18 @@ class ApiCall {
       _requestCore((node) => node.client.post(
             _requestUri(node, endpoint, queryParams),
             headers: {..._defaultHeaders, ...additionalHeaders},
-            body: bodyParameters,
+            body: json.encode(bodyParameters),
           ));
 
   Future<Map<String, dynamic>> put(
     String endpoint, {
     Map<String, String> queryParams = const {},
-    Map<String, String> bodyParameters = const {},
+    Object bodyParameters,
   }) =>
       _requestCore((node) => node.client.put(
             _requestUri(node, endpoint, queryParams),
             headers: _defaultHeaders,
-            body: bodyParameters,
+            body: json.encode(bodyParameters),
           ));
 
   Future<Map<String, dynamic>> patch(
@@ -93,7 +93,7 @@ class ApiCall {
       _requestCore((node) => node.client.patch(
             _requestUri(node, endpoint, queryParams),
             headers: _defaultHeaders,
-            body: bodyParameters,
+            body: json.encode(bodyParameters),
           ));
 
   Future<Map<String, dynamic>> _requestCore(
@@ -186,8 +186,7 @@ class ApiCall {
       // If response is 2xx return the body.
       return responseBody;
     } else {
-      throw _customExceptionForResponse(
-          responseBody.toString(), responseStatus);
+      throw _exception(responseBody.toString(), responseStatus);
     }
   }
 
@@ -196,7 +195,7 @@ class ApiCall {
     node.lastAccessTimestamp = DateTime.now();
   }
 
-  Exception _customExceptionForResponse(String body, int status) {
+  RequestException _exception(String body, int status) {
     if (status == 400) {
       return RequestMalformed(body, status);
     } else if (status == 401) {

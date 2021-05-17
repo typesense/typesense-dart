@@ -10,7 +10,8 @@ const protocol = 'http',
     mockServerPort = 8081,
     unresponsiveServerPort = 9090,
     pathToService = '/path/to/service',
-    collections = '/collections';
+    collections = '/collections',
+    aliases = '/aliases';
 
 class ConfigurationFactory {
   ConfigurationFactory._();
