@@ -14,16 +14,16 @@ class Documents {
       {Map<String, dynamic> options = const {}}) async {
     Map<String, dynamic> ops = new Map<String, dynamic>.from(options)
       ..addAll({"action": "create"});
-    ops["action"] = "create";
     return await _apicall.post(_endPoint(),
         bodyParameters: document, queryParams: ops);
   }
 
   Future<Map<String, dynamic>> upsert(Map<String, dynamic> document,
       {Map<String, dynamic> options = const {}}) async {
-    options["action"] = "upsert";
+    Map<String, dynamic> ops = new Map<String, dynamic>.from(options)
+      ..addAll({"action": "upsert"});
     return await _apicall.post(_endPoint(),
-        bodyParameters: document, queryParams: options);
+        bodyParameters: document, queryParams: ops);
   }
 
   Future<Map<String, dynamic>> update(Map<String, dynamic> document,
@@ -39,6 +39,6 @@ class Documents {
   }
 
   String _endPoint({String operation = ''}) {
-    return "${Collections.RESOURCEPATH}/$_collectionName/${Documents.RESOURCEPATH}/$operation";
+    return "${Collections.RESOURCEPATH}/$_collectionName${Documents.RESOURCEPATH}/$operation";
   }
 }

@@ -19,16 +19,29 @@ void main() {
     test('has a RESOURCEPATH', () {
       expect(Documents.RESOURCEPATH, equals('/documents'));
     });
-    test("Create calls ApiCall.post()", () async {
+    test("create() calls ApiCall.post()", () async {
       final document = {
         'id': '124',
         'company_name': 'Stark Industries',
         'num_employees': 5215,
         'country': 'USA',
       };
-      when(mock.post("/collections/companies/documents?action=create"))
+      when(mock.post("/collections/companies/documents/",
+              bodyParameters: document, queryParams: {"action": "create"}))
           .thenAnswer((realInvocation) => Future.value(document));
       expect(await documents.create(document), equals(document));
+    });
+    test("upsert() calls ApiCall.post()", () async {
+      final document = {
+        'id': '124',
+        'company_name': 'Stark Industries',
+        'num_employees': 5215,
+        'country': 'USA',
+      };
+      when(mock.post("/collections/companies/documents/",
+              bodyParameters: document, queryParams: {"action": "upsert"}))
+          .thenAnswer((realInvocation) => Future.value(document));
+      expect(await documents.upsert(document), equals(document));
     });
   });
 }
