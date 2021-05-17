@@ -43,5 +43,27 @@ void main() {
           .thenAnswer((realInvocation) => Future.value(document));
       expect(await documents.upsert(document), equals(document));
     });
+    test("update() calls ApiCall.post()", () async {
+      final document = {
+        'company_name': 'Stark Industries',
+        'num_employees': 5215,
+        'country': 'USA',
+      };
+      when(mock.post("/collections/companies/documents/",
+              bodyParameters: document, queryParams: {"action": "update"}))
+          .thenAnswer((realInvocation) => Future.value(document));
+      expect(await documents.update(document), equals(document));
+    });
+    test("delete() calls ApiCall.post()", () async {
+      final document = {
+        'company_name': 'Stark Industries',
+        'num_employees': 5215,
+        'country': 'USA',
+      };
+      when(mock.delete("/collections/companies/documents/",
+              queryParams: document))
+          .thenAnswer((realInvocation) => Future.value(document));
+      expect(await documents.delete(document), equals(document));
+    });
   });
 }

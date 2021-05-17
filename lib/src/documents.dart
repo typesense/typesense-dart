@@ -28,14 +28,14 @@ class Documents {
 
   Future<Map<String, dynamic>> update(Map<String, dynamic> document,
       {Map<String, dynamic> options = const {}}) async {
-    options["action"] = "update";
+    Map<String, dynamic> ops = new Map<String, dynamic>.from(options)
+      ..addAll({"action": "update"});
     return await _apicall.post(_endPoint(),
-        bodyParameters: document, queryParams: options);
+        bodyParameters: document, queryParams: ops);
   }
 
-  Future<Map<String, dynamic>> delete(
-      {Map<String, dynamic> queryParams = const {}}) async {
-    return await _apicall.post(_endPoint(), bodyParameters: queryParams);
+  Future<Map<String, dynamic>> delete(Map<String, dynamic> document) async {
+    return await _apicall.delete(_endPoint(), queryParams: document);
   }
 
   String _endPoint({String operation = ''}) {
