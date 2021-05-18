@@ -8,6 +8,11 @@ import 'models/node.dart';
 import 'exceptions.dart' hide MissingConfiguration;
 
 class ApiCall {
+  /// Key to set the content-type of the request in `additionalHeaders` map.
+  ///
+  /// The content-type of the request will default to "application/json".
+  static const CONTENT_TYPE = 'Content-Type';
+
   final Configuration _config;
   List<Node> _nodes;
   int _nodeIndex = -1;
@@ -32,7 +37,7 @@ class ApiCall {
     if (!_config.sendApiKeyAsQueryParam) {
       defaultHeaders['x-typesense-api-key'] = _config.apiKey;
     }
-    defaultHeaders['Content-Type'] = 'application/json';
+    defaultHeaders[CONTENT_TYPE] = 'application/json';
     return defaultHeaders;
   }
 
@@ -66,7 +71,7 @@ class ApiCall {
     String endpoint, {
     Map<String, dynamic> queryParams = const {},
     Map<String, dynamic> additionalHeaders = const {},
-    Map<String, dynamic> bodyParameters = const {},
+    Object bodyParameters,
   }) =>
       _requestCore((node) => node.client.post(
             _requestUri(node, endpoint, queryParams),
