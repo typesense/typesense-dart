@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:html';
+
 import 'package:test/test.dart';
 import 'package:mockito/mockito.dart';
 
@@ -64,6 +67,38 @@ void main() {
               queryParams: document))
           .thenAnswer((realInvocation) => Future.value(document));
       expect(await documents.delete(document), equals(document));
+    });
+    test("import() calls ApiCall.post() with string", () async {
+      final documentJson = [
+        {
+          "id": "124",
+          "company_name": "Stark Industries",
+          "num_employees": 5215,
+          "country": "US"
+        },
+        {
+          "id": "125",
+          "company_name": "Future Technology",
+          "num_employees": 1232,
+          "country": "UK"
+        },
+        {
+          "id": "126",
+          "company_name": "Random Corp.",
+          "num_employees": 531,
+          "country": "AU"
+        },
+      ];
+      final documentJsonl = jsonEncode(documentJson);
+      final result = [
+        {"success": true},
+        {"success": true},
+        {"success": true}
+      ];
+      when(mock.post("/collections/companies/documents/import",
+              bodyParameters: documentJsonl))
+          .thenAnswer((realInvocation) => Future.value(result));
+      expect(await documents.import(document), equals(result));
     });
   });
 }

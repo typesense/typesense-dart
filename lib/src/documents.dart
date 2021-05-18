@@ -54,7 +54,7 @@ class Documents {
     return await _apicall.post(_endPoint(operation: 'import'),
         queryParams: options,
         bodyParameters: documentsInJsonl,
-        additionalHeaders: {'Content-Type': 'text/plain'});
+        additionalHeaders: {ApiCall.CONTENT_TYPE: 'text/plain'});
   }
 
   String _endPoint({String operation = ''}) {
