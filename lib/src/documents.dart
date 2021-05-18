@@ -1,5 +1,6 @@
 import 'package:typesense/src/api_call.dart';
 import 'package:typesense/src/collections.dart';
+import 'dart:convert';
 
 class Documents {
   final ApiCall _apicall;
@@ -36,6 +37,24 @@ class Documents {
 
   Future<Map<String, dynamic>> delete(Map<String, dynamic> document) async {
     return await _apicall.delete(_endPoint(), queryParams: document);
+  }
+
+  Future<Map<String, dynamic>> import(dynamic documents,
+      {Map<String, dynamic> options = const {}}) async {
+    String documentsInJsonl;
+    if (documents is List) {
+      List<String> documentJsonArray = [];
+      documents.forEach((element) {
+        documentJsonArray.add(jsonEncode(element));
+      });
+      documentsInJsonl = documentJsonArray.join("\n");
+    } else {
+      documentsInJsonl = documents;
+    }
+    return await _apicall.post(_endPoint(operation: 'import'),
+        queryParams: options,
+        bodyParameters: documentsInJsonl,
+        additionalHeaders: {'Content-Type': 'text/plain'});
   }
 
   String _endPoint({String operation = ''}) {
