@@ -60,7 +60,7 @@ class ApiCall {
 
   Future<Map<String, dynamic>> delete(
     String endpoint, {
-    Map<String, String> queryParams = const {},
+    Map<String, dynamic> queryParams = const {},
   }) =>
       _requestCore((node) => node.client.delete(
             _requestUri(node, endpoint, queryParams),
@@ -69,8 +69,8 @@ class ApiCall {
 
   Future<Map<String, dynamic>> post(
     String endpoint, {
-    Map<String, String> queryParams = const {},
-    Map<String, String> additionalHeaders = const {},
+    Map<String, dynamic> queryParams = const {},
+    Map<String, dynamic> additionalHeaders = const {},
     Object bodyParameters,
   }) =>
       _requestCore((node) => node.client.post(
@@ -132,7 +132,7 @@ class ApiCall {
   Uri _requestUri(
     Node node,
     String endpoint,
-    Map<String, String> queryParams,
+    Map<String, dynamic> queryParams,
   ) =>
       Uri(
         scheme: node.uri.scheme,
