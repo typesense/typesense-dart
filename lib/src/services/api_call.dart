@@ -18,7 +18,7 @@ class ApiCall extends BaseApiCall<Map<String, dynamic>> {
   /// [endpoint] and [queryParams].
   Future<Map<String, dynamic>> get(
     String endpoint, {
-    Map<String, String> queryParams = const {},
+    Map<String, dynamic> queryParams = const {},
   }) =>
       send((node) => node.client.get(
             requestUri(node, endpoint, queryParams),
@@ -29,7 +29,7 @@ class ApiCall extends BaseApiCall<Map<String, dynamic>> {
   /// [endpoint] and [queryParams].
   Future<Map<String, dynamic>> delete(
     String endpoint, {
-    Map<String, String> queryParams = const {},
+    Map<String, dynamic> queryParams = const {},
   }) =>
       send((node) => node.client.delete(
             requestUri(node, endpoint, queryParams),
@@ -45,7 +45,7 @@ class ApiCall extends BaseApiCall<Map<String, dynamic>> {
   /// "application/json".
   Future<Map<String, dynamic>> post(
     String endpoint, {
-    Map<String, String> queryParams = const {},
+    Map<String, dynamic> queryParams = const {},
     Map<String, String> additionalHeaders = const {},
     Object bodyParameters,
   }) =>
@@ -63,7 +63,7 @@ class ApiCall extends BaseApiCall<Map<String, dynamic>> {
   /// "application/json".
   Future<Map<String, dynamic>> put(
     String endpoint, {
-    Map<String, String> queryParams = const {},
+    Map<String, dynamic> queryParams = const {},
     Object bodyParameters,
   }) =>
       send((node) => node.client.put(

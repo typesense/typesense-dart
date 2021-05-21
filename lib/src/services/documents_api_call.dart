@@ -17,7 +17,7 @@ class DocumentsApiCall extends BaseApiCall<String> {
   /// [endpoint] and [queryParams].
   Future<String> get(
     String endpoint, {
-    Map<String, String> queryParams = const {},
+    Map<String, dynamic> queryParams = const {},
   }) =>
       send((node) => node.client.get(
             requestUri(node, endpoint, queryParams),
@@ -33,7 +33,7 @@ class DocumentsApiCall extends BaseApiCall<String> {
   /// "application/json".
   Future<String> post(
     String endpoint, {
-    Map<String, String> queryParams = const {},
+    Map<String, dynamic> queryParams = const {},
     Map<String, String> additionalHeaders = const {},
     String bodyParameters,
   }) =>

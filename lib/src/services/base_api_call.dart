@@ -95,7 +95,7 @@ abstract class BaseApiCall<R extends Object> {
   Uri requestUri(
     Node node,
     String endpoint,
-    Map<String, String> queryParams,
+    Map<String, dynamic> queryParams,
   ) =>
       Uri(
         scheme: node.uri.scheme,
