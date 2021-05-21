@@ -1,4 +1,4 @@
-import '../api_call.dart';
+import '../services/api_call.dart';
 import '../aliases.dart';
 
 class Alias {

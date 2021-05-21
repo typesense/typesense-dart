@@ -1,4 +1,4 @@
-import 'package:typesense/src/api_call.dart';
+import 'package:typesense/src/services/api_call.dart';
 
 import 'models/alias.dart';
 
