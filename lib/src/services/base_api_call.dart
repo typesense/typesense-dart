@@ -1,0 +1,128 @@
+import 'dart:async';
+
+import 'package:http/http.dart' as http;
+
+import '../configuration.dart';
+import '../models/node.dart';
+import 'node_pool.dart';
+import '../exceptions.dart' hide MissingConfiguration;
+
+/// Key to set the content-type of the request in `additionalHeaders` map.
+///
+/// The content-type of the request will default to "application/json".
+const CONTENT_TYPE = 'Content-Type';
+
+/// Key to set the api key in either `_defaultQueryParameters` or
+/// `_defaultHeaders` map depending on `Configuration.sendApiKeyAsQueryParam`.
+const _API_KEY = 'x-typesense-api-key';
+
+/// A generic abstract class which implements the core logic of using [NodePool]
+/// to complete the requests.
+///
+/// [R] stands for the response type that the sub-class implementing
+/// [BaseApiCall] promises.
+abstract class BaseApiCall<R extends Object> {
+  final Configuration _config;
+  final NodePool _nodePool;
+  Map<String, String> _defaultHeaders = {};
+  Map<String, String> _defaultQueryParameters = {};
+
+  BaseApiCall(Configuration config, NodePool nodePool)
+      : _config = config,
+        _nodePool = nodePool {
+    if (_config.sendApiKeyAsQueryParam) {
+      _defaultQueryParameters[_API_KEY] = _config.apiKey;
+    } else {
+      _defaultHeaders[_API_KEY] = _config.apiKey;
+    }
+
+    _defaultHeaders[CONTENT_TYPE] = 'application/json';
+  }
+
+  /// Headers that are common in majority requests.
+  ///
+  /// Holds the api key if [Configuration.sendApiKeyAsQueryParam] is `false`.
+  Map<String, String> get defaultHeaders => Map.from(_defaultHeaders);
+
+  /// Holds the api key if [Configuration.sendApiKeyAsQueryParam] is `true`.
+  Map<String, String> get defaultQueryParameters =>
+      Map.from(_defaultQueryParameters);
+
+  /// Retries the [request] untill a node responds or [Configuration.numRetries]
+  /// run out.
+  ///
+  /// Also sets the health status of nodes after each request so it can be put
+  /// in/out of [NodePool]'s circulation.
+  Future<R> send(Future<http.Response> Function(Node) request) async {
+    http.Response response;
+    Node node;
+    for (var triesLeft = _config.numRetries;;) {
+      node = _nodePool.nextNode;
+      try {
+        response = await request(node).timeout(
+          _config.connectionTimeout,
+        );
+        final decodedResponse = handleNodeResponse(response);
+        // Node responded, set it healthy.
+        NodePool.setNodeHealthStatus(node, true, DateTime.now());
+        return decodedResponse;
+      } catch (e) {
+        if (e is RequestException && e.runtimeType != ServerError) {
+          // Node did respond, yet a RequestException was raised.
+          NodePool.setNodeHealthStatus(node, true, DateTime.now());
+          rethrow;
+        } else {
+          // ServerError was raised, set node as unhealthy.
+          NodePool.setNodeHealthStatus(node, false, DateTime.now());
+        }
+
+        if (--triesLeft <= 0) {
+          // We've exhausted our tries, rethrow.
+          rethrow;
+        } else {
+          // Retry for all errors including ServerError after [retryInterval].
+          await Future.delayed(_config.retryInterval);
+        }
+      }
+    }
+  }
+
+  /// [response] handler specific to each implementation of [BaseApiCall].
+  R handleNodeResponse(http.Response response);
+
+  /// Constructs the final [Uri] by combining the [Node.uri] with [endpoint] and
+  /// [queryParams].
+  Uri requestUri(
+    Node node,
+    String endpoint,
+    Map<String, String> queryParams,
+  ) =>
+      Uri(
+        scheme: node.uri.scheme,
+        host: node.uri.host,
+        port: node.uri.port,
+        path: '${node.uri.path}$endpoint',
+        queryParameters: {..._defaultQueryParameters, ...queryParams},
+      );
+
+  /// Returns a [RequestException] according to [status] received in a response.
+  ///
+  /// [message] usually contains the response body received.
+  RequestException exception(String message, int status) {
+    if (status == 400) {
+      return RequestMalformed(message, status);
+    } else if (status == 401) {
+      return RequestUnauthorized(message, status);
+    } else if (status == 404) {
+      return ObjectNotFound(message, status);
+    } else if (status == 409) {
+      return ObjectAlreadyExists(message, status);
+    } else if (status == 422) {
+      return ObjectUnprocessable(message, status);
+    } else if (status >= 500 && status <= 599) {
+      return ServerError(message, status);
+    } else {
+      return HttpError(message, status);
+    }
+  }
+}
