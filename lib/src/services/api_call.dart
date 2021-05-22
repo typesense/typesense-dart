@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:http/http.dart';
-
 import './base_api_call.dart';
 import './node_pool.dart';
 import '../configuration.dart';
@@ -72,20 +70,9 @@ class ApiCall extends BaseApiCall<Map<String, dynamic>> {
             body: json.encode(bodyParameters),
           ));
 
-  /// Handels the [response] from the [node] for a request.
-  ///
-  /// The [response.body] is parsed as JSON and returned if no exceptions are
+  /// The [responseBody] is parsed as JSON and returned if no exceptions are
   /// raised.
   @override
-  Map<String, dynamic> handleNodeResponse(Response response) {
-    final responseBody = json.decode(response.body),
-        responseStatus = response.statusCode;
-
-    if (responseStatus >= 200 && responseStatus < 300) {
-      // If response is 2xx return the body.
-      return responseBody;
-    } else {
-      throw exception(responseBody.toString(), responseStatus);
-    }
-  }
+  Map<String, dynamic> decode(String responseBody) =>
+      responseBody.isEmpty ? {} : json.decode(responseBody);
 }

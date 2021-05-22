@@ -119,8 +119,7 @@ void main() {
       when(mockReponse.body)
           .thenAnswer((realInvocation) => '{"success": true}');
 
-      expect(docsApiCall.handleNodeResponse(mockReponse),
-          equals('{"success": true}'));
+      expect(docsApiCall.decode(mockReponse.body), equals('{"success": true}'));
     });
     test('has a requestUri method', () {
       final config = ConfigurationFactory.withNearestNode(),
@@ -136,28 +135,6 @@ void main() {
               {'howCool': 'isThat'}).toString(),
           equals(
               '$protocol://$host:$nearestServerPort$pathToService/endpoint?howCool=isThat'));
-    });
-    test('has an exception method', () {
-      final config = ConfigurationFactory.withNearestNode(),
-          nodePool = NodePool(config),
-          docsApiCall = DocumentsApiCall(config, nodePool);
-
-      var exception = docsApiCall.exception('foo', 401);
-      expect(exception, isA<RequestUnauthorized>());
-      expect(exception.message, equals('foo'));
-      expect(exception.statusCode, equals(401));
-
-      exception = docsApiCall.exception('', 404);
-      expect(exception, isA<ObjectNotFound>());
-
-      exception = docsApiCall.exception('', 409);
-      expect(exception, isA<ObjectAlreadyExists>());
-
-      exception = docsApiCall.exception('', 422);
-      expect(exception, isA<ObjectUnprocessable>());
-
-      exception = docsApiCall.exception('', 405);
-      expect(exception, isA<HttpError>());
     });
   });
 
@@ -197,18 +174,20 @@ void main() {
       await DocumentsApiCall(config, nodePool).post('/api/key/test');
     });
     test(
-        'sets the health status of the nodes accordingly if a node responds or not',
+        'sets the health status of a node according to completion of the request',
         () async {
       var requestNumber = 0;
       final client = MockClient(
             (request) async {
               expect(request.url.path,
                   equals('$pathToService/health/status/test'));
-              if (requestNumber == 0) {
-                requestNumber++;
-                return http.Response('', 500, request: request);
-              } else {
-                return http.Response('', 200, request: request);
+              switch (++requestNumber) {
+                case 1:
+                  return http.Response('', 500, request: request);
+                case 2:
+                  return http.Response('', 0, request: request);
+                default:
+                  return http.Response('', 200, request: request);
               }
             },
           ),
@@ -226,8 +205,15 @@ void main() {
             port: mockServerPort,
             path: pathToService,
           ),
+          node3 = Node(
+            client: client,
+            protocol: protocol,
+            host: host,
+            port: unavailableServerPort,
+            path: pathToService,
+          ),
           config = ConfigurationFactory.withoutNearestNode(
-            nodes: {node1, node2},
+            nodes: {node1, node2, node3},
             retryInterval: Duration.zero,
           ),
           nodePool = NodePool(config);
@@ -236,14 +222,18 @@ void main() {
       expect(node1.lastAccessTimestamp, isNull);
       expect(node2.isHealthy, isTrue);
       expect(node2.lastAccessTimestamp, isNull);
+      expect(node3.isHealthy, isTrue);
+      expect(node3.lastAccessTimestamp, isNull);
 
       final now = DateTime.now();
       await DocumentsApiCall(config, nodePool).post('/health/status/test');
 
       expect(node1.isHealthy, isFalse); // returned 500 status
       expect(node1.lastAccessTimestamp.compareTo(now) > 0, isTrue);
-      expect(node2.isHealthy, isTrue);
+      expect(node2.isHealthy, isFalse); // returned 0 status
       expect(node2.lastAccessTimestamp.compareTo(now) > 0, isTrue);
+      expect(node3.isHealthy, isTrue);
+      expect(node3.lastAccessTimestamp.compareTo(now) > 0, isTrue);
     });
     test('retries a request after Configuration.retryInterval duration',
         () async {
@@ -284,6 +274,7 @@ void main() {
             ),
             config = ConfigurationFactory.withoutNearestNode(
               mockClient: client,
+              numRetries: 5,
             ),
             nodePool = NodePool(config);
 
@@ -326,7 +317,7 @@ void main() {
       );
     });
     test(
-      'immediately if a request fails with RequestException apart from ServerError',
+      'immediately for Http response code < 500',
       () async {
         var numTries, requestNumber = 0;
         final client = MockClient(
@@ -347,7 +338,7 @@ void main() {
                   case 5:
                     return http.Response('', 422, request: request);
                   case 6:
-                    return http.Response('', 429, request: request);
+                    return http.Response('', 0, request: request);
                 }
 
                 return http.Response('', 200, request: request);

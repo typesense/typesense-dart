@@ -62,33 +62,45 @@ abstract class BaseApiCall<R extends Object> {
         response = await request(node).timeout(
           _config.connectionTimeout,
         );
-        final decodedResponse = handleNodeResponse(response);
-        // Node responded, set it healthy.
-        NodePool.setNodeHealthStatus(node, true, DateTime.now());
-        return decodedResponse;
-      } catch (e) {
-        if (e is RequestException && e.runtimeType != ServerError) {
-          // Node did respond, yet a RequestException was raised.
+
+        if (response.statusCode >= 1 && response.statusCode <= 499) {
+          // Treat any status code > 0 and < 500 to be an indication that the
+          // node is healthy
+          // We exclude 0 since some clients return 0 when
+          // request fails
           NodePool.setNodeHealthStatus(node, true, DateTime.now());
-          rethrow;
-        } else {
-          // ServerError was raised, set node as unhealthy.
-          NodePool.setNodeHealthStatus(node, false, DateTime.now());
         }
+
+        if (response.statusCode >= 200 && response.statusCode < 300) {
+          // If response is 2xx return a resolved promise
+          return decode(response.body);
+        } else if (response.statusCode < 500) {
+          // Next, if response is anything but 5xx, don't retry, return a custom
+          // error
+          return Future.error(
+              _exception(response.toString(), response.statusCode));
+        } else {
+          // Retry all other HTTP errors (HTTPStatus > 500)
+          // This will get caught by the catch block below
+          throw ServerError(response.body, response.statusCode);
+        }
+      } catch (e) {
+        // This block handles retries for HTTPStatus > 500 and network layer
+        // issues like connection timeouts
+        NodePool.setNodeHealthStatus(node, false, DateTime.now());
 
         if (--triesLeft <= 0) {
           // We've exhausted our tries, rethrow.
           rethrow;
         } else {
-          // Retry for all errors including ServerError after [retryInterval].
           await Future.delayed(_config.retryInterval);
         }
       }
     }
   }
 
-  /// [response] handler specific to each implementation of [BaseApiCall].
-  R handleNodeResponse(http.Response response);
+  /// [responseBody] decoder specific to each implementation of [BaseApiCall].
+  R decode(String responseBody);
 
   /// Constructs the final [Uri] by combining the [Node.uri] with [endpoint] and
   /// [queryParams].
@@ -108,7 +120,7 @@ abstract class BaseApiCall<R extends Object> {
   /// Returns a [RequestException] according to [status] received in a response.
   ///
   /// [message] usually contains the response body received.
-  RequestException exception(String message, int status) {
+  RequestException _exception(String message, int status) {
     if (status == 400) {
       return RequestMalformed(message, status);
     } else if (status == 401) {
