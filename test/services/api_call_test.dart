@@ -1,9 +1,9 @@
 import 'dart:async';
-import 'dart:io';
 import 'dart:convert';
 
 import 'package:test/test.dart';
 import 'package:http/http.dart' as http;
+import 'package:http/testing.dart';
 import 'package:mockito/mockito.dart';
 
 import 'package:typesense/src/services/api_call.dart';
@@ -16,107 +16,181 @@ import '../test_utils.dart';
 class MockResponse extends Mock implements http.Response {}
 
 void main() {
-  int unresponsivePort = 9091;
-  HttpServer
-
-      // serving on port 8080, used as nearest node
-      nearestServer,
-
-      // serving on port 8081, passed in Configuration.nodes
-      mockServer,
-
-      // serving on port 9090, only returns HTTP 503 status
-      unavailableServer,
-
-      // serving on port 9091, does not have any handler
-      unresponsiveServer;
-
-  setUp(() async {
-    nearestServer = await HttpServer.bind(host, nearestServerPort);
-    mockServer = await HttpServer.bind(host, mockServerPort);
-    unavailableServer = await HttpServer.bind(host, unavailableServerPort);
-    unresponsiveServer = await HttpServer.bind(host, unresponsivePort);
-    handleHttpRequests(nearestServer);
-    handleHttpRequests(mockServer);
-    handleHttpRequests(unavailableServer);
-  });
-
-  tearDown(() async {
-    await nearestServer.close();
-    await mockServer.close();
-    await unavailableServer.close();
-    await unresponsiveServer.close();
-  });
   group('ApiCall', () {
-    final config = ConfigurationFactory.withNearestNode(),
-        nodePool = NodePool(config);
+    const companyCollection = {
+      "name": "companies",
+      "num_documents": 0,
+      "fields": [
+        {"name": "company_name", "type": "string"},
+        {"name": "num_employees", "type": "int32"},
+        {"name": "country", "type": "string", "facet": true}
+      ],
+      "default_sorting_field": "num_employees"
+    };
     test('has a CONTENT_TYPE constant', () {
       expect(CONTENT_TYPE, equals('Content-Type'));
     });
-    test('has a get method', () async {
-      expect(await ApiCall(config, nodePool).get(companiesCollectionEndpoint),
-          equals(companyCollection));
+    test('has a defaultHeaders field', () {
+      final config = ConfigurationFactory.withNearestNode(),
+          nodePool = NodePool(config),
+          docsApiCall = ApiCall(config, nodePool);
+      expect(docsApiCall.defaultHeaders,
+          equals({apiKeyLabel: apiKey, CONTENT_TYPE: 'application/json'}));
     });
-    test('has a put method', () async {
+    test('has a defaultQueryParameters field', () {
+      final config = ConfigurationFactory.withNearestNode(
+              sendApiKeyAsQueryParam: true),
+          nodePool = NodePool(config),
+          docsApiCall = ApiCall(config, nodePool);
+      expect(docsApiCall.defaultQueryParameters, equals({apiKeyLabel: apiKey}));
+    });
+    test('has a get method', () async {
+      final companiesAlias = {
+            'name': 'companies',
+            'collection_name': 'companies_june11',
+          },
+          client = MockClient(
+            (request) async {
+              expect(
+                  request.url.toString(),
+                  equals(
+                      '$protocol://$host:$mockServerPort$pathToService/aliases/companies?'));
+              expect(request.method, equals('GET'));
+              expect(request.headers[apiKeyLabel], equals(apiKey));
+
+              return http.Response(json.encode(companiesAlias), 200,
+                  request: request);
+            },
+          ),
+          config = ConfigurationFactory.withoutNearestNode(mockClient: client),
+          nodePool = NodePool(config);
+
       expect(
-          await ApiCall(config, nodePool).put(
-            '$aliases/companies',
-            bodyParameters: {'collection_name': 'companies_june11'},
+          await ApiCall(config, nodePool).get(
+            '/aliases/companies',
           ),
           equals(companiesAlias));
     });
     test('has a delete method', () async {
-      expect(await ApiCall(config, nodePool).delete('$aliases/companies'),
+      final companiesAlias = {
+            'name': 'companies',
+            'collection_name': 'companies_june11',
+          },
+          client = MockClient(
+            (request) async {
+              expect(
+                  request.url.toString(),
+                  equals(
+                      '$protocol://$host:$mockServerPort$pathToService/aliases/companies?'));
+              expect(request.method, equals('DELETE'));
+              expect(request.headers[apiKeyLabel], equals(apiKey));
+
+              return http.Response(json.encode(companiesAlias), 200,
+                  request: request);
+            },
+          ),
+          config = ConfigurationFactory.withoutNearestNode(mockClient: client),
+          nodePool = NodePool(config);
+
+      expect(
+          await ApiCall(config, nodePool).delete(
+            '/aliases/companies',
+          ),
           equals(companiesAlias));
     });
     test('has a post method', () async {
-      expect(await ApiCall(config, nodePool).post(collections),
+      final client = MockClient(
+            (request) async {
+              expect(
+                  request.url.toString(),
+                  equals(
+                      '$protocol://$host:$mockServerPort$pathToService/collections?'));
+              expect(request.method, equals('POST'));
+              expect(request.headers[apiKeyLabel], equals(apiKey));
+              expect(
+                  request.headers[CONTENT_TYPE], contains('application/json'));
+
+              return http.Response(json.encode(companyCollection), 200,
+                  request: request);
+            },
+          ),
+          config = ConfigurationFactory.withoutNearestNode(mockClient: client),
+          nodePool = NodePool(config);
+
+      expect(
+          await ApiCall(config, nodePool).post(
+            '/collections',
+            bodyParameters: companyCollection,
+          ),
           equals(companyCollection));
     });
+    test('has a put method', () async {
+      final companiesAlias = {
+            'name': 'companies',
+            'collection_name': 'companies_june11',
+          },
+          client = MockClient(
+            (request) async {
+              expect(
+                  request.url.toString(),
+                  equals(
+                      '$protocol://$host:$mockServerPort$pathToService/aliases/companies?'));
+              expect(request.method, equals('PUT'));
+              expect(request.headers[apiKeyLabel], equals(apiKey));
+              expect(
+                  request.headers[CONTENT_TYPE], contains('application/json'));
+
+              return http.Response(json.encode(companiesAlias), 200,
+                  request: request);
+            },
+          ),
+          config = ConfigurationFactory.withoutNearestNode(mockClient: client),
+          nodePool = NodePool(config);
+
+      expect(
+          await ApiCall(config, nodePool).put(
+            '/aliases/companies',
+            bodyParameters: {'collection_name': 'companies_june11'},
+          ),
+          equals(companiesAlias));
+    });
     test('has a send method', () async {
-      final apiCall = ApiCall(config, nodePool), mockReponse = MockResponse();
+      final config = ConfigurationFactory.withNearestNode(),
+          nodePool = NodePool(config),
+          docsApiCall = ApiCall(config, nodePool),
+          mockReponse = MockResponse();
       when(mockReponse.statusCode).thenAnswer((realInvocation) => 200);
       when(mockReponse.body)
-          .thenAnswer((realInvocation) => json.encode({'return': 'data'}));
+          .thenAnswer((realInvocation) => json.encode(companyCollection));
 
-      expect(await apiCall.send((node) => Future.value(mockReponse)),
-          equals({'return': 'data'}));
+      expect(await docsApiCall.send((node) => Future.value(mockReponse)),
+          equals(companyCollection));
     });
     test('has a handleNodeResponse method', () {
-      final apiCall = ApiCall(config, nodePool), mockReponse = MockResponse();
+      final config = ConfigurationFactory.withNearestNode(),
+          nodePool = NodePool(config),
+          docsApiCall = ApiCall(config, nodePool),
+          mockReponse = MockResponse();
       when(mockReponse.statusCode).thenAnswer((realInvocation) => 200);
       when(mockReponse.body)
-          .thenAnswer((realInvocation) => json.encode({'return': 'data'}));
+          .thenAnswer((realInvocation) => json.encode(companyCollection));
 
-      expect(
-          apiCall.handleNodeResponse(mockReponse), equals({'return': 'data'}));
+      expect(docsApiCall.decode(mockReponse.body), equals(companyCollection));
     });
     test('has a requestUri method', () {
+      final config = ConfigurationFactory.withNearestNode(),
+          nodePool = NodePool(config);
       expect(
           ApiCall(config, nodePool).requestUri(
-              Node(protocol: protocol, host: host, path: pathToService),
-              aliases,
-              {'query': 'how'}).toString(),
-          equals('http://$host/path/to/service/aliases?query=how'));
-    });
-    test('has an exception method', () {
-      final apiCall = ApiCall(config, nodePool);
-      var exception = apiCall.exception('foo', 401);
-      expect(exception, isA<RequestUnauthorized>());
-      expect(exception.message, equals('foo'));
-      expect(exception.statusCode, equals(401));
-
-      exception = apiCall.exception('', 404);
-      expect(exception, isA<ObjectNotFound>());
-
-      exception = apiCall.exception('', 409);
-      expect(exception, isA<ObjectAlreadyExists>());
-
-      exception = apiCall.exception('', 422);
-      expect(exception, isA<ObjectUnprocessable>());
-
-      exception = apiCall.exception('', 405);
-      expect(exception, isA<HttpError>());
+              Node(
+                  protocol: protocol,
+                  host: host,
+                  port: nearestServerPort,
+                  path: pathToService),
+              '/endpoint',
+              {'howCool': 'isThat'}).toString(),
+          equals(
+              '$protocol://$host:$nearestServerPort$pathToService/endpoint?howCool=isThat'));
     });
   });
 
@@ -124,156 +198,261 @@ void main() {
     setUp(() async {});
     test('sends api key in the header or query according to the configuration',
         () async {
-      // Defaults to sending api key in the header
-      var config = ConfigurationFactory.withoutNearestNode(),
-          res = await ApiCall(config, NodePool(config))
-              .get(companiesCollectionEndpoint);
-      expect(res, equals(companyCollection));
+      var sendApiKeyAsQueryParam = false;
+      final client = MockClient(
+        (request) async {
+          expect(request.url.path, equals('$pathToService/api/key/test'));
 
-      config =
-          ConfigurationFactory.withNearestNode(sendApiKeyAsQueryParam: true);
-      res = await ApiCall(config, NodePool(config))
-          .get(companiesCollectionEndpoint);
-      expect(res, equals(companyCollection));
+          if (sendApiKeyAsQueryParam) {
+            expect(request.url.queryParameters[apiKeyLabel], equals(apiKey));
+          } else {
+            expect(request.headers[apiKeyLabel], equals(apiKey));
+          }
+          return http.Response('', 200, request: request);
+        },
+      );
+
+      // Defaults to sending api key in the header
+      var config = ConfigurationFactory.withoutNearestNode(
+            sendApiKeyAsQueryParam: sendApiKeyAsQueryParam,
+            mockClient: client,
+          ),
+          nodePool = NodePool(config);
+      await ApiCall(config, nodePool).post('/api/key/test');
+
+      // Sending api key as query parameter now
+      sendApiKeyAsQueryParam = true;
+      config = ConfigurationFactory.withoutNearestNode(
+        sendApiKeyAsQueryParam: sendApiKeyAsQueryParam,
+        mockClient: client,
+      );
+      nodePool = NodePool(config);
+      await ApiCall(config, nodePool).post('/api/key/test');
     });
     test(
-      'retries a request Configuration.numRetries times if an exception occurs (except RequestException HTTP status < 500)',
-      () async {
-        final config = ConfigurationFactory.withoutNearestNode(nodes: {
-              Node(
-                protocol: protocol,
-                host: host,
-                port: unavailableServerPort,
-                path: pathToService,
-              ),
-            }),
-            res = await ApiCall(config, NodePool(config))
-                .get(companiesCollectionEndpoint);
-
-        expect(res, equals(companyCollection));
-      },
-      // Skipping since HttpServer returns "Connection refused" when request is
-      // sent multiple times to unresponsiveServerPort.
-      // TODO: Fix this test.
-      skip: true,
-    );
-  });
-
-  group('ApiCall throws', () {
-    test('if a request fails with response code < 500', () {
-      final config = ConfigurationFactory.withoutNearestNode(nodes: {
-        Node(
-          protocol: protocol,
-          host: host,
-          port: mockServerPort,
-          path: '/wrong/path',
-        ),
-      });
-
-      expect(
+        'sets the health status of a node according to completion of the request',
         () async {
-          await ApiCall(config, NodePool(config))
-              .get(companiesCollectionEndpoint);
-        },
-        throwsA(
-          isA<RequestMalformed>()
-              .having(
-                (e) => e.message,
-                'message',
-                equals('{}'),
-              )
-              .having(
-                (e) => e.statusCode,
-                'statusCode',
-                equals(400),
-              ),
-        ),
-      );
-    });
-    test('RequestUnauthorized when apiKey is incorrect', () {
-      final config =
-          ConfigurationFactory.withoutNearestNode(apiKey: 'wrongKey');
-
-      expect(
-        () async {
-          await ApiCall(config, NodePool(config))
-              .get(companiesCollectionEndpoint);
-        },
-        throwsA(
-          isA<RequestUnauthorized>()
-              .having(
-                (e) => e.message,
-                'message',
-                equals('{}'),
-              )
-              .having(
-                (e) => e.statusCode,
-                'statusCode',
-                equals(401),
-              ),
-        ),
-      );
-    });
-    test('ServerError for response code 5xx', () {
-      final config = ConfigurationFactory.withoutNearestNode(
-        nodes: {
-          Node(
+      var requestNumber = 0;
+      final client = MockClient(
+            (request) async {
+              expect(request.url.path,
+                  equals('$pathToService/health/status/test'));
+              switch (++requestNumber) {
+                case 1:
+                  return http.Response('', 500, request: request);
+                case 2:
+                  return http.Response('', 0, request: request);
+                default:
+                  return http.Response('', 200, request: request);
+              }
+            },
+          ),
+          node1 = Node(
+            client: client,
+            protocol: protocol,
+            host: host,
+            port: nearestServerPort,
+            path: pathToService,
+          ),
+          node2 = Node(
+            client: client,
+            protocol: protocol,
+            host: host,
+            port: mockServerPort,
+            path: pathToService,
+          ),
+          node3 = Node(
+            client: client,
             protocol: protocol,
             host: host,
             port: unavailableServerPort,
             path: pathToService,
-          )
-        },
-        numRetries: 0, // To avoid retrying the only node multiple times.
-      );
+          ),
+          config = ConfigurationFactory.withoutNearestNode(
+            nodes: {node1, node2, node3},
+            retryInterval: Duration.zero,
+          ),
+          nodePool = NodePool(config);
 
-      expect(
-        () async {
-          await ApiCall(config, NodePool(config))
-              .get(companiesCollectionEndpoint);
-        },
-        throwsA(
-          isA<ServerError>()
-              .having(
-                (e) => e.message,
-                'message',
-                equals('{}'),
-              )
-              .having(
-                (e) => e.statusCode,
-                'statusCode',
-                equals(503),
-              ),
-        ),
-      );
+      expect(node1.isHealthy, isTrue);
+      expect(node1.lastAccessTimestamp, isNull);
+      expect(node2.isHealthy, isTrue);
+      expect(node2.lastAccessTimestamp, isNull);
+      expect(node3.isHealthy, isTrue);
+      expect(node3.lastAccessTimestamp, isNull);
+
+      final now = DateTime.now();
+      await ApiCall(config, nodePool).post('/health/status/test');
+
+      expect(node1.isHealthy, isFalse); // returned 500 status
+      expect(node1.lastAccessTimestamp.compareTo(now) > 0, isTrue);
+      expect(node2.isHealthy, isFalse); // returned 0 status
+      expect(node2.lastAccessTimestamp.compareTo(now) > 0, isTrue);
+      expect(node3.isHealthy, isTrue);
+      expect(node3.lastAccessTimestamp.compareTo(now) > 0, isTrue);
     });
+    test('retries a request after Configuration.retryInterval duration',
+        () async {
+      DateTime firstRequestTime, secondRequestTime;
+      final retryInterval = Duration(milliseconds: 900),
+          client = MockClient(
+            (request) async {
+              expect(request.url.path,
+                  equals('$pathToService/retry/interval/test'));
+              if (firstRequestTime == null) {
+                firstRequestTime = DateTime.now();
+                return http.Response('', 500, request: request);
+              } else {
+                secondRequestTime = DateTime.now();
+                return http.Response('', 200, request: request);
+              }
+            },
+          ),
+          config = ConfigurationFactory.withoutNearestNode(
+              mockClient: client, retryInterval: retryInterval),
+          nodePool = NodePool(config);
+
+      await ApiCall(config, nodePool).post('/retry/interval/test');
+      // Atleast [retryInterval] delay between requests.
+      expect(secondRequestTime.difference(firstRequestTime) > retryInterval,
+          isTrue);
+    });
+    test(
+      'retries a request Configuration.numRetries times if an exception occurs',
+      () async {
+        var numTries = 0;
+        final client = MockClient(
+              (request) async {
+                expect(request.url.path, equals('$pathToService/retries/test'));
+                numTries++;
+                return http.Response('', 500, request: request);
+              },
+            ),
+            config = ConfigurationFactory.withoutNearestNode(
+              mockClient: client,
+              numRetries: 5,
+            ),
+            nodePool = NodePool(config);
+
+        try {
+          await ApiCall(config, nodePool).post('/retries/test');
+        } catch (e) {
+          // Exception is rethrown when Configuration.numRetries run out
+          expect(e, isA<ServerError>());
+          expect(numTries, equals(5));
+        }
+      },
+    );
+  });
+
+  group('ApiCall throws', () {
     test(
         'TimeoutException when no response is received for Configuration.connectionTimeout duration',
         () {
-      final timeoutDuration = Duration(seconds: 1, milliseconds: 850),
-          config = ConfigurationFactory.withoutNearestNode(
-            nodes: {
-              Node(
-                protocol: protocol,
-                host: host,
-                port: unresponsivePort,
-                path: pathToService,
-              ),
+      final client = MockClient(
+            (request) async {
+              expect(request.url.path, equals('$pathToService/timeout/test'));
+
+              return await Future.delayed(
+                      Duration(seconds: 1, milliseconds: 10))
+                  .then((_) => http.Response('', 200, request: request));
             },
-            connectionTimeout: timeoutDuration,
-            numRetries: 0,
-          );
+          ),
+          config = ConfigurationFactory.withoutNearestNode(mockClient: client),
+          nodePool = NodePool(config);
+
       expect(
         () async {
-          await ApiCall(config, NodePool(config))
-              .get(companiesCollectionEndpoint);
+          await ApiCall(config, nodePool).post('/timeout/test');
         },
         throwsA(isA<TimeoutException>().having(
           (e) => e.duration,
           'duration',
-          equals(timeoutDuration),
+          equals(Duration(seconds: 1)),
         )),
       );
     });
+    test(
+      'immediately for Http response code < 500',
+      () async {
+        var numTries, requestNumber = 0;
+        final client = MockClient(
+              (request) async {
+                expect(request.url.path, equals('$pathToService/retries/test'));
+                numTries++;
+                requestNumber++;
+
+                switch (requestNumber) {
+                  case 1:
+                    return http.Response('', 400, request: request);
+                  case 2:
+                    return http.Response('', 401, request: request);
+                  case 3:
+                    return http.Response('', 404, request: request);
+                  case 4:
+                    return http.Response('', 409, request: request);
+                  case 5:
+                    return http.Response('', 422, request: request);
+                  case 6:
+                    return http.Response('', 0, request: request);
+                }
+
+                return http.Response('', 200, request: request);
+              },
+            ),
+            config = ConfigurationFactory.withoutNearestNode(
+              mockClient: client,
+            ),
+            nodePool = NodePool(config);
+
+        numTries = 0;
+        try {
+          await ApiCall(config, nodePool).post('/retries/test');
+        } catch (e) {
+          expect(e, isA<RequestMalformed>());
+          expect(numTries, equals(1));
+        }
+
+        numTries = 0;
+        try {
+          await ApiCall(config, nodePool).post('/retries/test');
+        } catch (e) {
+          expect(e, isA<RequestUnauthorized>());
+          expect(numTries, equals(1));
+        }
+
+        numTries = 0;
+        try {
+          await ApiCall(config, nodePool).post('/retries/test');
+        } catch (e) {
+          expect(e, isA<ObjectNotFound>());
+          expect(numTries, equals(1));
+        }
+
+        numTries = 0;
+        try {
+          await ApiCall(config, nodePool).post('/retries/test');
+        } catch (e) {
+          expect(e, isA<ObjectAlreadyExists>());
+          expect(numTries, equals(1));
+        }
+
+        numTries = 0;
+        try {
+          await ApiCall(config, nodePool).post('/retries/test');
+        } catch (e) {
+          expect(e, isA<ObjectUnprocessable>());
+          expect(numTries, equals(1));
+        }
+
+        numTries = 0;
+        try {
+          await ApiCall(config, nodePool).post('/retries/test');
+        } catch (e) {
+          expect(e, isA<HttpError>());
+          expect(numTries, equals(1));
+        }
+      },
+    );
   });
 }
