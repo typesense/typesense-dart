@@ -8,8 +8,8 @@ environment:
   sdk: ">=2.7.0 <3.0.0"
 
 dependencies:
-  http: ^0.13.1
+  http: ^0.12.2
 
 dev_dependencies:
-  test: ^1.16.5
-  mockito: ^5.0.7
+  test: ^1.15.7
+  mockito: ^4.1.4
