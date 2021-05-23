@@ -12,7 +12,9 @@ commands:
       - run:
           name: Download deps
           shell: << parameters.shell >>
-          command: dart pub get
+          command: |
+            dart -h
+            # dart pub get
 
 jobs:
   test:
