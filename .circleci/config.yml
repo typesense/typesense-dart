@@ -1,0 +1,32 @@
+version: 2.1
+
+commands:
+  dependencies:
+    description: "Download dependencies"
+    parameters:
+      shell:
+        type: string
+        default: "/bin/bash --login -eo pipefail"
+    steps:
+      - checkout
+      - run:
+          name: Download deps
+          shell: << parameters.shell >>
+          command: pub get
+
+jobs:
+  test:
+    docker:
+      - image: google/dart:2.9.1
+    steps:
+      - dependencies:
+          shell: "/bin/bash -eo pipefail"
+      - run:
+          name: Run tests
+          command: pub run test
+
+workflows:
+  version: 2.1
+  test-and-build:
+    jobs:
+      - test
