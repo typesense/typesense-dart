@@ -12,7 +12,7 @@ commands:
       - run:
           name: Download deps
           shell: << parameters.shell >>
-          command: flutter pub get
+          command: dart pub get
 
 jobs:
   test:
@@ -23,7 +23,7 @@ jobs:
           shell: "/bin/bash -eo pipefail"
       - run:
           name: Run tests
-          command: flutter test
+          command: dart test
 
 workflows:
   version: 2.1
