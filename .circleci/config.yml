@@ -12,9 +12,7 @@ commands:
       - run:
           name: Download deps
           shell: << parameters.shell >>
-          command: |
-            dart -h
-            # dart pub get
+          command: pub get
 
 jobs:
   test:
@@ -25,7 +23,7 @@ jobs:
           shell: "/bin/bash -eo pipefail"
       - run:
           name: Run tests
-          command: dart test
+          command: pub run test
 
 workflows:
   version: 2.1
