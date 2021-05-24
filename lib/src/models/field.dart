@@ -4,7 +4,6 @@ class Field {
   final bool isOptional;
   final bool isFacetable;
   final bool isMultivalued;
-  int _hash;
 
   Field(
     this.name,
@@ -19,11 +18,6 @@ class Field {
     if (type == null) {
       throw ArgumentError('Ensure Field.type is set');
     }
-    _hash = name.hashCode ^
-        type.hashCode ^
-        isOptional.hashCode ^
-        isFacetable.hashCode ^
-        isMultivalued.hashCode;
   }
 
   Map<String, dynamic> toMap() {
@@ -36,7 +30,12 @@ class Field {
   }
 
   @override
-  int get hashCode => _hash;
+  int get hashCode =>
+      name.hashCode ^
+      type.hashCode ^
+      isOptional.hashCode ^
+      isFacetable.hashCode ^
+      isMultivalued.hashCode;
 
   @override
   bool operator ==(Object o) =>
@@ -50,7 +49,7 @@ class Field {
           isMultivalued == o.isMultivalued);
 }
 
-enum Type { string, int32, int64, float, bool }
+enum Type { string, int32, int64, float, bool, auto }
 
 extension _TypeExtension on Type {
   String value(bool isMultivalued) {
