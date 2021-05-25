@@ -45,18 +45,21 @@ void main() {
                 'type': 'string',
                 'facet': false,
                 'optional': false,
+                'index': true,
               },
               {
                 'name': 'num_employees',
                 'type': 'int32',
                 'facet': false,
                 'optional': false,
+                'index': true,
               },
               {
                 'name': 'country',
                 'type': 'string',
                 'facet': true,
                 'optional': false,
+                'index': true,
               }
             ],
             'default_sorting_field': 'num_employees',
