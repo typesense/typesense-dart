@@ -14,7 +14,7 @@ void main() {
           Field('num_employees', Type.int32),
           Field('country', Type.string, isFacetable: true),
         },
-        Field('num_employees', Type.int32),
+        defaultSortingField: Field('num_employees', Type.int32),
       );
     });
 
@@ -77,7 +77,7 @@ void main() {
             Field('num_employees', Type.int32),
             Field('country', Type.string, isFacetable: true),
           },
-          Field('num_employees', Type.int32),
+          defaultSortingField: Field('num_employees', Type.int32),
         ),
         throwsA(
           isA<ArgumentError>().having(
@@ -95,7 +95,7 @@ void main() {
             Field('num_employees', Type.int32),
             Field('country', Type.string, isFacetable: true),
           },
-          Field('num_employees', Type.int32),
+          defaultSortingField: Field('num_employees', Type.int32),
         ),
         throwsA(
           isA<ArgumentError>().having(
@@ -111,7 +111,7 @@ void main() {
         () => Schema(
           'companies',
           null,
-          Field('num_employees', Type.int32),
+          defaultSortingField: Field('num_employees', Type.int32),
         ),
         throwsA(
           isA<ArgumentError>().having(
@@ -125,33 +125,13 @@ void main() {
         () => Schema(
           'companies',
           {},
-          Field('num_employees', Type.int32),
+          defaultSortingField: Field('num_employees', Type.int32),
         ),
         throwsA(
           isA<ArgumentError>().having(
             (e) => e.message,
             'message',
             'Ensure Schema.fields is set',
-          ),
-        ),
-      );
-    });
-    test('with null defaultSortingField throws', () {
-      expect(
-        () => Schema(
-          'companies',
-          {
-            Field('company_name', Type.string),
-            Field('num_employees', Type.int32),
-            Field('country', Type.string, isFacetable: true),
-          },
-          null,
-        ),
-        throwsA(
-          isA<ArgumentError>().having(
-            (e) => e.message,
-            'message',
-            'Ensure Schema.defaultSortingField is set',
           ),
         ),
       );
@@ -165,13 +145,36 @@ void main() {
             Field('num_employees', Type.int32),
             Field('country', Type.string, isFacetable: true),
           },
-          Field('num_employees', Type.int64), // Not present in fields
+          defaultSortingField:
+              Field('num_employees', Type.int64), // Not present in fields
         ),
         throwsA(
           isA<ArgumentError>().having(
             (e) => e.message,
             'message',
             'Ensure Schema.defaultSortingField is present in Schema.fields',
+          ),
+        ),
+      );
+    });
+    test('with defaultSortingField\'s type other than int32 and float throws',
+        () {
+      expect(
+        () => Schema(
+          'companies',
+          {
+            Field('company_name', Type.string),
+            Field('num_employees', Type.int32),
+            Field('country', Type.string, isFacetable: true),
+          },
+          defaultSortingField:
+              Field('company_name', Type.string), // Not present in fields
+        ),
+        throwsA(
+          isA<ArgumentError>().having(
+            (e) => e.message,
+            'message',
+            'Ensure type of Schema.defaultSortingField is int32 / float',
           ),
         ),
       );
