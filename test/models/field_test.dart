@@ -12,6 +12,7 @@ void main() {
         isFacetable: true,
         isMultivalued: false,
         isOptional: false,
+        shouldIndex: true,
       );
     });
 
@@ -30,6 +31,9 @@ void main() {
     test('has a isOptional field', () {
       expect(field.isOptional, isFalse);
     });
+    test('has a shouldIndex field', () {
+      expect(field.shouldIndex, isTrue);
+    });
     test('has a toMap method', () {
       expect(
           field.toMap(),
@@ -37,7 +41,8 @@ void main() {
             'name': 'country',
             'type': 'string',
             'facet': true,
-            'optional': false
+            'optional': false,
+            'index': true,
           }));
     });
   });
@@ -85,10 +90,58 @@ void main() {
     });
   });
 
-  test('Field toMap suffixes type with "[]" when isMultivalued set to true',
-      () {
-    final field = Field('country', Type.string, isMultivalued: true);
-    expect(field.toMap()['type'], equals('string[]'));
+  group('Field toMap()', () {
+    test('sets "type" according to the field type', () {
+      var field = Field('country', Type.string);
+      expect(field.toMap()['type'], equals('string'));
+
+      field = Field('country', Type.int32);
+      expect(field.toMap()['type'], equals('int32'));
+
+      field = Field('country', Type.int64);
+      expect(field.toMap()['type'], equals('int64'));
+
+      field = Field('country', Type.float);
+      expect(field.toMap()['type'], equals('float'));
+
+      field = Field('country', Type.bool);
+      expect(field.toMap()['type'], equals('bool'));
+
+      field = Field('country', Type.auto);
+      expect(field.toMap()['type'], equals('auto'));
+
+      field = Field('country', Type.stringify);
+      expect(field.toMap()['type'], equals('string*'));
+    });
+    test('suffixes basic types with "[]" when isMultivalued set to true', () {
+      var field = Field('country', Type.string, isMultivalued: true);
+      expect(field.toMap()['type'], equals('string[]'));
+
+      field = Field('country', Type.int32, isMultivalued: true);
+      expect(field.toMap()['type'], equals('int32[]'));
+
+      field = Field('country', Type.int64, isMultivalued: true);
+      expect(field.toMap()['type'], equals('int64[]'));
+
+      field = Field('country', Type.float, isMultivalued: true);
+      expect(field.toMap()['type'], equals('float[]'));
+
+      field = Field('country', Type.bool, isMultivalued: true);
+      expect(field.toMap()['type'], equals('bool[]'));
+    });
+    test(
+        'does not suffix Type.auto and Type.stringify with "[]" regardless of isMultivalued',
+        () {
+      var field = Field('country', Type.auto);
+      expect(field.toMap()['type'], equals('auto'));
+      field = Field('country', Type.auto, isMultivalued: true);
+      expect(field.toMap()['type'], equals('auto'));
+
+      field = Field('country', Type.stringify);
+      expect(field.toMap()['type'], equals('string*'));
+      field = Field('country', Type.stringify, isMultivalued: true);
+      expect(field.toMap()['type'], equals('string*'));
+    });
   });
 
   test('Fields are equatable', () {
