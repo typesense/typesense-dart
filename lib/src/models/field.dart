@@ -39,6 +39,19 @@ class Field {
     }
   }
 
+  factory Field.fromMap(Map<String, dynamic> map) {
+    final isMultivalued = map['type']?.contains(RegExp(r'\[\]$')) ?? false;
+
+    return Field(
+      map['name'],
+      _getTypeFrom(map['type'], isMultivalued),
+      isFacetable: map['facet'] ?? false,
+      isOptional: map['optional'] ?? false,
+      shouldIndex: map['index'] ?? true,
+      isMultivalued: isMultivalued,
+    );
+  }
+
   Map<String, dynamic> toMap() {
     final map = <String, dynamic>{};
     map['name'] = name;
@@ -55,7 +68,8 @@ class Field {
       type.hashCode ^
       isOptional.hashCode ^
       isFacetable.hashCode ^
-      isMultivalued.hashCode;
+      isMultivalued.hashCode ^
+      shouldIndex.hashCode;
 
   @override
   bool operator ==(Object o) =>
@@ -66,7 +80,13 @@ class Field {
           type == o.type &&
           isOptional == o.isOptional &&
           isFacetable == o.isFacetable &&
-          isMultivalued == o.isMultivalued);
+          isMultivalued == o.isMultivalued &&
+          shouldIndex == o.shouldIndex);
+
+  @override
+  String toString() {
+    return '$name(${type.value(isMultivalued)}), facetable: $isFacetable, optional: $isOptional, indexed: $shouldIndex';
+  }
 }
 
 /// Enumerates the allowed field types.
@@ -108,3 +128,8 @@ extension _TypeExtension on Type {
     }
   }
 }
+
+Type _getTypeFrom(String value, bool isMultiValued) => (value != null)
+    ? Type.values.firstWhere((type) => value == type.value(isMultiValued),
+        orElse: () => null)
+    : null;

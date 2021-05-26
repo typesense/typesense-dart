@@ -4,9 +4,9 @@ import 'package:typesense/src/models/field.dart';
 
 void main() {
   group('Field', () {
-    Field field;
+    Field f1, f2;
     setUp(() {
-      field = Field(
+      f1 = Field(
         'country',
         Type.string,
         isFacetable: true,
@@ -14,36 +14,49 @@ void main() {
         isOptional: false,
         shouldIndex: true,
       );
+      f2 = Field.fromMap({
+        "name": "country",
+        "type": "string",
+        "facet": true,
+        "optional": false,
+        "index": true,
+      });
     });
 
     test('has a name field', () {
-      expect(field.name, equals('country'));
+      expect(f1.name, equals('country'));
+      expect(f2.name, equals('country'));
     });
     test('has a type field', () {
-      expect(field.type, equals(Type.string));
+      expect(f1.type, equals(Type.string));
+      expect(f2.type, equals(Type.string));
     });
     test('has a isFacetable field', () {
-      expect(field.isFacetable, isTrue);
+      expect(f1.isFacetable, isTrue);
+      expect(f2.isFacetable, isTrue);
     });
     test('has a isMultivalued field', () {
-      expect(field.isMultivalued, isFalse);
+      expect(f1.isMultivalued, isFalse);
+      expect(f2.isMultivalued, isFalse);
     });
     test('has a isOptional field', () {
-      expect(field.isOptional, isFalse);
+      expect(f1.isOptional, isFalse);
+      expect(f2.isOptional, isFalse);
     });
     test('has a shouldIndex field', () {
-      expect(field.shouldIndex, isTrue);
+      expect(f1.shouldIndex, isTrue);
+      expect(f2.shouldIndex, isTrue);
     });
     test('has a toMap method', () {
-      expect(
-          field.toMap(),
-          equals({
-            'name': 'country',
-            'type': 'string',
-            'facet': true,
-            'optional': false,
-            'index': true,
-          }));
+      final map = {
+        'name': 'country',
+        'type': 'string',
+        'facet': true,
+        'optional': false,
+        'index': true,
+      };
+      expect(f1.toMap(), equals(map));
+      expect(f2.toMap(), equals(map));
     });
   });
 
@@ -90,6 +103,140 @@ void main() {
     });
   });
 
+  group('Field.fromMap initialization', () {
+    test('with null/empty name throws', () {
+      expect(
+        () => Field.fromMap({
+          "type": "string",
+          "facet": true,
+          "optional": false,
+          "index": true,
+        }),
+        throwsA(
+          isA<ArgumentError>().having(
+            (e) => e.message,
+            'message',
+            'Ensure Field.name is set',
+          ),
+        ),
+      );
+      expect(
+        () => Field.fromMap({
+          "name": "",
+          "type": "string",
+          "facet": true,
+          "optional": false,
+          "index": true,
+        }),
+        throwsA(
+          isA<ArgumentError>().having(
+            (e) => e.message,
+            'message',
+            'Ensure Field.name is set',
+          ),
+        ),
+      );
+    });
+    test('with null/unknown type throws', () {
+      expect(
+          () => Field.fromMap({"name": "country"}),
+          throwsA(isA<ArgumentError>().having(
+              (e) => e.message, 'message', 'Ensure Field.type is set')));
+      expect(
+          () => Field.fromMap({"name": "country", "type": "not_a_type"}),
+          throwsA(isA<ArgumentError>().having(
+              (e) => e.message, 'message', 'Ensure Field.type is set')));
+    });
+    test('identifies type of the field', () {
+      var field = Field.fromMap({
+        "name": "name",
+        "type": "string",
+      });
+      expect(field.type, equals(Type.string));
+      expect(field.isMultivalued, isFalse);
+
+      field = Field.fromMap({
+        "name": "name",
+        "type": "string[]",
+      });
+      expect(field.type, equals(Type.string));
+      expect(field.isMultivalued, isTrue);
+
+      field = Field.fromMap({
+        "name": "name",
+        "type": "int32",
+      });
+      expect(field.type, equals(Type.int32));
+      expect(field.isMultivalued, isFalse);
+
+      field = Field.fromMap({
+        "name": "name",
+        "type": "int32[]",
+      });
+      expect(field.type, equals(Type.int32));
+      expect(field.isMultivalued, isTrue);
+
+      field = Field.fromMap({
+        "name": "name",
+        "type": "int64",
+      });
+      expect(field.type, equals(Type.int64));
+      expect(field.isMultivalued, isFalse);
+
+      field = Field.fromMap({
+        "name": "name",
+        "type": "int64[]",
+      });
+      expect(field.type, equals(Type.int64));
+      expect(field.isMultivalued, isTrue);
+
+      field = Field.fromMap({
+        "name": "name",
+        "type": "float",
+      });
+      expect(field.type, equals(Type.float));
+      expect(field.isMultivalued, isFalse);
+
+      field = Field.fromMap({
+        "name": "name",
+        "type": "float[]",
+      });
+      expect(field.type, equals(Type.float));
+      expect(field.isMultivalued, isTrue);
+
+      field = Field.fromMap({
+        "name": "name",
+        "type": "bool",
+      });
+      expect(field.type, equals(Type.bool));
+      expect(field.isMultivalued, isFalse);
+
+      field = Field.fromMap({
+        "name": "name",
+        "type": "bool[]",
+      });
+      expect(field.type, equals(Type.bool));
+      expect(field.isMultivalued, isTrue);
+
+      field = Field.fromMap({
+        "name": "name",
+        "type": "auto",
+      });
+      expect(field.type, equals(Type.auto));
+
+      field = Field.fromMap({
+        "name": "name",
+        "type": "string*",
+      });
+      expect(field.type, equals(Type.stringify));
+    });
+    test('sets default values to fields when null', () {
+      final field = Field.fromMap({"name": "num_employees", "type": "int32"});
+      expect(field.isFacetable, isFalse);
+      expect(field.shouldIndex, isTrue);
+      expect(field.isOptional, isFalse);
+    });
+  });
   group('Field toMap()', () {
     test('sets "type" according to the field type', () {
       var field = Field('country', Type.string);

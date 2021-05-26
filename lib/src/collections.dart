@@ -1,18 +1,29 @@
-import 'package:typesense/src/services/api_call.dart';
-
 import 'models/schema.dart';
+import 'services/api_call.dart';
+import 'services/collections_api_call.dart';
 
 class Collections {
   final ApiCall _apicall;
+  final CollectionsApiCall _collectionsApiCall;
   static const String RESOURCEPATH = '/collections';
 
-  Collections(ApiCall apicall) : _apicall = apicall;
+  Collections(ApiCall apicall, CollectionsApiCall collectionsApiCall)
+      : _apicall = apicall,
+        _collectionsApiCall = collectionsApiCall;
 
-  Future<Map<String, dynamic>> retrieve() async {
-    return await _apicall.get(RESOURCEPATH);
+  /// Returns [Schema] of all your collections. The collections are returned
+  /// sorted by creation date, with the most recent collections appearing first.
+  Future<List<Schema>> retrieve() async {
+    return (await _collectionsApiCall.get(RESOURCEPATH))
+        .map((schema) => Schema.fromMap(schema))
+        .toList(growable: false);
   }
 
-  Future<Map<String, dynamic>> create(Schema schema) async {
-    return await _apicall.post(RESOURCEPATH, bodyParameters: schema.toMap());
+  /// Creates a new collection with the [schema].
+  Future<Schema> create(Schema schema) async {
+    return Schema.fromMap(await _apicall.post(
+      RESOURCEPATH,
+      bodyParameters: schema.toMap(),
+    ));
   }
 }

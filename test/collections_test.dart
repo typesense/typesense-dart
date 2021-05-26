@@ -2,38 +2,143 @@ import 'package:test/test.dart';
 import 'package:mockito/mockito.dart';
 
 import 'package:typesense/src/collections.dart';
+import 'package:typesense/src/models/field.dart';
+import 'package:typesense/src/models/schema.dart';
 import 'package:typesense/src/services/api_call.dart';
+import 'package:typesense/src/services/collections_api_call.dart';
 
 class MockApiCall extends Mock implements ApiCall {}
 
+class MockCollectionsApiCall extends Mock implements CollectionsApiCall {}
+
 void main() {
   Collections collections;
-  MockApiCall mock;
+  MockApiCall mockApiCall;
+  MockCollectionsApiCall mockCollectionsApiCall;
 
   setUp(() {
-    mock = MockApiCall();
-    collections = Collections(mock);
+    mockApiCall = MockApiCall();
+    mockCollectionsApiCall = MockCollectionsApiCall();
+    collections = Collections(mockApiCall, mockCollectionsApiCall);
   });
 
   group('Collections', () {
     test('has a RESOURCEPATH', () {
       expect(Collections.RESOURCEPATH, equals('/collections'));
     });
+    test('retrieve() calls CollectionsApiCall.get()', () async {
+      final schemaList = [
+        {
+          "num_documents": 1250,
+          "name": "companies",
+          "fields": [
+            {"name": "company_name", "type": "string"},
+            {"name": "num_employees", "type": "int32"},
+            {"name": "country", "type": "string", "facet": true}
+          ],
+          "default_sorting_field": "num_employees"
+        },
+        {
+          "num_documents": 1250,
+          "name": "ceos",
+          "fields": [
+            {"name": "company_name", "type": "string"},
+            {"name": "full_name", "type": "string"},
+            {"name": "from_year", "type": "int32"}
+          ],
+          "default_sorting_field": "from_year"
+        }
+      ];
+      when(mockCollectionsApiCall.get('/collections'))
+          .thenAnswer((realInvocation) => Future.value(schemaList));
 
-    test('retrieve() calls ApiCall.get()', () async {
-      final map = {
-        "name": "companies",
-        "num_documents": 0,
-        "fields": [
-          {"name": "company_name", "type": "string"},
-          {"name": "num_employees", "type": "int32"},
-          {"name": "country", "type": "string", "facet": true}
-        ],
-        "default_sorting_field": "num_employees"
-      };
-      when(mock.get('/collections'))
-          .thenAnswer((realInvocation) => Future.value(map));
-      expect(await collections.retrieve(), equals(map));
+      final schemas = await collections.retrieve();
+      expect(schemas[0].name, equals('companies'));
+      expect(schemas[0].documentCount, equals(1250));
+      expect(
+          schemas[0].fields,
+          equals({
+            Field('company_name', Type.string),
+            Field('num_employees', Type.int32),
+            Field('country', Type.string, isFacetable: true),
+          }));
+      expect(schemas[0].defaultSortingField,
+          equals(Field('num_employees', Type.int32)));
+
+      expect(schemas[1].name, equals('ceos'));
+      expect(schemas[1].documentCount, equals(1250));
+      expect(
+          schemas[1].fields,
+          equals({
+            Field('company_name', Type.string),
+            Field('from_year', Type.int32),
+            Field('full_name', Type.string),
+          }));
+      expect(schemas[1].defaultSortingField,
+          equals(Field('from_year', Type.int32)));
+    });
+    test('create() calls ApiCall.post()', () async {
+      when(mockApiCall.post(
+        '/collections',
+        bodyParameters: {
+          "name": "companies",
+          "fields": [
+            {
+              "name": "company_name",
+              "type": "string",
+              'facet': false,
+              'optional': false,
+              'index': true,
+            },
+            {
+              "name": "num_employees",
+              "type": "int32",
+              'facet': false,
+              'optional': false,
+              'index': true,
+            },
+            {
+              "name": "country",
+              "type": "string",
+              'facet': true,
+              'optional': false,
+              'index': true,
+            }
+          ],
+          "default_sorting_field": "num_employees"
+        },
+      )).thenAnswer((realInvocation) => Future.value({
+            "name": "companies",
+            "num_documents": 0,
+            "fields": [
+              {"name": "company_name", "type": "string"},
+              {"name": "num_employees", "type": "int32"},
+              {"name": "country", "type": "string", "facet": true}
+            ],
+            "default_sorting_field": "num_employees"
+          }));
+
+      final schema = await collections.create(Schema(
+        'companies',
+        {
+          Field('company_name', Type.string),
+          Field('num_employees', Type.int32),
+          Field('country', Type.string, isFacetable: true),
+        },
+        defaultSortingField: Field('num_employees', Type.int32),
+      ));
+
+      expect(schema.name, equals('companies'));
+      expect(
+          schema.fields,
+          equals({
+            Field('company_name', Type.string),
+            Field('num_employees', Type.int32),
+            Field('country', Type.string, isFacetable: true),
+          }));
+      expect(schema.defaultSortingField,
+          equals(Field('num_employees', Type.int32)));
+      expect(schema.documentCount, equals(0));
     });
   });
 }
