@@ -1,8 +1,7 @@
 name: typesense
-description: A new Flutter package project.
+description: Dart client library for accessing the Typesense HTTP API.
 version: 0.0.1
-author:
-homepage:
+homepage: https://typesense.org/
 
 environment:
   sdk: ">=2.10.0-0 <3.0.0"
