@@ -154,6 +154,36 @@ void main() {
           ),
           equals(companiesAlias));
     });
+    test('has a patch method', () async {
+      final partialDocument = {
+            'company_name': 'Stark Industries',
+            'num_employees': 5500
+          },
+          client = MockClient(
+            (request) async {
+              expect(
+                  request.url.toString(),
+                  equals(
+                      '$protocol://$host:$mockServerPort$pathToService/collections/companies/documents/124?'));
+              expect(request.method, equals('PATCH'));
+              expect(request.headers[apiKeyLabel], equals(apiKey));
+              expect(
+                  request.headers[CONTENT_TYPE], contains('application/json'));
+
+              return http.Response(json.encode(partialDocument), 200,
+                  request: request);
+            },
+          ),
+          config = ConfigurationFactory.withoutNearestNode(mockClient: client),
+          nodePool = NodePool(config);
+
+      expect(
+          await ApiCall(config, nodePool).patch(
+            '/collections/companies/documents/124',
+            bodyParameters: partialDocument,
+          ),
+          equals(partialDocument));
+    });
     test('has a send method', () async {
       final config = ConfigurationFactory.withNearestNode(),
           nodePool = NodePool(config),
