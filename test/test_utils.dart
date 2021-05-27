@@ -6,7 +6,7 @@ import 'package:typesense/src/models/node.dart';
 
 String host = InternetAddress.loopbackIPv4.address;
 const protocol = 'http',
-    apiKeyLabel = 'x-typesense-api-key',
+    apiKeyLabel = 'X-TYPESENSE-API-KEY',
     apiKey = 'abc123',
     nearestServerPort = 8080,
     mockServerPort = 8081,

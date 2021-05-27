@@ -14,7 +14,7 @@ const CONTENT_TYPE = 'Content-Type';
 
 /// Key to set the api key in either `_defaultQueryParameters` or
 /// `_defaultHeaders` map depending on `Configuration.sendApiKeyAsQueryParam`.
-const _API_KEY = 'x-typesense-api-key';
+const _API_KEY = 'X-TYPESENSE-API-KEY';
 
 /// A generic abstract class which implements the core logic of using [NodePool]
 /// to complete the requests.

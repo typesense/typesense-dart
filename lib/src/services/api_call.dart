@@ -70,6 +70,23 @@ class ApiCall extends BaseApiCall<Map<String, dynamic>> {
             body: json.encode(bodyParameters),
           ));
 
+  /// Sends an HTTP PATCH request with the given [bodyParameters] to the URL
+  /// constructed using the [Node.uri], [endpoint] and [queryParams].
+  ///
+  /// [bodyParameters] sets the body of the request. It's encoded as json and
+  /// used as the body of the request. The content-type of the request is
+  /// "application/json".
+  Future<Map<String, dynamic>> patch(
+    String endpoint, {
+    Map<String, dynamic> queryParams = const {},
+    Object bodyParameters,
+  }) =>
+      send((node) => node.client.patch(
+            requestUri(node, endpoint, queryParams),
+            headers: defaultHeaders,
+            body: json.encode(bodyParameters),
+          ));
+
   /// The [responseBody] is parsed as JSON and returned if no exceptions are
   /// raised.
   @override
