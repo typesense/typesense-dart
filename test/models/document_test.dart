@@ -20,8 +20,8 @@ void main() {
     setUp(() {
       mock = MockApiCall();
       document = Document(
-        '124',
         'companies',
+        '124',
         mock,
       );
     });
@@ -52,74 +52,6 @@ void main() {
             bodyParameters: partialDocument, queryParams: null),
       ).thenAnswer((realInvocation) => Future.value(partialDocument));
       expect(await document.update(partialDocument), equals(partialDocument));
-    });
-  });
-
-  group('Document initialization', () {
-    MockApiCall mock;
-    setUp(() {
-      mock = MockApiCall();
-    });
-
-    test('with null/empty documentId throws', () {
-      expect(
-        () => Document(
-          null,
-          'companies',
-          mock,
-        ),
-        throwsA(
-          isA<ArgumentError>().having(
-            (e) => e.message,
-            'message',
-            'Ensure Document.documentId is set',
-          ),
-        ),
-      );
-      expect(
-        () => Document(
-          '',
-          'companies',
-          mock,
-        ),
-        throwsA(
-          isA<ArgumentError>().having(
-            (e) => e.message,
-            'message',
-            'Ensure Document.documentId is set',
-          ),
-        ),
-      );
-    });
-    test('with null/empty collectionName throws', () {
-      expect(
-        () => Document(
-          '124',
-          null,
-          mock,
-        ),
-        throwsA(
-          isA<ArgumentError>().having(
-            (e) => e.message,
-            'message',
-            'Ensure Document.collectionName is set',
-          ),
-        ),
-      );
-      expect(
-        () => Document(
-          '124',
-          '',
-          mock,
-        ),
-        throwsA(
-          isA<ArgumentError>().having(
-            (e) => e.message,
-            'message',
-            'Ensure Document.collectionName is set',
-          ),
-        ),
-      );
     });
   });
 }

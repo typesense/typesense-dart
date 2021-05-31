@@ -3,21 +3,13 @@ import '../collections.dart';
 import '../services/api_call.dart';
 
 class Document {
-  final String _collectionName;
-  final String _documentId;
+  final String _collectionName, _documentId;
   final ApiCall _apiCall;
 
-  Document(String documentId, String collectionName, ApiCall apiCall)
+  const Document(String collectionName, String documentId, ApiCall apiCall)
       : _collectionName = collectionName,
         _documentId = documentId,
-        _apiCall = apiCall {
-    if (documentId == null || documentId.isEmpty) {
-      throw ArgumentError('Ensure Document.documentId is set');
-    }
-    if (collectionName == null || collectionName.isEmpty) {
-      throw ArgumentError('Ensure Document.collectionName is set');
-    }
-  }
+        _apiCall = apiCall;
 
   Future<Map<String, dynamic>> delete() async {
     return await _apiCall.delete(_endpointPath);

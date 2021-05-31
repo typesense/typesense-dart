@@ -3,16 +3,12 @@ import '../overrides.dart';
 import '../services/api_call.dart';
 
 class Override {
-  final String _overrideId;
-  final String _collectionName;
+  final String _collectionName, _overrideId;
   final ApiCall _apiCall;
 
-  const Override(
-    String overrideId,
-    String collectionName,
-    ApiCall apiCall,
-  )   : _overrideId = overrideId,
-        _collectionName = collectionName,
+  const Override(String collectionName, String overrideId, ApiCall apiCall)
+      : _collectionName = collectionName,
+        _overrideId = overrideId,
         _apiCall = apiCall;
 
   Future<Map<String, dynamic>> delete() async {

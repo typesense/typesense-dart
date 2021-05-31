@@ -3,12 +3,12 @@ import '../synonyms.dart';
 import '../services/api_call.dart';
 
 class Synonym {
-  final String _synonymId, _collectionName;
+  final String _collectionName, _synonymId;
   final ApiCall _apiCall;
 
-  const Synonym(String synonymId, String collectionName, ApiCall apiCall)
-      : _synonymId = synonymId,
-        _collectionName = collectionName,
+  const Synonym(String collectionName, String synonymId, ApiCall apiCall)
+      : _collectionName = collectionName,
+        _synonymId = synonymId,
         _apiCall = apiCall;
 
   Future<Map<String, dynamic>> retrieve() async {
