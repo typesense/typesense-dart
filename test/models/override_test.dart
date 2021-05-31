@@ -10,23 +10,12 @@ void main() {
   group('Override', () {
     Override override;
     MockApiCall mock;
-    final overrideMap = {
-      "id": "customize-apple",
-      "excludes": [
-        {"id": "287"}
-      ],
-      "includes": [
-        {"id": "422", "position": 1},
-        {"id": "54", "position": 2}
-      ],
-      "rule": {"match": "exact", "query": "apple"}
-    };
 
     setUp(() {
       mock = MockApiCall();
       override = Override(
-        'customize-apple',
         'companies',
+        'customize-apple',
         mock,
       );
     });
@@ -40,6 +29,13 @@ void main() {
       expect(await override.delete(), equals({"id": "customize-apple"}));
     });
     test('retrieve() calls ApiCall.get()', () async {
+      final overrideMap = {
+        "id": "customize-apple",
+        "company_name": "Stark Industries",
+        "num_employees": 5215,
+        "country": "USA"
+      };
+
       when(
         mock.get(
           '/collections/companies/overrides/customize-apple',

@@ -14,8 +14,8 @@ void main() {
     setUp(() {
       mock = MockApiCall();
       synonym = Synonym(
-        'coat-synonyms',
         'products',
+        'coat-synonyms',
         mock,
       );
     });
