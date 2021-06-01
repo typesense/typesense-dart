@@ -4,31 +4,31 @@ import 'package:typesense/src/configuration.dart';
 import 'package:typesense/src/models/node.dart';
 import 'package:typesense/src/exceptions.dart' show MissingConfiguration;
 
+import 'test_utils.dart';
+
 void main() {
+  final config = Configuration(
+    apiKey: 'abc123',
+    connectionTimeout: Duration(seconds: 10),
+    healthcheckInterval: Duration(seconds: 5),
+    nearestNode: Node(
+      protocol: 'http',
+      host: 'localhost',
+      path: '/path/to/service',
+    ),
+    nodes: {
+      Node(
+        protocol: 'https',
+        host: 'localhost',
+        path: '/path/to/service',
+      ),
+    },
+    numRetries: 5,
+    retryInterval: Duration(seconds: 3),
+    sendApiKeyAsQueryParam: true,
+  );
+
   group('Configuration', () {
-    Configuration config;
-    setUp(() {
-      config = Configuration(
-        apiKey: 'abc123',
-        connectionTimeout: Duration(seconds: 10),
-        healthcheckInterval: Duration(seconds: 5),
-        nearestNode: Node(
-          protocol: 'http',
-          host: 'localhost',
-          path: '/path/to/service',
-        ),
-        nodes: {
-          Node(
-            protocol: 'https',
-            host: 'localhost',
-            path: '/path/to/service',
-          ),
-        },
-        numRetries: 5,
-        retryInterval: Duration(seconds: 3),
-        sendApiKeyAsQueryParam: true,
-      );
-    });
     test('has a nodes field', () {
       expect(config.nodes, isNotEmpty);
       expect(config.nodes.length, equals(1));
@@ -254,5 +254,38 @@ void main() {
         ),
       );
     });
+    test(
+        'using updateParameters factory constructor returns a new Configuration object with changes',
+        () {
+      var updatedConfig = Configuration.updateParameters(config,
+          apiKey: 'newKey',
+          healthcheckInterval: Duration(minutes: 1),
+          sendApiKeyAsQueryParam: false);
+      expect(config.apiKey == updatedConfig.apiKey, isFalse);
+      expect(updatedConfig.apiKey, equals('newKey'));
+      expect(config.healthcheckInterval == updatedConfig.healthcheckInterval,
+          isFalse);
+      expect(
+          config.sendApiKeyAsQueryParam == updatedConfig.sendApiKeyAsQueryParam,
+          isFalse);
+      expect(updatedConfig.sendApiKeyAsQueryParam, isFalse);
+
+      expect(updatedConfig.connectionTimeout, equals(config.connectionTimeout));
+      expect(updatedConfig.nearestNode, equals(config.nearestNode));
+      expect(updatedConfig.nodes, equals(config.nodes));
+      expect(updatedConfig.numRetries, equals(config.numRetries));
+      expect(updatedConfig.retryInterval, equals(config.retryInterval));
+    });
+  });
+
+  test('Configurations are equatable', () {
+    expect(
+        ConfigurationFactory.withNearestNode ==
+            ConfigurationFactory.withNearestNode,
+        isTrue);
+    expect(
+        ConfigurationFactory.withoutNearestNode ==
+            ConfigurationFactory.withoutNearestNode,
+        isTrue);
   });
 }
