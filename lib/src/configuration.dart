@@ -1,5 +1,6 @@
-import 'exceptions.dart' show MissingConfiguration;
+import 'package:collection/collection.dart';
 
+import 'exceptions.dart' show MissingConfiguration;
 import 'models/node.dart';
 
 class Configuration {
@@ -51,4 +52,67 @@ class Configuration {
       sendApiKeyAsQueryParam: sendApiKeyAsQueryParam ??= false,
     );
   }
+
+  factory Configuration.updateParameters(
+    Configuration original, {
+    Set<Node> nodes,
+    Node nearestNode,
+    Duration connectionTimeout,
+    Duration healthcheckInterval,
+    int numRetries,
+    Duration retryInterval,
+    String apiKey,
+    bool sendApiKeyAsQueryParam,
+  }) =>
+      Configuration._(
+        nodes: nodes ?? original.nodes,
+        nearestNode: nearestNode ?? original.nearestNode,
+        connectionTimeout: connectionTimeout ?? original.connectionTimeout,
+        healthcheckInterval:
+            healthcheckInterval ?? original.healthcheckInterval,
+        numRetries: numRetries ?? original.numRetries,
+        retryInterval: retryInterval ?? original.retryInterval,
+        apiKey: apiKey ?? original.apiKey,
+        sendApiKeyAsQueryParam:
+            sendApiKeyAsQueryParam ?? original.sendApiKeyAsQueryParam,
+      );
+
+  @override
+  String toString() => '''
+{
+  Nodes: $nodes
+  Nearest node: $nearestNode
+  Connection timeout: $connectionTimeout
+  Health check interval: $healthcheckInterval
+  Retries: $numRetries
+  Retry interval: $retryInterval
+  Api key: $apiKey
+  Send api key in query: $sendApiKeyAsQueryParam
+}
+''';
+
+  @override
+  bool operator ==(Object o) =>
+      identical(this, o) ||
+      (o is Configuration &&
+          runtimeType == o.runtimeType &&
+          SetEquality<Node>().equals(this.nodes, o.nodes) &&
+          this.nearestNode == o.nearestNode &&
+          this.connectionTimeout == o.connectionTimeout &&
+          this.healthcheckInterval == o.healthcheckInterval &&
+          this.numRetries == o.numRetries &&
+          this.retryInterval == o.retryInterval &&
+          this.apiKey == o.apiKey &&
+          this.sendApiKeyAsQueryParam == o.sendApiKeyAsQueryParam);
+
+  @override
+  int get hashCode =>
+      nodes.hashCode ^
+      nearestNode.hashCode ^
+      connectionTimeout.hashCode ^
+      healthcheckInterval.hashCode ^
+      numRetries.hashCode ^
+      retryInterval.hashCode ^
+      apiKey.hashCode ^
+      sendApiKeyAsQueryParam.hashCode;
 }
