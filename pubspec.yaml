@@ -9,7 +9,8 @@ environment:
 dependencies:
   http: ^0.12.2
   collection: ^1.14.13
-  
+  crypto: ^2.1.5
+
 dev_dependencies:
   test: ^1.15.7
   mockito: ^4.1.4
