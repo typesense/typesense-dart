@@ -9,7 +9,7 @@ import 'package:mockito/mockito.dart';
 import 'package:typesense/src/services/api_call.dart';
 import 'package:typesense/src/services/node_pool.dart';
 import 'package:typesense/src/models/node.dart';
-import 'package:typesense/src/exceptions.dart';
+import 'package:typesense/src/exceptions/exceptions.dart';
 
 import '../test_utils.dart';
 
