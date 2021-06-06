@@ -2,10 +2,10 @@ import 'dart:async';
 
 import 'package:http/http.dart' as http;
 
+import 'node_pool.dart';
 import '../configuration.dart';
 import '../models/node.dart';
-import 'node_pool.dart';
-import '../exceptions.dart' hide MissingConfiguration;
+import '../exceptions/exceptions.dart';
 
 /// Key to set the content-type of the request in `additionalHeaders` map.
 ///
@@ -121,15 +121,15 @@ abstract class BaseApiCall<R extends Object> {
   /// [message] usually contains the response body received.
   RequestException _exception(String message, int status) {
     if (status == 400) {
-      return RequestMalformed(message, status);
+      return RequestMalformed(message);
     } else if (status == 401) {
-      return RequestUnauthorized(message, status);
+      return RequestUnauthorized(message);
     } else if (status == 404) {
-      return ObjectNotFound(message, status);
+      return ObjectNotFound(message);
     } else if (status == 409) {
-      return ObjectAlreadyExists(message, status);
+      return ObjectAlreadyExists(message);
     } else if (status == 422) {
-      return ObjectUnprocessable(message, status);
+      return ObjectUnprocessable(message);
     } else if (status >= 500 && status <= 599) {
       return ServerError(message, status);
     } else {

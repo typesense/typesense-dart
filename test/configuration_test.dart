@@ -2,7 +2,8 @@ import 'package:test/test.dart';
 
 import 'package:typesense/src/configuration.dart';
 import 'package:typesense/src/models/node.dart';
-import 'package:typesense/src/exceptions.dart' show MissingConfiguration;
+import 'package:typesense/src/exceptions/exceptions.dart'
+    show MissingConfiguration;
 
 import 'test_utils.dart';
 

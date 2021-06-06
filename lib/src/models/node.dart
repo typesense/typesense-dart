@@ -1,6 +1,6 @@
 import 'package:http/http.dart' as http;
 
-import '../exceptions.dart';
+import '../exceptions/exceptions.dart';
 
 class Node {
   final String protocol;

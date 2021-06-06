@@ -1,6 +1,6 @@
 import 'package:collection/collection.dart';
 
-import 'exceptions.dart' show MissingConfiguration;
+import 'exceptions/exceptions.dart' show MissingConfiguration;
 import 'models/node.dart';
 
 class Configuration {
