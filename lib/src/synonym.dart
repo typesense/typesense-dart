@@ -1,6 +1,6 @@
-import '../collections.dart';
-import '../synonyms.dart';
-import '../services/api_call.dart';
+import 'collections.dart';
+import 'synonyms.dart';
+import 'services/api_call.dart';
 
 class Synonym {
   final String _collectionName, _synonymId;

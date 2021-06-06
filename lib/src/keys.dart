@@ -17,16 +17,15 @@ class Keys {
   Future<Map<String, dynamic>> retrieve() async {
     return await _apiCall.get(RESOURCEPATH);
   }
+}
 
-  static String generateScopedSearchKey(
-      String searchKey, Map<String, dynamic> parameters) {
-    final paramsJSON = json.encode(parameters),
-        hmacSha256 = Hmac(sha256, utf8.encode(searchKey)),
-        digest =
-            base64Encode(hmacSha256.convert(utf8.encode(paramsJSON)).bytes),
-        keyPrefix = searchKey.substring(0, 4),
-        rawScopedKey = '$digest$keyPrefix$paramsJSON';
+String generateScopedSearchKey(
+    String searchKey, Map<String, dynamic> parameters) {
+  final paramsJSON = json.encode(parameters),
+      hmacSha256 = Hmac(sha256, utf8.encode(searchKey)),
+      digest = base64Encode(hmacSha256.convert(utf8.encode(paramsJSON)).bytes),
+      keyPrefix = searchKey.substring(0, 4),
+      rawScopedKey = '$digest$keyPrefix$paramsJSON';
 
-    return base64Encode(rawScopedKey.codeUnits);
-  }
+  return base64Encode(rawScopedKey.codeUnits);
 }

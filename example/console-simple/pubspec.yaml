@@ -1,0 +1,14 @@
+name: console_simple
+description: A simple command-line application to showcase typesense examples.
+version: 1.0.0
+publish_to: none
+
+environment:
+  sdk: '>=2.10.0 <3.0.0'
+
+dependencies:
+  typesense:
+    path: ../../
+
+dev_dependencies:
+  pedantic: ^1.10.0

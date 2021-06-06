@@ -1,6 +1,6 @@
-import '../documents.dart';
-import '../collections.dart';
-import '../services/api_call.dart';
+import 'documents.dart';
+import 'collections.dart';
+import 'services/api_call.dart';
 
 class Document {
   final String _collectionName, _documentId;

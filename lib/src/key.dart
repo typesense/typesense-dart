@@ -1,5 +1,5 @@
-import '../keys.dart';
-import '../services/api_call.dart';
+import 'keys.dart';
+import 'services/api_call.dart';
 
 class Key {
   final int _id;
