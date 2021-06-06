@@ -1,6 +1,6 @@
-import '../collections.dart';
-import '../overrides.dart';
-import '../services/api_call.dart';
+import 'collections.dart';
+import 'overrides.dart';
+import 'services/api_call.dart';
 
 class Override {
   final String _collectionName, _overrideId;

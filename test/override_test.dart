@@ -2,7 +2,7 @@ import 'package:test/test.dart';
 import 'package:mockito/mockito.dart';
 
 import 'package:typesense/src/services/api_call.dart';
-import 'package:typesense/src/models/override.dart';
+import 'package:typesense/src/override.dart';
 
 class MockApiCall extends Mock implements ApiCall {}
 

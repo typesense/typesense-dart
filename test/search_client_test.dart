@@ -2,7 +2,7 @@ import 'package:test/test.dart';
 
 import 'package:typesense/src/search_client.dart';
 import 'package:typesense/src/multi_search.dart';
-import 'package:typesense/src/models/collection.dart';
+import 'package:typesense/src/collection.dart';
 
 import 'test_utils.dart';
 

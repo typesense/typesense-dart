@@ -1,15 +1,15 @@
 import 'dart:collection';
 
-import 'schema.dart';
+import 'models/schema.dart';
 import 'document.dart';
 import 'override.dart';
 import 'synonym.dart';
-import '../collections.dart';
-import '../documents.dart';
-import '../overrides.dart';
-import '../synonyms.dart';
-import '../services/api_call.dart';
-import '../services/documents_api_call.dart';
+import 'collections.dart';
+import 'documents.dart';
+import 'overrides.dart';
+import 'synonyms.dart';
+import 'services/api_call.dart';
+import 'services/documents_api_call.dart';
 
 class Collection {
   final String _name;

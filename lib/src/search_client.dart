@@ -2,7 +2,7 @@ import 'dart:collection';
 
 import 'configuration.dart';
 import 'multi_search.dart';
-import 'models/collection.dart';
+import 'collection.dart';
 import 'services/node_pool.dart';
 import 'services/api_call.dart';
 import 'services/documents_api_call.dart';

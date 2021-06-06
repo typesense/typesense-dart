@@ -1,10 +1,10 @@
 import 'package:test/test.dart';
 import 'package:mockito/mockito.dart';
 
-import 'package:typesense/src/models/collection.dart';
-import 'package:typesense/src/models/document.dart';
-import 'package:typesense/src/models/override.dart';
-import 'package:typesense/src/models/synonym.dart';
+import 'package:typesense/src/collection.dart';
+import 'package:typesense/src/document.dart';
+import 'package:typesense/src/override.dart';
+import 'package:typesense/src/synonym.dart';
 import 'package:typesense/src/models/field.dart';
 import 'package:typesense/src/documents.dart';
 import 'package:typesense/src/overrides.dart';

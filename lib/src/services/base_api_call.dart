@@ -77,8 +77,7 @@ abstract class BaseApiCall<R extends Object> {
         } else if (response.statusCode < 500) {
           // Next, if response is anything but 5xx, don't retry, return a custom
           // error
-          return Future.error(
-              _exception(response.toString(), response.statusCode));
+          return Future.error(_exception(response.body, response.statusCode));
         } else {
           // Retry all other HTTP errors (HTTPStatus > 500)
           // This will get caught by the catch block below

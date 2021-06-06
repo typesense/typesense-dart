@@ -64,4 +64,7 @@ class Schema {
     map['default_sorting_field'] = defaultSortingField?.name ?? '';
     return map;
   }
+
+  @override
+  String toString() => toMap().toString();
 }

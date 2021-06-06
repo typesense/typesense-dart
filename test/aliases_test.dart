@@ -4,14 +4,12 @@ import 'package:mockito/mockito.dart';
 import 'package:typesense/src/services/api_call.dart';
 
 import 'package:typesense/src/aliases.dart';
-import 'package:typesense/src/models/alias.dart';
 
 class MockApiCall extends Mock implements ApiCall {}
 
 void main() {
   Aliases aliases;
   MockApiCall mock;
-  Alias companies = Alias("companies", collectionName: "companies_june11");
 
   setUp(() {
     mock = MockApiCall();
@@ -30,7 +28,13 @@ void main() {
             "name": "companies",
             "collection_name": "companies_june11",
           }));
-      expect(await aliases.upsert(companies), equals(companies));
+      expect(
+          await aliases
+              .upsert('companies', {'collection_name': 'companies_june11'}),
+          equals({
+            "name": "companies",
+            "collection_name": "companies_june11",
+          }));
     });
     test('retrieve() calls ApiCall.get()', () async {
       when(
@@ -46,8 +50,10 @@ void main() {
       expect(
           await aliases.retrieve(),
           equals({
-            companies,
-            Alias("employees", collectionName: "employees_june11")
+            "aliases": [
+              {"name": "companies", "collection_name": "companies_june11"},
+              {"name": "employees", "collection_name": "employees_june11"}
+            ]
           }));
     });
   });
