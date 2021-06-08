@@ -2,5 +2,6 @@ import 'typesense_exception.dart';
 
 class ImportError implements TypesenseException {
   final String message;
-  ImportError(this.message);
+  final List<Map<String, dynamic>> importResults;
+  ImportError(this.message, this.importResults);
 }
