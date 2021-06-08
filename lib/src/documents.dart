@@ -1,6 +1,9 @@
-import './services/api_call.dart';
-import './services/documents_api_call.dart';
-import './collections.dart';
+import 'dart:convert';
+
+import 'collections.dart';
+import 'services/api_call.dart';
+import 'services/documents_api_call.dart';
+import 'exceptions/exceptions.dart';
 
 class Documents {
   final ApiCall _apicall;
@@ -40,17 +43,44 @@ class Documents {
     return await _apicall.delete(_endPoint, queryParams: queryParameters);
   }
 
-  // TODO: Implement after Document class.
-  // Future<Set<Document>> importDocuments(Set<Document> documents,
-  //     {Map<String, dynamic> options = const {}}) async {}
+  /// Imports the [documents] into the server.
+  Future<List<Map<String, dynamic>>> importDocuments(
+    List<Map<String, dynamic>> documents, {
+    Map<String, dynamic> options,
+  }) async {
+    final documentsInJSONLFormat =
+            documents.map((document) => json.encode(document)).join('\n'),
+        resultsInJSONFormat =
+            (await _import(documentsInJSONLFormat, options: options))
+                .split('\n')
+                .map((result) => json.decode(result) as Map<String, dynamic>)
+                .toList(),
+        failedItems =
+            resultsInJSONFormat.where((result) => !result['success']).toList();
+
+    if (failedItems.isNotEmpty) {
+      throw ImportError(
+          '${resultsInJSONFormat.length - failedItems.length} documents imported successfully, ${failedItems.length} documents failed during import. Use `error.importResults` from the raised exception to get a detailed error reason for each document.',
+          resultsInJSONFormat);
+    }
+
+    return resultsInJSONFormat;
+  }
 
   /// Imports the [jsonl] formatted documents into the server.
   Future<String> importJsonlDocuments(
     String jsonl, {
-    Map<String, String> queryParameters,
+    Map<String, dynamic> options,
+  }) async {
+    return await _import(jsonl, options: options);
+  }
+
+  Future<String> _import(
+    String jsonl, {
+    Map<String, dynamic> options,
   }) async {
     return await _documentApiCall.post('$_endPoint/import',
-        queryParams: queryParameters,
+        queryParams: options,
         bodyParameters: jsonl,
         additionalHeaders: {CONTENT_TYPE: 'text/plain'});
   }

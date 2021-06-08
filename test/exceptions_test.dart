@@ -3,9 +3,18 @@ import 'package:typesense/src/exceptions/exceptions.dart';
 
 void main() {
   test('ImportError', () {
-    final exception = ImportError('import failed');
+    final exception = ImportError('import failed', [
+      {"success": true},
+      {"success": false, "error": "Bad JSON.", "document": "[bad doc]"}
+    ]);
     expect(exception, isA<TypesenseException>());
     expect(exception.message, equals('import failed'));
+    expect(
+        exception.importResults,
+        equals([
+          {"success": true},
+          {"success": false, "error": "Bad JSON.", "document": "[bad doc]"}
+        ]));
   });
   test('MissingConfiguration', () {
     final exception = MissingConfiguration('configuration missing');
