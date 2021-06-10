@@ -8,29 +8,37 @@ import 'services/api_call.dart';
 import 'services/documents_api_call.dart';
 
 class SearchClient {
-  Configuration _config;
-  ApiCall _apiCall;
-  DocumentsApiCall _documentsApiCall;
-  MultiSearch _multiSearch;
+  final Configuration config;
+  final ApiCall _apiCall;
+  final DocumentsApiCall _documentsApiCall;
+  final MultiSearch _multiSearch;
   final _individualCollections = HashMap<String, Collection>();
 
-  SearchClient(Configuration config) {
-    // In v0.20.0 we restrict query params to 2000 in length. But sometimes
-    // scoped API keys can be over this limit, so we send long keys as headers
+  SearchClient._(
+    this.config,
+    this._apiCall,
+    this._documentsApiCall,
+    this._multiSearch,
+  );
+
+  factory SearchClient(Configuration config) {
+    // In v0.20.0 query params are restricted to 2000 in length. But sometimes
+    // scoped API keys can be over this limit, so long keys are sent as headers
     // instead. The tradeoff is that using a header to send the API key will
     // trigger the browser to send an OPTIONS request first.
-    _config = Configuration.updateParameters(
+    config = Configuration.updateParameters(
       config,
       sendApiKeyAsQueryParam: (config.apiKey.length < 2000),
     );
-    final _nodePool = NodePool(_config);
 
-    _apiCall = ApiCall(_config, _nodePool);
-    _documentsApiCall = DocumentsApiCall(_config, _nodePool);
-    _multiSearch = MultiSearch(_apiCall, useTextContentType: true);
+    final nodePool = NodePool(config), apiCall = ApiCall(config, nodePool);
+    return SearchClient._(
+      config,
+      apiCall,
+      DocumentsApiCall(config, nodePool),
+      MultiSearch(apiCall, useTextContentType: true),
+    );
   }
-
-  Configuration get configuration => _config;
 
   MultiSearch get multiSearch => _multiSearch;
 
