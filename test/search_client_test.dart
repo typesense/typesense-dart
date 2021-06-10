@@ -14,9 +14,9 @@ void main() {
   });
 
   group('SearchClient', () {
-    test('has a configuration getter', () {
+    test('has a config field', () {
       expect(
-          searchClient.configuration,
+          searchClient.config,
           equals(ConfigurationFactory.withNearestNode(
               sendApiKeyAsQueryParam: true)));
     });
@@ -38,7 +38,7 @@ void main() {
       var config = ConfigurationFactory.withNearestNode(
               apiKey: 'abc123', sendApiKeyAsQueryParam: false),
           multiSearch = SearchClient(config);
-      expect(multiSearch.configuration.sendApiKeyAsQueryParam, isTrue);
+      expect(multiSearch.config.sendApiKeyAsQueryParam, isTrue);
 
       config = ConfigurationFactory.withNearestNode(
           apiKey: () {
@@ -48,7 +48,7 @@ void main() {
           }(),
           sendApiKeyAsQueryParam: true);
       multiSearch = SearchClient(config);
-      expect(multiSearch.configuration.sendApiKeyAsQueryParam, isFalse);
+      expect(multiSearch.config.sendApiKeyAsQueryParam, isFalse);
     });
   });
 
