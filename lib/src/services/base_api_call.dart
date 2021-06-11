@@ -22,18 +22,18 @@ const _API_KEY = 'X-TYPESENSE-API-KEY';
 /// [R] stands for the response type that the sub-class implementing
 /// [BaseApiCall] promises.
 abstract class BaseApiCall<R extends Object> {
-  final Configuration _config;
+  final Configuration config;
   final NodePool _nodePool;
   Map<String, String> _defaultHeaders = {};
   Map<String, String> _defaultQueryParameters = {};
 
   BaseApiCall(Configuration config, NodePool nodePool)
-      : _config = config,
+      : config = config,
         _nodePool = nodePool {
-    if (_config.sendApiKeyAsQueryParam) {
-      _defaultQueryParameters[_API_KEY] = _config.apiKey;
+    if (config.sendApiKeyAsQueryParam) {
+      _defaultQueryParameters[_API_KEY] = config.apiKey;
     } else {
-      _defaultHeaders[_API_KEY] = _config.apiKey;
+      _defaultHeaders[_API_KEY] = config.apiKey;
     }
 
     _defaultHeaders[CONTENT_TYPE] = 'application/json';
@@ -56,11 +56,11 @@ abstract class BaseApiCall<R extends Object> {
   Future<R> send(Future<http.Response> Function(Node) request) async {
     http.Response response;
     Node node;
-    for (var triesLeft = _config.numRetries;;) {
+    for (var triesLeft = config.numRetries;;) {
       node = _nodePool.nextNode;
       try {
         response = await request(node).timeout(
-          _config.connectionTimeout,
+          config.connectionTimeout,
         );
 
         if (response.statusCode >= 1 && response.statusCode <= 499) {
@@ -92,7 +92,7 @@ abstract class BaseApiCall<R extends Object> {
           // We've exhausted our tries, rethrow.
           rethrow;
         } else {
-          await Future.delayed(_config.retryInterval);
+          await Future.delayed(config.retryInterval);
         }
       }
     }

@@ -8,6 +8,7 @@ import 'package:mockito/mockito.dart';
 
 import 'package:typesense/src/services/api_call.dart';
 import 'package:typesense/src/services/node_pool.dart';
+import 'package:typesense/src/services/request_cache.dart';
 import 'package:typesense/src/models/node.dart';
 import 'package:typesense/src/exceptions/exceptions.dart';
 
@@ -17,6 +18,7 @@ class MockResponse extends Mock implements http.Response {}
 
 void main() {
   group('ApiCall', () {
+    final requestCache = RequestCache();
     const companyCollection = {
       "name": "companies",
       "num_documents": 0,
@@ -33,7 +35,7 @@ void main() {
     test('has a defaultHeaders field', () {
       final config = ConfigurationFactory.withNearestNode(),
           nodePool = NodePool(config),
-          docsApiCall = ApiCall(config, nodePool);
+          docsApiCall = ApiCall(config, nodePool, requestCache);
       expect(docsApiCall.defaultHeaders,
           equals({apiKeyLabel: apiKey, CONTENT_TYPE: 'application/json'}));
     });
@@ -41,7 +43,7 @@ void main() {
       final config = ConfigurationFactory.withNearestNode(
               sendApiKeyAsQueryParam: true),
           nodePool = NodePool(config),
-          docsApiCall = ApiCall(config, nodePool);
+          docsApiCall = ApiCall(config, nodePool, requestCache);
       expect(docsApiCall.defaultQueryParameters, equals({apiKeyLabel: apiKey}));
     });
     test('has a get method', () async {
@@ -66,7 +68,7 @@ void main() {
           nodePool = NodePool(config);
 
       expect(
-          await ApiCall(config, nodePool).get(
+          await ApiCall(config, nodePool, requestCache).get(
             '/aliases/companies',
           ),
           equals(companiesAlias));
@@ -93,7 +95,7 @@ void main() {
           nodePool = NodePool(config);
 
       expect(
-          await ApiCall(config, nodePool).delete(
+          await ApiCall(config, nodePool, requestCache).delete(
             '/aliases/companies',
           ),
           equals(companiesAlias));
@@ -118,7 +120,7 @@ void main() {
           nodePool = NodePool(config);
 
       expect(
-          await ApiCall(config, nodePool).post(
+          await ApiCall(config, nodePool, requestCache).post(
             '/collections',
             bodyParameters: companyCollection,
           ),
@@ -148,7 +150,7 @@ void main() {
           nodePool = NodePool(config);
 
       expect(
-          await ApiCall(config, nodePool).put(
+          await ApiCall(config, nodePool, requestCache).put(
             '/aliases/companies',
             bodyParameters: {'collection_name': 'companies_june11'},
           ),
@@ -178,7 +180,7 @@ void main() {
           nodePool = NodePool(config);
 
       expect(
-          await ApiCall(config, nodePool).patch(
+          await ApiCall(config, nodePool, requestCache).patch(
             '/collections/companies/documents/124',
             bodyParameters: partialDocument,
           ),
@@ -187,31 +189,31 @@ void main() {
     test('has a send method', () async {
       final config = ConfigurationFactory.withNearestNode(),
           nodePool = NodePool(config),
-          docsApiCall = ApiCall(config, nodePool),
+          apiCall = ApiCall(config, nodePool, requestCache),
           mockReponse = MockResponse();
       when(mockReponse.statusCode).thenAnswer((realInvocation) => 200);
       when(mockReponse.body)
           .thenAnswer((realInvocation) => json.encode(companyCollection));
 
-      expect(await docsApiCall.send((node) => Future.value(mockReponse)),
+      expect(await apiCall.send((node) => Future.value(mockReponse)),
           equals(companyCollection));
     });
-    test('has a handleNodeResponse method', () {
+    test('has a decode method', () {
       final config = ConfigurationFactory.withNearestNode(),
           nodePool = NodePool(config),
-          docsApiCall = ApiCall(config, nodePool),
+          apiCall = ApiCall(config, nodePool, requestCache),
           mockReponse = MockResponse();
       when(mockReponse.statusCode).thenAnswer((realInvocation) => 200);
       when(mockReponse.body)
           .thenAnswer((realInvocation) => json.encode(companyCollection));
 
-      expect(docsApiCall.decode(mockReponse.body), equals(companyCollection));
+      expect(apiCall.decode(mockReponse.body), equals(companyCollection));
     });
     test('has a requestUri method', () {
       final config = ConfigurationFactory.withNearestNode(),
           nodePool = NodePool(config);
       expect(
-          ApiCall(config, nodePool).requestUri(
+          ApiCall(config, nodePool, requestCache).requestUri(
               Node(
                   protocol: protocol,
                   host: host,
@@ -225,7 +227,10 @@ void main() {
   });
 
   group('ApiCall', () {
-    setUp(() async {});
+    RequestCache requestCache;
+    setUp(() {
+      requestCache = RequestCache();
+    });
     test('sends api key in the header or query according to the configuration',
         () async {
       var sendApiKeyAsQueryParam = false;
@@ -248,7 +253,7 @@ void main() {
             mockClient: client,
           ),
           nodePool = NodePool(config);
-      await ApiCall(config, nodePool).post('/api/key/test');
+      await ApiCall(config, nodePool, requestCache).post('/api/key/test');
 
       // Sending api key as query parameter now
       sendApiKeyAsQueryParam = true;
@@ -257,7 +262,7 @@ void main() {
         mockClient: client,
       );
       nodePool = NodePool(config);
-      await ApiCall(config, nodePool).post('/api/key/test');
+      await ApiCall(config, nodePool, requestCache).post('/api/key/test');
     });
     test(
         'sets the health status of a node according to completion of the request',
@@ -312,7 +317,7 @@ void main() {
       expect(node3.lastAccessTimestamp, isNull);
 
       final now = DateTime.now();
-      await ApiCall(config, nodePool).post('/health/status/test');
+      await ApiCall(config, nodePool, requestCache).post('/health/status/test');
 
       expect(node1.isHealthy, isFalse); // returned 500 status
       expect(node1.lastAccessTimestamp.compareTo(now) > 0, isTrue);
@@ -342,7 +347,8 @@ void main() {
               mockClient: client, retryInterval: retryInterval),
           nodePool = NodePool(config);
 
-      await ApiCall(config, nodePool).post('/retry/interval/test');
+      await ApiCall(config, nodePool, requestCache)
+          .post('/retry/interval/test');
       // Atleast [retryInterval] delay between requests.
       expect(secondRequestTime.difference(firstRequestTime) > retryInterval,
           isTrue);
@@ -365,7 +371,7 @@ void main() {
             nodePool = NodePool(config);
 
         try {
-          await ApiCall(config, nodePool).post('/retries/test');
+          await ApiCall(config, nodePool, requestCache).post('/retries/test');
         } catch (e) {
           // Exception is rethrown when Configuration.numRetries run out
           expect(e, isA<ServerError>());
@@ -375,7 +381,101 @@ void main() {
     );
   });
 
+  group('ApiCall caches', () {
+    ApiCall apiCall;
+
+    setUp(() {
+      var requestNumber = 1;
+      final client = MockClient(
+            (request) {
+              expect(request.url.path, equals('$pathToService/cache/test'));
+
+              switch (requestNumber++) {
+                case 1:
+                  return Future.value(http.Response(
+                      json.encode({'value': 'initial'}), 200,
+                      request: request));
+
+                case 2:
+                  return Future.value(http.Response(
+                      json.encode({'value': 'updated'}), 200,
+                      request: request));
+
+                default:
+                  return Future.value(
+                      http.Response(json.encode('{}'), 200, request: request));
+              }
+            },
+          ),
+          config = ConfigurationFactory.withoutNearestNode(
+            mockClient: client,
+            cachedSearchResultsTTL: Duration(milliseconds: 500),
+          ),
+          nodePool = NodePool(config);
+
+      apiCall = ApiCall(config, nodePool, RequestCache());
+    });
+    test(
+        'get requests if shouldCacheResult is true and Configuration.cachedSearchResultsTTL is set',
+        () async {
+      expect(
+          await apiCall.get(
+            '/cache/test',
+            queryParams: {'a': 'b', '1': '2'},
+            shouldCacheResult: true,
+          ),
+          equals({'value': 'initial'}));
+      expect(
+          await apiCall.get(
+            '/cache/test',
+            queryParams: {'1': '2', 'a': 'b'},
+            shouldCacheResult: true,
+          ),
+          equals({'value': 'initial'}));
+
+      await Future.delayed(Duration(milliseconds: 600)); // > TTL
+      expect(
+          await apiCall.get(
+            '/cache/test',
+            queryParams: {'a': 'b', '1': '2'},
+            shouldCacheResult: true,
+          ),
+          equals({'value': 'updated'}));
+    });
+    test(
+        'post requests if shouldCacheResult is true and Configuration.cachedSearchResultsTTL is set',
+        () async {
+      expect(
+          await apiCall.post(
+            '/cache/test',
+            bodyParameters: {'body': 'data'},
+            queryParams: {'1': '2', 'a': 'b'},
+            shouldCacheResult: true,
+          ),
+          equals({'value': 'initial'}));
+      expect(
+          await apiCall.post(
+            '/cache/test',
+            bodyParameters: {'body': 'data'},
+            queryParams: {'a': 'b', '1': '2'},
+            shouldCacheResult: true,
+          ),
+          equals({'value': 'initial'}));
+
+      await Future.delayed(Duration(milliseconds: 600)); // > TTL
+      expect(
+          await apiCall.post(
+            '/cache/test',
+            bodyParameters: {'body': 'data'},
+            queryParams: {'1': '2', 'a': 'b'},
+            shouldCacheResult: true,
+          ),
+          equals({'value': 'updated'}));
+    });
+  });
+
   group('ApiCall throws', () {
+    final requestCache = RequestCache();
     test(
         'TimeoutException when no response is received for Configuration.connectionTimeout duration',
         () {
@@ -393,7 +493,7 @@ void main() {
 
       expect(
         () async {
-          await ApiCall(config, nodePool).post('/timeout/test');
+          await ApiCall(config, nodePool, requestCache).post('/timeout/test');
         },
         throwsA(isA<TimeoutException>().having(
           (e) => e.duration,
@@ -437,7 +537,7 @@ void main() {
 
         numTries = 0;
         try {
-          await ApiCall(config, nodePool).post('/retries/test');
+          await ApiCall(config, nodePool, requestCache).post('/retries/test');
         } catch (e) {
           expect(e, isA<RequestMalformed>());
           expect(numTries, equals(1));
@@ -445,7 +545,7 @@ void main() {
 
         numTries = 0;
         try {
-          await ApiCall(config, nodePool).post('/retries/test');
+          await ApiCall(config, nodePool, requestCache).post('/retries/test');
         } catch (e) {
           expect(e, isA<RequestUnauthorized>());
           expect(numTries, equals(1));
@@ -453,7 +553,7 @@ void main() {
 
         numTries = 0;
         try {
-          await ApiCall(config, nodePool).post('/retries/test');
+          await ApiCall(config, nodePool, requestCache).post('/retries/test');
         } catch (e) {
           expect(e, isA<ObjectNotFound>());
           expect(numTries, equals(1));
@@ -461,7 +561,7 @@ void main() {
 
         numTries = 0;
         try {
-          await ApiCall(config, nodePool).post('/retries/test');
+          await ApiCall(config, nodePool, requestCache).post('/retries/test');
         } catch (e) {
           expect(e, isA<ObjectAlreadyExists>());
           expect(numTries, equals(1));
@@ -469,7 +569,7 @@ void main() {
 
         numTries = 0;
         try {
-          await ApiCall(config, nodePool).post('/retries/test');
+          await ApiCall(config, nodePool, requestCache).post('/retries/test');
         } catch (e) {
           expect(e, isA<ObjectUnprocessable>());
           expect(numTries, equals(1));
@@ -477,7 +577,7 @@ void main() {
 
         numTries = 0;
         try {
-          await ApiCall(config, nodePool).post('/retries/test');
+          await ApiCall(config, nodePool, requestCache).post('/retries/test');
         } catch (e) {
           expect(e, isA<HttpError>());
           expect(numTries, equals(1));

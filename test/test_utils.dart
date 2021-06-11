@@ -29,6 +29,7 @@ class ConfigurationFactory {
     String apiKey = apiKey,
     bool sendApiKeyAsQueryParam = false,
     MockClient mockClient,
+    Duration cachedSearchResultsTTL,
   }) =>
       Configuration(
         nearestNode: nearestNode ??
@@ -55,6 +56,7 @@ class ConfigurationFactory {
         apiKey: apiKey,
         retryInterval: retryInterval,
         sendApiKeyAsQueryParam: sendApiKeyAsQueryParam,
+        cachedSearchResultsTTL: cachedSearchResultsTTL,
       );
 
   static Configuration withoutNearestNode({
@@ -66,6 +68,7 @@ class ConfigurationFactory {
     String apiKey = apiKey,
     bool sendApiKeyAsQueryParam = false,
     MockClient mockClient,
+    Duration cachedSearchResultsTTL,
   }) =>
       Configuration(
         nodes: nodes ??
@@ -84,5 +87,6 @@ class ConfigurationFactory {
         apiKey: apiKey,
         retryInterval: retryInterval,
         sendApiKeyAsQueryParam: sendApiKeyAsQueryParam,
+        cachedSearchResultsTTL: cachedSearchResultsTTL,
       );
 }
