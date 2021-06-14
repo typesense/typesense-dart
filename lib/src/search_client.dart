@@ -4,6 +4,7 @@ import 'configuration.dart';
 import 'multi_search.dart';
 import 'collection.dart';
 import 'services/node_pool.dart';
+import 'services/request_cache.dart';
 import 'services/api_call.dart';
 import 'services/documents_api_call.dart';
 
@@ -31,7 +32,8 @@ class SearchClient {
       sendApiKeyAsQueryParam: (config.apiKey.length < 2000),
     );
 
-    final nodePool = NodePool(config), apiCall = ApiCall(config, nodePool);
+    final nodePool = NodePool(config),
+        apiCall = ApiCall(config, nodePool, RequestCache());
     return SearchClient._(
       config,
       apiCall,

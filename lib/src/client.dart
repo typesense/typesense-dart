@@ -2,6 +2,7 @@ import 'dart:collection';
 
 import 'configuration.dart';
 import 'services/node_pool.dart';
+import 'services/request_cache.dart';
 import 'services/api_call.dart';
 import 'services/documents_api_call.dart';
 import 'services/collections_api_call.dart';
@@ -47,7 +48,8 @@ class Client {
       this.multiSearch);
 
   factory Client(Configuration config) {
-    final nodePool = NodePool(config), apiCall = ApiCall(config, nodePool);
+    final nodePool = NodePool(config),
+        apiCall = ApiCall(config, nodePool, RequestCache());
     return Client._(
         config,
         apiCall,

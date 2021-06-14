@@ -1,9 +1,9 @@
-import 'package:collection/collection.dart';
+import 'package:equatable/equatable.dart';
 
 import 'exceptions/exceptions.dart' show MissingConfiguration;
 import 'models/node.dart';
 
-class Configuration {
+class Configuration extends Equatable {
   final Set<Node> nodes;
   final Node nearestNode;
   final Duration connectionTimeout;
@@ -12,6 +12,7 @@ class Configuration {
   final Duration retryInterval;
   final String apiKey;
   final bool sendApiKeyAsQueryParam;
+  final Duration cachedSearchResultsTTL;
 
   const Configuration._({
     this.nodes,
@@ -22,6 +23,7 @@ class Configuration {
     this.retryInterval,
     this.apiKey,
     this.sendApiKeyAsQueryParam,
+    this.cachedSearchResultsTTL,
   });
 
   factory Configuration({
@@ -33,6 +35,7 @@ class Configuration {
     Duration retryInterval,
     String apiKey,
     bool sendApiKeyAsQueryParam,
+    Duration cachedSearchResultsTTL,
   }) {
     if (nodes == null || nodes.isEmpty) {
       throw MissingConfiguration('Ensure that Configuration.nodes is set');
@@ -50,6 +53,8 @@ class Configuration {
       retryInterval: retryInterval ??= Duration(milliseconds: 100),
       apiKey: apiKey,
       sendApiKeyAsQueryParam: sendApiKeyAsQueryParam ??= false,
+      cachedSearchResultsTTL: cachedSearchResultsTTL ??=
+          Duration.zero, // Disable cache by default
     );
   }
 
@@ -63,6 +68,7 @@ class Configuration {
     Duration retryInterval,
     String apiKey,
     bool sendApiKeyAsQueryParam,
+    Duration cachedSearchResultsTTL,
   }) =>
       Configuration._(
         nodes: nodes ?? original.nodes,
@@ -75,6 +81,8 @@ class Configuration {
         apiKey: apiKey ?? original.apiKey,
         sendApiKeyAsQueryParam:
             sendApiKeyAsQueryParam ?? original.sendApiKeyAsQueryParam,
+        cachedSearchResultsTTL:
+            cachedSearchResultsTTL ?? original.cachedSearchResultsTTL,
       );
 
   @override
@@ -88,31 +96,22 @@ class Configuration {
   Retry interval: $retryInterval
   Api key: $apiKey
   Send api key in query: $sendApiKeyAsQueryParam
+  Cached search results Time To Live: $cachedSearchResultsTTL
 }
 ''';
 
   @override
-  bool operator ==(Object o) =>
-      identical(this, o) ||
-      (o is Configuration &&
-          runtimeType == o.runtimeType &&
-          SetEquality<Node>().equals(this.nodes, o.nodes) &&
-          this.nearestNode == o.nearestNode &&
-          this.connectionTimeout == o.connectionTimeout &&
-          this.healthcheckInterval == o.healthcheckInterval &&
-          this.numRetries == o.numRetries &&
-          this.retryInterval == o.retryInterval &&
-          this.apiKey == o.apiKey &&
-          this.sendApiKeyAsQueryParam == o.sendApiKeyAsQueryParam);
-
-  @override
-  int get hashCode =>
-      nodes.hashCode ^
-      nearestNode.hashCode ^
-      connectionTimeout.hashCode ^
-      healthcheckInterval.hashCode ^
-      numRetries.hashCode ^
-      retryInterval.hashCode ^
-      apiKey.hashCode ^
-      sendApiKeyAsQueryParam.hashCode;
+  List<Object> get props {
+    return [
+      nodes,
+      nearestNode,
+      connectionTimeout,
+      healthcheckInterval,
+      numRetries,
+      retryInterval,
+      apiKey,
+      sendApiKeyAsQueryParam,
+      cachedSearchResultsTTL,
+    ];
+  }
 }

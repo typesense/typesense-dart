@@ -1,11 +1,10 @@
 import 'package:test/test.dart';
+import 'package:equatable/equatable.dart';
 
 import 'package:typesense/src/configuration.dart';
 import 'package:typesense/src/models/node.dart';
 import 'package:typesense/src/exceptions/exceptions.dart'
     show MissingConfiguration;
-
-import 'test_utils.dart';
 
 void main() {
   final config = Configuration(
@@ -27,6 +26,7 @@ void main() {
     numRetries: 5,
     retryInterval: Duration(seconds: 3),
     sendApiKeyAsQueryParam: true,
+    cachedSearchResultsTTL: Duration(seconds: 30),
   );
 
   group('Configuration', () {
@@ -60,6 +60,9 @@ void main() {
     });
     test('has a sendApiKeyAsQueryParam field', () {
       expect(config.sendApiKeyAsQueryParam, isTrue);
+    });
+    test('has a cacheSearchResults field', () {
+      expect(config.cachedSearchResultsTTL, equals(Duration(seconds: 30)));
     });
   });
 
@@ -276,17 +279,12 @@ void main() {
       expect(updatedConfig.nodes, equals(config.nodes));
       expect(updatedConfig.numRetries, equals(config.numRetries));
       expect(updatedConfig.retryInterval, equals(config.retryInterval));
+      expect(updatedConfig.cachedSearchResultsTTL,
+          equals(config.cachedSearchResultsTTL));
     });
   });
 
-  test('Configurations are equatable', () {
-    expect(
-        ConfigurationFactory.withNearestNode ==
-            ConfigurationFactory.withNearestNode,
-        isTrue);
-    expect(
-        ConfigurationFactory.withoutNearestNode ==
-            ConfigurationFactory.withoutNearestNode,
-        isTrue);
+  test('Configuration extends Equatable', () {
+    expect(config, isA<Equatable>());
   });
 }

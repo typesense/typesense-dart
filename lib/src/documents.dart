@@ -90,6 +90,15 @@ class Documents {
     return await _documentApiCall.get('$_endPoint/export');
   }
 
+  Future<Map<String, dynamic>> search(
+      Map<String, dynamic> searchParameters) async {
+    return await _apicall.get(
+      '$_endPoint/search',
+      queryParams: searchParameters,
+      shouldCacheResult: true,
+    );
+  }
+
   String get _endPoint =>
       "${Collections.RESOURCEPATH}/$_collectionName${Documents.RESOURCEPATH}";
 }

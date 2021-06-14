@@ -110,7 +110,7 @@ void main() {
       expect(await docsApiCall.send((node) => Future.value(mockReponse)),
           equals('{"success": true}'));
     });
-    test('has a handleNodeResponse method', () {
+    test('has a decode method', () {
       final config = ConfigurationFactory.withNearestNode(),
           nodePool = NodePool(config),
           docsApiCall = DocumentsApiCall(config, nodePool),

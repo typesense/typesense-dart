@@ -2,7 +2,6 @@ import 'package:test/test.dart';
 import 'package:mockito/mockito.dart';
 
 import 'package:typesense/src/services/api_call.dart';
-
 import 'package:typesense/src/multi_search.dart';
 
 class MockApiCall extends Mock implements ApiCall {}
@@ -76,7 +75,8 @@ void main() {
     test('has a RESOURCEPATH', () {
       expect(MultiSearch.RESOURCEPATH, equals('/multi_search'));
     });
-    test('perform() calls ApiCall.post()', () async {
+    test('perform() calls ApiCall.post() with shouldCacheResult true',
+        () async {
       when(
         mock.post(
           '/multi_search',
@@ -96,6 +96,7 @@ void main() {
           queryParams: {
             'query_by': 'name',
           },
+          shouldCacheResult: true,
         ),
       ).thenAnswer((realInvocation) => Future.value(map));
       expect(
@@ -120,5 +121,53 @@ void main() {
           equals(map));
     });
   });
-  // TODO: Add test which sets useTextContentType to true
+
+  test(
+      'MultiSearch when initialized with useTextContentType true sets CONTENT_TYPE to "text/plain"',
+      () async {
+    final multiSearch = MultiSearch(mock, useTextContentType: true);
+    when(
+      mock.post(
+        '/multi_search',
+        bodyParameters: {
+          'searches': [
+            {
+              'collection': 'products',
+              'q': 'shoe',
+              'filter_by': 'price:=[50..120]',
+            },
+            {
+              'collection': 'brands',
+              'q': 'Nike',
+            }
+          ]
+        },
+        queryParams: {
+          'query_by': 'name',
+        },
+        additionalHeaders: {'Content-Type': 'text/plain'},
+        shouldCacheResult: true,
+      ),
+    ).thenAnswer((realInvocation) => Future.value(map));
+    expect(
+        await multiSearch.perform(
+          {
+            'searches': [
+              {
+                'collection': 'products',
+                'q': 'shoe',
+                'filter_by': 'price:=[50..120]',
+              },
+              {
+                'collection': 'brands',
+                'q': 'Nike',
+              }
+            ]
+          },
+          queryParams: {
+            'query_by': 'name',
+          },
+        ),
+        equals(map));
+  });
 }

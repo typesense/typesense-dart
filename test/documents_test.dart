@@ -120,6 +120,60 @@ void main() {
       )).thenAnswer((realInvocation) => Future.value(documentJsonl));
       expect(await documents.exportJsonlDocuments(), equals(documentJsonl));
     });
+    test('search() calls ApiCall.get with shouldCacheResult true', () async {
+      final searchResult = {
+        "facet_counts": [],
+        "found": 1,
+        "out_of": 1,
+        "page": 1,
+        "request_params": {"q": ""},
+        "search_time_ms": 1,
+        "grouped_hits": [
+          {
+            "group_key": ["USA"],
+            "hits": [
+              {
+                "highlights": [
+                  {
+                    "field": "company_name",
+                    "snippet": "<mark>Stark</mark> Industries"
+                  }
+                ],
+                "document": {
+                  "id": "124",
+                  "company_name": "Stark Industries",
+                  "num_employees": 5215,
+                  "country": "USA"
+                }
+              }
+            ]
+          }
+        ]
+      };
+
+      when(mockApiCall.get(
+        "/collections/companies/documents/search",
+        queryParams: {
+          'q': 'stark',
+          'query_by': 'company_name',
+          'filter_by': 'num_employees:>100',
+          'sort_by': 'num_employees:desc',
+          'group_by': 'country',
+          'group_limit': '1'
+        },
+        shouldCacheResult: true,
+      )).thenAnswer((realInvocation) => Future.value(searchResult));
+      expect(
+          await documents.search({
+            'q': 'stark',
+            'query_by': 'company_name',
+            'filter_by': 'num_employees:>100',
+            'sort_by': 'num_employees:desc',
+            'group_by': 'country',
+            'group_limit': '1'
+          }),
+          equals(searchResult));
+    });
   });
 
   test('Documents.importDocuments throws ImportError if "success" is false',

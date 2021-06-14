@@ -14,9 +14,12 @@ class MultiSearch {
     if (useTextContentType) {
       additionalHeaders[CONTENT_TYPE] = 'text/plain';
     }
-    return await _apiCall.post(RESOURCEPATH,
-        bodyParameters: searchRequests,
-        queryParams: queryParams,
-        additionalHeaders: additionalHeaders);
+    return await _apiCall.post(
+      RESOURCEPATH,
+      bodyParameters: searchRequests,
+      queryParams: queryParams,
+      additionalHeaders: additionalHeaders,
+      shouldCacheResult: true,
+    );
   }
 }
