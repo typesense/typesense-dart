@@ -76,3 +76,4 @@ build/
 # From https://dart.dev/tools/pub/package-layout#the-pubspec
 # If your package is an application package, check the lockfile into source control. Otherwise, don’t.
 pubspec.lock
+.vscode

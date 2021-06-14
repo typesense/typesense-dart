@@ -35,16 +35,16 @@ void main() {
     test('has a defaultHeaders field', () {
       final config = ConfigurationFactory.withNearestNode(),
           nodePool = NodePool(config),
-          docsApiCall = ApiCall(config, nodePool, requestCache);
-      expect(docsApiCall.defaultHeaders,
+          apiCall = ApiCall(config, nodePool, requestCache);
+      expect(apiCall.defaultHeaders,
           equals({apiKeyLabel: apiKey, CONTENT_TYPE: 'application/json'}));
     });
     test('has a defaultQueryParameters field', () {
       final config = ConfigurationFactory.withNearestNode(
               sendApiKeyAsQueryParam: true),
           nodePool = NodePool(config),
-          docsApiCall = ApiCall(config, nodePool, requestCache);
-      expect(docsApiCall.defaultQueryParameters, equals({apiKeyLabel: apiKey}));
+          apiCall = ApiCall(config, nodePool, requestCache);
+      expect(apiCall.defaultQueryParameters, equals({apiKeyLabel: apiKey}));
     });
     test('has a get method', () async {
       final companiesAlias = {

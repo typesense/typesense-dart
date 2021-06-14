@@ -7,10 +7,10 @@ environment:
   sdk: ">=2.10.0-0 <3.0.0"
 
 dependencies:
-  http: ^0.12.2
-  crypto: ^2.1.5
-  equatable: 1.2.6
+  http: ^0.13.3
+  crypto: ^3.0.1
+  equatable: ^2.0.2
 
 dev_dependencies:
-  test: ^1.15.7
-  mockito: ^4.1.4
+  test: ^1.17.7
+  mockito: ^5.0.10
