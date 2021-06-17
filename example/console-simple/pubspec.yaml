@@ -9,6 +9,7 @@ environment:
 dependencies:
   typesense:
     path: ../../
+  logging: ^0.11.4
 
 dev_dependencies:
   pedantic: ^1.10.0
