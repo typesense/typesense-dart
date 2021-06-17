@@ -30,10 +30,12 @@ class Collection {
         _overrides = Overrides(collectionName, apiCall),
         _synonyms = Synonyms(collectionName, apiCall);
 
+  /// Retrieves the [Schema] of the specified collection.
   Future<Schema> retrieve() async {
     return Schema.fromMap(await this._apiCall.get(_endpointPath));
   }
 
+  /// Deletes the specified collection.
   Future<Schema> delete() async {
     return Schema.fromMap(await this._apiCall.delete(_endpointPath));
   }
