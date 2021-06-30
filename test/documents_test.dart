@@ -102,7 +102,7 @@ void main() {
         "/collections/companies/documents/import",
         bodyParameters: documentJsonl,
         additionalHeaders: {CONTENT_TYPE: 'text/plain'},
-        queryParams: null,
+        queryParams: {},
       )).thenAnswer((realInvocation) => Future.value(result));
       expect(await documents.importJSONL(documentJsonl), equals(result));
     });
