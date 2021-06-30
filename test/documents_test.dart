@@ -64,9 +64,7 @@ void main() {
       when(mockApiCall.delete("/collections/companies/documents",
               queryParams: {'filter_by': 'num_employees:>100'}))
           .thenAnswer((realInvocation) => Future.value({"num_deleted": 24}));
-      expect(
-          await documents
-              .delete(queryParameters: {'filter_by': 'num_employees:>100'}),
+      expect(await documents.delete({'filter_by': 'num_employees:>100'}),
           equals({"num_deleted": 24}));
     });
     test('importDocuments() calls DocumentsApiCall.post()', () async {
@@ -75,7 +73,7 @@ void main() {
         bodyParameters:
             '{"id":"124","company_name":"Stark Industries","num_employees":5215,"country":"USA"}',
         additionalHeaders: {CONTENT_TYPE: 'text/plain'},
-        queryParams: null,
+        queryParams: {},
       )).thenAnswer((realInvocation) => Future.value('{"success": true}'));
       expect(
           await documents.importDocuments([
@@ -106,8 +104,7 @@ void main() {
         additionalHeaders: {CONTENT_TYPE: 'text/plain'},
         queryParams: null,
       )).thenAnswer((realInvocation) => Future.value(result));
-      expect(
-          await documents.importJsonlDocuments(documentJsonl), equals(result));
+      expect(await documents.importJSONL(documentJsonl), equals(result));
     });
     test("exportJsonlDocuments() calls DocumentsApiCall.get()", () async {
       final documentJsonl = '''
@@ -118,7 +115,7 @@ void main() {
       when(mockDocumentsApiCall.get(
         "/collections/companies/documents/export",
       )).thenAnswer((realInvocation) => Future.value(documentJsonl));
-      expect(await documents.exportJsonlDocuments(), equals(documentJsonl));
+      expect(await documents.exportJSONL(), equals(documentJsonl));
     });
     test('search() calls ApiCall.get with shouldCacheResult true', () async {
       final searchResult = {
@@ -184,7 +181,7 @@ void main() {
           '''{"id":"124","company_name":"Stark Industries","num_employees":"5215","country":"USA"}
 {"id":"125","company_name":"Acme Corp","num_employees":2133,"country":"CA"}''',
       additionalHeaders: {CONTENT_TYPE: 'text/plain'},
-      queryParams: null,
+      queryParams: {},
     )).thenAnswer((realInvocation) => Future.value(
         '''{"code":400,"document":"{\\"id\\": \\"124\\",\\"company_name\\": \\"Stark Industries\\",\\"num_employees\\": \\"5215\\",\\"country\\": \\"USA\\"}","error":"Field `num_employees` must be an int32.","success":false}
 {"success":true}'''));

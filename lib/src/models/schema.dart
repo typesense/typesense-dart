@@ -45,7 +45,7 @@ class Schema {
         defaultSortingField = (fields != null)
             ? fields.firstWhere(
                 (field) => map['default_sorting_field'] == field.name,
-                orElse: () => Field(map['default_sorting_field'], Type.auto),
+                orElse: () => null,
               )
             : null;
 

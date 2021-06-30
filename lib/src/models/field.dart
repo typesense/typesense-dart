@@ -1,4 +1,6 @@
-class Field {
+import 'package:equatable/equatable.dart';
+
+class Field extends Equatable {
   /// [name] of the field.
   final String name;
 
@@ -63,41 +65,23 @@ class Field {
   }
 
   @override
-  int get hashCode =>
-      name.hashCode ^
-      type.hashCode ^
-      isOptional.hashCode ^
-      isFacetable.hashCode ^
-      isMultivalued.hashCode ^
-      shouldIndex.hashCode;
-
-  @override
-  bool operator ==(Object o) =>
-      identical(this, o) ||
-      (o is Field &&
-          runtimeType == o.runtimeType &&
-          name == o.name &&
-          type == o.type &&
-          isOptional == o.isOptional &&
-          isFacetable == o.isFacetable &&
-          isMultivalued == o.isMultivalued &&
-          shouldIndex == o.shouldIndex);
-
-  @override
   String toString() {
     return '$name(${type.value(isMultivalued)}), facetable: $isFacetable, optional: $isOptional, indexed: $shouldIndex';
   }
+
+  @override
+  List<Object> get props => [name, type, isMultivalued];
 }
 
 /// Enumerates the allowed field types.
 ///
-/// [Type.auto] and [Type.stringify] are special field types that are used for
+/// - [Type.auto] and [Type.stringify] are special field types that are used for
 /// handling data sources with varying schema via automatic schema detection.
 ///
-/// [Type.auto] is used to let Typesense detect the type of the fields
+/// - [Type.auto] is used to let Typesense detect the type of the fields
 /// automatically.
 ///
-/// [Type.stringify] (`string*`) is a way to store the field value (both
+/// - [Type.stringify] (`string*`) is a way to store the field value (both
 /// singular and multi-value/array values) as string.
 enum Type { string, int32, int64, float, bool, auto, stringify }
 
