@@ -11,17 +11,23 @@ class Document {
         _documentId = documentId,
         _apiCall = apiCall;
 
+  /// Deletes a document.
   Future<Map<String, dynamic>> delete() async {
     return await _apiCall.delete(_endpointPath);
   }
 
+  /// Retrieves a document from a collection.
   Future<Map<String, dynamic>> retrieve() async {
     return await _apiCall.get(_endpointPath);
   }
 
+  /// Updates a document.
+  ///
+  /// Partial updates, which only update a subset of the document fields, are
+  /// allowed.
   Future<Map<String, dynamic>> update(
     Map<String, dynamic> partialDocument, {
-    Map<String, dynamic> options,
+    Map<String, dynamic> options = const {},
   }) async {
     return await _apiCall.patch(_endpointPath,
         bodyParameters: partialDocument, queryParams: options);

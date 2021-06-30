@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'collections.dart';
+import 'configuration.dart';
 import 'services/api_call.dart';
 import 'services/documents_api_call.dart';
 import 'exceptions/exceptions.dart';
@@ -17,6 +18,17 @@ class Documents {
         _collectionName = collectionName,
         _documentApiCall = documentApiCall;
 
+  /// Creates a new [document].
+  ///
+  /// A document to be indexed in a given collection must conform to the schema
+  /// of the collection.
+  ///
+  /// If the document contains an id field of type `String`, Typesense would use
+  /// that field as the identifier for the document. Otherwise, Typesense would
+  /// assign an identifier of its choice to the document.
+  ///
+  /// Note that the id should not include spaces or any other characters that
+  /// encoding in [urls](https://www.w3schools.com/tags/ref_urlencode.asp).
   Future<Map<String, dynamic>> create(Map<String, dynamic> document,
       {Map<String, dynamic> options = const {}}) async {
     return await _apicall.post(_endPoint,
@@ -24,6 +36,7 @@ class Documents {
         queryParams: {...options, "action": "create"});
   }
 
+  /// Upserts a [document].
   Future<Map<String, dynamic>> upsert(Map<String, dynamic> document,
       {Map<String, dynamic> options = const {}}) async {
     return await _apicall.post(_endPoint,
@@ -31,6 +44,7 @@ class Documents {
         queryParams: {...options, "action": "upsert"});
   }
 
+  /// Updates a [document].
   Future<Map<String, dynamic>> update(Map<String, dynamic> document,
       {Map<String, dynamic> options = const {}}) async {
     return await _apicall.post(_endPoint,
@@ -38,15 +52,16 @@ class Documents {
         queryParams: {...options, "action": "update"});
   }
 
+  /// Deletes all the documents the match the [queryParameters].
   Future<Map<String, dynamic>> delete(
-      {Map<String, String> queryParameters}) async {
+      Map<String, String> queryParameters) async {
     return await _apicall.delete(_endPoint, queryParams: queryParameters);
   }
 
   /// Imports the [documents] into the server.
   Future<List<Map<String, dynamic>>> importDocuments(
     List<Map<String, dynamic>> documents, {
-    Map<String, dynamic> options,
+    Map<String, dynamic> options = const {},
   }) async {
     final documentsInJSONLFormat =
             documents.map((document) => json.encode(document)).join('\n'),
@@ -67,29 +82,37 @@ class Documents {
     return resultsInJSONFormat;
   }
 
-  /// Imports the [jsonl] formatted documents into the server.
-  Future<String> importJsonlDocuments(
-    String jsonl, {
-    Map<String, dynamic> options,
+  /// Imports the [JSONL] formatted documents into the server.
+  Future<String> importJSONL(
+    String JSONL, {
+    Map<String, dynamic> options = const {},
   }) async {
-    return await _import(jsonl, options: options);
+    return await _import(JSONL, options: options);
   }
 
   Future<String> _import(
-    String jsonl, {
-    Map<String, dynamic> options,
+    String JSONL, {
+    Map<String, dynamic> options = const {},
   }) async {
     return await _documentApiCall.post('$_endPoint/import',
         queryParams: options,
-        bodyParameters: jsonl,
+        bodyParameters: JSONL,
         additionalHeaders: {CONTENT_TYPE: 'text/plain'});
   }
 
-  /// Returns the jsonl formatted documents.
-  Future<String> exportJsonlDocuments() async {
+  /// Returns the documents belonging to a collection in JSONL format.
+  Future<String> exportJSONL() async {
     return await _documentApiCall.get('$_endPoint/export');
   }
 
+  /// Search through the documents with the [searchParameters].
+  ///
+  /// [searchParameters] consists of a query against one or more text fields and
+  /// a list of filters against numerical or facet fields. You can also sort and
+  /// facet your results.
+  ///
+  /// To cache the search result locally, [Configuration.cachedSearchResultsTTL]
+  /// must be specified.
   Future<Map<String, dynamic>> search(
       Map<String, dynamic> searchParameters) async {
     return await _apicall.get(

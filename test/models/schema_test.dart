@@ -278,26 +278,32 @@ void main() {
         ),
       );
     });
-    test('with defaultSortingField that is not present in fields throws', () {
-      expect(
-        () => Schema.fromMap({
-          "name": "companies",
-          "num_documents": 0,
-          "fields": [
-            {"name": "company_name", "type": "string"},
-            {"name": "num_employees", "type": "int32"},
-            {"name": "country", "type": "string", "facet": true}
-          ],
-          "default_sorting_field": "not_present"
-        }),
-        throwsA(
-          isA<ArgumentError>().having(
-            (e) => e.message,
-            'message',
-            'Ensure Schema.defaultSortingField is present in Schema.fields',
-          ),
-        ),
-      );
+    test("with invalid defaultSortingField is successful", () {
+      var schema = Schema.fromMap({
+        "name": "companies",
+        "num_documents": 0,
+        "fields": [
+          {"name": "company_name", "type": "string"},
+          {"name": "num_employees", "type": "int32"},
+          {"name": "country", "type": "string", "facet": true}
+        ],
+        "default_sorting_field": ""
+      });
+      expect(schema.name, equals('companies'));
+      expect(schema.defaultSortingField, isNull);
+
+      schema = Schema.fromMap({
+        "name": "companies",
+        "num_documents": 0,
+        "fields": [
+          {"name": "company_name", "type": "string"},
+          {"name": "num_employees", "type": "int32"},
+          {"name": "country", "type": "string", "facet": true}
+        ],
+        "default_sorting_field": "not_present"
+      });
+      expect(schema.name, equals('companies'));
+      expect(schema.defaultSortingField, isNull);
     });
     test('with defaultSortingField\'s type other than int32 and float throws',
         () {
