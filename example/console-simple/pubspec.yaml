@@ -1,6 +1,6 @@
 name: console_simple
 description: A simple command-line application to showcase typesense examples.
-version: 1.0.0
+version: 0.1.0
 publish_to: none
 
 environment:
