@@ -87,13 +87,12 @@ void main() {
             ]
           }));
     });
-  });
-
-  test('generateScopedSearchKey method', () {
-    expect(
-        generateScopedSearchKey('RN23GFr1s6jQ9kgSNg2O7fYcAUXU7127',
-            {'filter_by': 'company_id:124', 'expires_at': 1906054106}),
-        equals(
-            'OW9DYWZGS1Q1RGdSbmo0S1QrOWxhbk9PL2kxbTU1eXA3bCthdmE5eXJKRT1STjIzeyJmaWx0ZXJfYnkiOiJjb21wYW55X2lkOjEyNCIsImV4cGlyZXNfYXQiOjE5MDYwNTQxMDZ9'));
+    test('has a generateScopedSearchKey() method', () {
+      expect(
+          keys.generateScopedSearchKey('RN23GFr1s6jQ9kgSNg2O7fYcAUXU7127',
+              {'filter_by': 'company_id:124', 'expires_at': 1906054106}),
+          equals(
+              'OW9DYWZGS1Q1RGdSbmo0S1QrOWxhbk9PL2kxbTU1eXA3bCthdmE5eXJKRT1STjIzeyJmaWx0ZXJfYnkiOiJjb21wYW55X2lkOjEyNCIsImV4cGlyZXNfYXQiOjE5MDYwNTQxMDZ9'));
+    });
   });
 }
