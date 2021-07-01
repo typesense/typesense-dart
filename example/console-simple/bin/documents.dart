@@ -9,6 +9,7 @@ import 'collections.dart' as collections;
 final log = Logger('Documents');
 
 Future<void> runExample(Client client) async {
+  logInfoln(log, '--Documents example--');
   await init(client);
   await create(client);
   await upsert(client);

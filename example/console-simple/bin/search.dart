@@ -8,6 +8,7 @@ import 'documents.dart' as documents;
 final log = Logger('Documents');
 
 Future<void> runExample(Client client) async {
+  logInfoln(log, '--Search example--');
   await init(client);
   // Give Typesense cluster a few hundred ms to create collection on all nodes,
   // before reading it right after (eventually consistent)

@@ -6,6 +6,7 @@ import 'util.dart';
 final log = Logger('Collections');
 
 Future<void> runExample(Client client) async {
+  logInfoln(log, '--Collections example--');
   await create(client);
   // Give Typesense cluster a few hundred ms to create collection on all nodes,
   // before reading it right after (eventually consistent)
