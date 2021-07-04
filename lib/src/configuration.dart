@@ -58,6 +58,8 @@ class Configuration extends Equatable {
     );
   }
 
+  /// Returns a new [Configuration] object which differs only in the specified
+  /// values from the [original] object.
   factory Configuration.updateParameters(
     Configuration original, {
     Set<Node> nodes,

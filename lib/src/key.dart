@@ -9,10 +9,12 @@ class Key {
       : _id = id,
         _apiCall = apiCall;
 
+  /// Retrieves metadata of a key.
   Future<Map<String, dynamic>> retrieve() async {
     return await _apiCall.get(_endpointPath);
   }
 
+  /// Deletes a key.
   Future<Map<String, dynamic>> delete() async {
     return await _apiCall.delete(_endpointPath);
   }
