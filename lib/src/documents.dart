@@ -30,26 +30,26 @@ class Documents {
   /// Note that the id should not include spaces or any other characters that
   /// encoding in [urls](https://www.w3schools.com/tags/ref_urlencode.asp).
   Future<Map<String, dynamic>> create(Map<String, dynamic> document,
-      {Map<String, dynamic> options = const {}}) async {
+      {Map<String, dynamic> options}) async {
     return await _apicall.post(_endPoint,
         bodyParameters: document,
-        queryParams: {...options, "action": "create"});
+        queryParams: {...?options, "action": "create"});
   }
 
   /// Upserts a [document].
   Future<Map<String, dynamic>> upsert(Map<String, dynamic> document,
-      {Map<String, dynamic> options = const {}}) async {
+      {Map<String, dynamic> options}) async {
     return await _apicall.post(_endPoint,
         bodyParameters: document,
-        queryParams: {...options, "action": "upsert"});
+        queryParams: {...?options, "action": "upsert"});
   }
 
   /// Updates a [document].
   Future<Map<String, dynamic>> update(Map<String, dynamic> document,
-      {Map<String, dynamic> options = const {}}) async {
+      {Map<String, dynamic> options}) async {
     return await _apicall.post(_endPoint,
         bodyParameters: document,
-        queryParams: {...options, "action": "update"});
+        queryParams: {...?options, "action": "update"});
   }
 
   /// Deletes all the documents the match the [queryParameters].
@@ -61,7 +61,7 @@ class Documents {
   /// Imports the [documents] into the server.
   Future<List<Map<String, dynamic>>> importDocuments(
     List<Map<String, dynamic>> documents, {
-    Map<String, dynamic> options = const {},
+    Map<String, dynamic> options,
   }) async {
     final documentsInJSONLFormat =
             documents.map((document) => json.encode(document)).join('\n'),
@@ -85,14 +85,14 @@ class Documents {
   /// Imports the [JSONL] formatted documents into the server.
   Future<String> importJSONL(
     String JSONL, {
-    Map<String, dynamic> options = const {},
+    Map<String, dynamic> options,
   }) async {
     return await _import(JSONL, options: options);
   }
 
   Future<String> _import(
     String JSONL, {
-    Map<String, dynamic> options = const {},
+    Map<String, dynamic> options,
   }) async {
     return await _documentApiCall.post('$_endPoint/import',
         queryParams: options,

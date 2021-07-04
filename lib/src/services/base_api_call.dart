@@ -113,7 +113,7 @@ abstract class BaseApiCall<R extends Object> {
         host: node.uri.host,
         port: node.uri.port,
         path: '${node.uri.path}$endpoint',
-        queryParameters: {..._defaultQueryParameters, ...queryParams},
+        queryParameters: {..._defaultQueryParameters, ...?queryParams},
       );
 
   /// Returns a [RequestException] according to [status] received in a response.

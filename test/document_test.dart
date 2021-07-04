@@ -49,7 +49,7 @@ void main() {
       };
       when(
         mock.patch('/collections/companies/documents/124',
-            bodyParameters: partialDocument, queryParams: {}),
+            bodyParameters: partialDocument),
       ).thenAnswer((realInvocation) => Future.value(partialDocument));
       expect(await document.update(partialDocument), equals(partialDocument));
     });

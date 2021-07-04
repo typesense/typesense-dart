@@ -51,7 +51,7 @@ class ApiCall extends BaseApiCall<Map<String, dynamic>> {
   /// [endpoint] and [queryParams].
   Future<Map<String, dynamic>> delete(
     String endpoint, {
-    Map<String, dynamic> queryParams = const {},
+    Map<String, dynamic> queryParams,
   }) =>
       send((node) => node.client.delete(
             requestUri(node, endpoint, queryParams),
@@ -111,7 +111,7 @@ class ApiCall extends BaseApiCall<Map<String, dynamic>> {
   /// of calling `.toJson()` on the unencodable object.
   Future<Map<String, dynamic>> put(
     String endpoint, {
-    Map<String, dynamic> queryParams = const {},
+    Map<String, dynamic> queryParams,
     Object bodyParameters,
   }) =>
       send((node) => node.client.put(
@@ -131,7 +131,7 @@ class ApiCall extends BaseApiCall<Map<String, dynamic>> {
   /// of calling `.toJson()` on the unencodable object.
   Future<Map<String, dynamic>> patch(
     String endpoint, {
-    Map<String, dynamic> queryParams = const {},
+    Map<String, dynamic> queryParams,
     Object bodyParameters,
   }) =>
       send((node) => node.client.patch(
