@@ -17,7 +17,7 @@ class CollectionsApiCall extends BaseApiCall<List<Map<String, dynamic>>> {
   /// [endpoint] and [queryParams].
   Future<List<Map<String, dynamic>>> get(
     String endpoint, {
-    Map<String, dynamic> queryParams = const {},
+    Map<String, dynamic> queryParams,
   }) =>
       send((node) => node.client.get(
             requestUri(node, endpoint, queryParams),

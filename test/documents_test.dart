@@ -73,7 +73,6 @@ void main() {
         bodyParameters:
             '{"id":"124","company_name":"Stark Industries","num_employees":5215,"country":"USA"}',
         additionalHeaders: {CONTENT_TYPE: 'text/plain'},
-        queryParams: {},
       )).thenAnswer((realInvocation) => Future.value('{"success": true}'));
       expect(
           await documents.importDocuments([
@@ -102,7 +101,6 @@ void main() {
         "/collections/companies/documents/import",
         bodyParameters: documentJsonl,
         additionalHeaders: {CONTENT_TYPE: 'text/plain'},
-        queryParams: {},
       )).thenAnswer((realInvocation) => Future.value(result));
       expect(await documents.importJSONL(documentJsonl), equals(result));
     });
@@ -181,7 +179,6 @@ void main() {
           '''{"id":"124","company_name":"Stark Industries","num_employees":"5215","country":"USA"}
 {"id":"125","company_name":"Acme Corp","num_employees":2133,"country":"CA"}''',
       additionalHeaders: {CONTENT_TYPE: 'text/plain'},
-      queryParams: {},
     )).thenAnswer((realInvocation) => Future.value(
         '''{"code":400,"document":"{\\"id\\": \\"124\\",\\"company_name\\": \\"Stark Industries\\",\\"num_employees\\": \\"5215\\",\\"country\\": \\"USA\\"}","error":"Field `num_employees` must be an int32.","success":false}
 {"success":true}'''));
