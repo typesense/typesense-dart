@@ -47,7 +47,7 @@ final _documents = [
 
 Future<void> init(Client client) async {
   await documents.init(client);
-  await documents.importDocs(client, _documents);
+  await documents.importDocs(client, 'companies', _documents);
 }
 
 Future<void> search(Client client) async {

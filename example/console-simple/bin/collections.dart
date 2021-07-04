@@ -16,36 +16,39 @@ Future<void> runExample(Client client) async {
   await delete(client);
 }
 
-Future<void> create(Client client) async {
-  final schema = Schema(
-    'companies',
-    {
-      Field('company_name', Type.string),
-      Field('num_employees', Type.int32),
-      Field('country', Type.string, isFacetable: true),
-    },
-    defaultSortingField: Field('num_employees', Type.int32),
-  );
+Future<void> create(Client client, [Schema schema]) async {
+  final _schema = Schema(
+        'companies',
+        {
+          Field('company_name', Type.string),
+          Field('num_employees', Type.int32),
+          Field('country', Type.string, isFacetable: true),
+        },
+        defaultSortingField: Field('num_employees', Type.int32),
+      ),
+      collectionName = schema == null ? 'companies' : schema.name;
+
   try {
-    logInfoln(log, 'Creating "companies" collection.');
-    log.fine(await client.collections.create(schema));
+    logInfoln(log, 'Creating "$collectionName" collection.');
+    log.fine(await client.collections.create(schema ?? _schema));
   } on RequestException catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
 
     if (e.runtimeType == ObjectAlreadyExists) {
-      log.info('Collection "companies" already exists, recreating it.');
-      await delete(client);
-      await create(client);
+      log.info('Collection "$collectionName" already exists, recreating it.');
+      await delete(client, collectionName);
+      await create(client, schema);
     }
   } catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
   }
 }
 
-Future<void> delete(Client client) async {
+Future<void> delete(Client client,
+    [String collectionName = 'companies']) async {
   try {
-    logInfoln(log, 'Deleting "companies" collection.');
-    log.fine(await client.collection('companies').delete());
+    logInfoln(log, 'Deleting "$collectionName" collection.');
+    log.fine(await client.collection(collectionName).delete());
   } catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
   }

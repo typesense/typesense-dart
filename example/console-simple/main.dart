@@ -3,9 +3,10 @@ import 'dart:io';
 import 'package:typesense/typesense.dart';
 import 'package:logging/logging.dart';
 
-import 'collections.dart' as collections;
-import 'documents.dart' as documents;
-import 'search.dart' as search;
+import 'bin/collections.dart' as collections;
+import 'bin/documents.dart' as documents;
+import 'bin/search.dart' as search;
+import 'bin/keys.dart' as keys;
 
 void main() async {
   final config = Configuration(
@@ -40,15 +41,9 @@ void main() async {
   await collections.runExample(client);
   await documents.runExample(Client(Configuration.updateParameters(
     config,
-    nodes: {
-      Node(
-        protocol: 'http',
-        host: InternetAddress.loopbackIPv4.address,
-        port: 8108,
-      )
-    },
     connectionTimeout:
         Duration(seconds: 120), // Set a longer timeout for large imports
   )));
   await search.runExample(client);
+  await keys.runExample(client);
 }

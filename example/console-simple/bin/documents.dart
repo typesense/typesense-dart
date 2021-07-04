@@ -115,12 +115,13 @@ Future<void> retrieve(Client client) async {
 
 Future<void> importDocs(
   Client client, [
+  String collectionName = 'companies',
   List<Map<String, Object>> documents,
 ]) async {
   try {
     logInfoln(log, 'Importing documents.');
     log.fine(await client
-        .collection('companies')
+        .collection(collectionName)
         .documents
         .importDocuments(documents ?? _documents));
   } catch (e, stackTrace) {
