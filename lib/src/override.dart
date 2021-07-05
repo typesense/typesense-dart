@@ -11,10 +11,12 @@ class Override {
         _overrideId = overrideId,
         _apiCall = apiCall;
 
+  /// Deletes an override.
   Future<Map<String, dynamic>> delete() async {
     return await _apiCall.delete(_endpointPath);
   }
 
+  /// Retrieves an override.
   Future<Map<String, dynamic>> retrieve() async {
     return await _apiCall.get(_endpointPath);
   }

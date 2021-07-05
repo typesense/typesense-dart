@@ -7,6 +7,7 @@ import 'bin/collections.dart' as collections;
 import 'bin/documents.dart' as documents;
 import 'bin/search.dart' as search;
 import 'bin/keys.dart' as keys;
+import 'bin/overrides.dart' as overrides;
 
 void main() async {
   final config = Configuration(
@@ -39,11 +40,10 @@ void main() async {
   });
 
   await collections.runExample(client);
-  await documents.runExample(Client(Configuration.updateParameters(
-    config,
-    connectionTimeout:
-        Duration(seconds: 120), // Set a longer timeout for large imports
-  )));
+  await documents.runExample(Client(Configuration.updateParameters(config,
+      // Set a longer timeout in case of large imports.
+      connectionTimeout: Duration(seconds: 120))));
   await search.runExample(client);
   await keys.runExample(client);
+  await overrides.runExample(client);
 }

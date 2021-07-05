@@ -5,7 +5,7 @@ import 'util.dart';
 import 'collections.dart' as collections;
 import 'documents.dart' as documents;
 
-final log = Logger('Documents');
+final log = Logger('Keys');
 
 Future<void> runExample(Client client) async {
   logInfoln(log, '--Keys example--');
