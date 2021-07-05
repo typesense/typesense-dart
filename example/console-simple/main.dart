@@ -8,6 +8,7 @@ import 'bin/documents.dart' as documents;
 import 'bin/search.dart' as search;
 import 'bin/keys.dart' as keys;
 import 'bin/overrides.dart' as overrides;
+import 'bin/synonyms.dart' as synonyms;
 import 'bin/aliases.dart' as aliases;
 
 void main() async {
@@ -47,5 +48,6 @@ void main() async {
   await search.runExample(client);
   await keys.runExample(client);
   await overrides.runExample(client);
+  await synonyms.runExample(client);
   await aliases.runExample(client);
 }

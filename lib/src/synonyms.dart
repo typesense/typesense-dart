@@ -10,12 +10,14 @@ class Synonyms {
       : _collectionName = collectionName,
         _apiCall = apiCall;
 
+  /// Creates/updates a synonym corresponding to [synonymId].
   Future<Map<String, dynamic>> upsert(
       String synonymId, Map<String, dynamic> params) async {
     return await _apiCall.put('$_endpointPath/$synonymId',
         bodyParameters: params);
   }
 
+  /// Retrieves all synonyms.
   Future<Map<String, dynamic>> retrieve() async {
     return await _apiCall.get(_endpointPath);
   }

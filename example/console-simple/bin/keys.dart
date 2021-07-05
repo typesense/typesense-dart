@@ -11,7 +11,7 @@ Future<void> runExample(Client client) async {
   logInfoln(log, '--Keys example--');
   await init(client);
   // Give Typesense cluster a few hundred ms to create collection on all nodes,
-  // before reading it right after (eventually consistent)
+  // before reading it right after (eventually consistent).
   await Future.delayed(Duration(milliseconds: 500));
 
   final response = await createUnscopedSearchOnlyApiKey(client),
