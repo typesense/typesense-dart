@@ -10,12 +10,14 @@ class Overrides {
       : _collectionName = collectionName,
         _apiCall = apiCall;
 
+  /// Creates/updates an override corresponding to [overrideId].
   Future<Map<String, dynamic>> upsert(
       String overrideId, Map<String, dynamic> params) async {
     return await _apiCall.put('$_endpointPath/$overrideId',
         bodyParameters: params);
   }
 
+  /// Retrieves all overrides.
   Future<Map<String, dynamic>> retrieve() async {
     return await _apiCall.get(_endpointPath);
   }
