@@ -11,10 +11,12 @@ class Synonym {
         _synonymId = synonymId,
         _apiCall = apiCall;
 
+  /// Retrieves a synonym.
   Future<Map<String, dynamic>> retrieve() async {
     return await _apiCall.get(_endpointPath);
   }
 
+  /// Deletes a synonym.
   Future<Map<String, dynamic>> delete() async {
     return await _apiCall.delete(_endpointPath);
   }
