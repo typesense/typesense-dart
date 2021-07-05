@@ -7,12 +7,14 @@ class Alias {
 
   const Alias(this.name, ApiCall apiCall) : _apiCall = apiCall;
 
+  /// Deletes an alias.
   Future<Map<String, dynamic>> delete() async {
     return await _apiCall.delete(
       '${Aliases.RESOURCEPATH}/$name',
     );
   }
 
+  /// Retrieves an alias.
   Future<Map<String, dynamic>> retrieve() async {
     return await _apiCall.get(
       '${Aliases.RESOURCEPATH}/$name',
