@@ -7,8 +7,9 @@ import '../models/node.dart';
 class NodePool {
   final Configuration _config;
   final List<Node> _nodes;
-  int _index = -1;
   final bool _isNearestNodePresent;
+
+  int _index = -1;
 
   NodePool(Configuration config)
       : _config = config,

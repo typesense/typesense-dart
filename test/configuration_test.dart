@@ -261,7 +261,7 @@ void main() {
     test(
         'using updateParameters factory constructor returns a new Configuration object with changes',
         () {
-      var updatedConfig = Configuration.updateParameters(config,
+      var updatedConfig = config.copyWith(
           apiKey: 'newKey',
           healthcheckInterval: Duration(minutes: 1),
           sendApiKeyAsQueryParam: false);

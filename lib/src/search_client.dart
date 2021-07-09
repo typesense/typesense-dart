@@ -27,8 +27,7 @@ class SearchClient {
     // scoped API keys can be over this limit, so long keys are sent as headers
     // instead. The tradeoff is that using a header to send the API key will
     // trigger the browser to send an OPTIONS request first.
-    config = Configuration.updateParameters(
-      config,
+    config = config.copyWith(
       sendApiKeyAsQueryParam: (config.apiKey.length < 2000),
     );
 

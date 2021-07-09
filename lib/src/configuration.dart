@@ -59,9 +59,8 @@ class Configuration extends Equatable {
   }
 
   /// Returns a new [Configuration] object which differs only in the specified
-  /// values from the [original] object.
-  factory Configuration.updateParameters(
-    Configuration original, {
+  /// values from this object.
+  Configuration copyWith({
     Set<Node> nodes,
     Node nearestNode,
     Duration connectionTimeout,
@@ -72,19 +71,18 @@ class Configuration extends Equatable {
     bool sendApiKeyAsQueryParam,
     Duration cachedSearchResultsTTL,
   }) =>
-      Configuration._(
-        nodes: nodes ?? original.nodes,
-        nearestNode: nearestNode ?? original.nearestNode,
-        connectionTimeout: connectionTimeout ?? original.connectionTimeout,
-        healthcheckInterval:
-            healthcheckInterval ?? original.healthcheckInterval,
-        numRetries: numRetries ?? original.numRetries,
-        retryInterval: retryInterval ?? original.retryInterval,
-        apiKey: apiKey ?? original.apiKey,
+      Configuration(
+        nodes: nodes ?? this.nodes,
+        nearestNode: nearestNode ?? this.nearestNode,
+        connectionTimeout: connectionTimeout ?? this.connectionTimeout,
+        healthcheckInterval: healthcheckInterval ?? this.healthcheckInterval,
+        numRetries: numRetries ?? this.numRetries,
+        retryInterval: retryInterval ?? this.retryInterval,
+        apiKey: apiKey ?? this.apiKey,
         sendApiKeyAsQueryParam:
-            sendApiKeyAsQueryParam ?? original.sendApiKeyAsQueryParam,
+            sendApiKeyAsQueryParam ?? this.sendApiKeyAsQueryParam,
         cachedSearchResultsTTL:
-            cachedSearchResultsTTL ?? original.cachedSearchResultsTTL,
+            cachedSearchResultsTTL ?? this.cachedSearchResultsTTL,
       );
 
   @override

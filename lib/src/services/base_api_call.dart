@@ -24,8 +24,8 @@ const _API_KEY = 'X-TYPESENSE-API-KEY';
 abstract class BaseApiCall<R extends Object> {
   final Configuration config;
   final NodePool _nodePool;
-  Map<String, String> _defaultHeaders = {};
-  Map<String, String> _defaultQueryParameters = {};
+  final Map<String, String> _defaultHeaders = {};
+  final Map<String, String> _defaultQueryParameters = {};
 
   BaseApiCall(Configuration config, NodePool nodePool)
       : config = config,
@@ -65,27 +65,27 @@ abstract class BaseApiCall<R extends Object> {
 
         if (response.statusCode >= 1 && response.statusCode <= 499) {
           // Treat any status code > 0 and < 500 to be an indication that the
-          // node is healthy
+          // node is healthy.
           // We exclude 0 since some clients return 0 when
-          // request fails
+          // request fails.
           NodePool.setNodeHealthStatus(node, true, DateTime.now());
         }
 
         if (response.statusCode >= 200 && response.statusCode < 300) {
-          // If response is 2xx return a resolved promise
+          // If response is 2xx return a resolved promise.
           return decode(response.body);
         } else if (response.statusCode < 500) {
           // Next, if response is anything but 5xx, don't retry, return a custom
-          // error
+          // error.
           return Future.error(_exception(response.body, response.statusCode));
         } else {
-          // Retry all other HTTP errors (HTTPStatus > 500)
-          // This will get caught by the catch block below
+          // Retry all other HTTP errors (HTTPStatus > 500).
+          // This will get caught by the catch block below.
           throw ServerError(response.body, response.statusCode);
         }
       } catch (e) {
         // This block handles retries for HTTPStatus > 500 and network layer
-        // issues like connection timeouts
+        // issues like connection timeouts.
         NodePool.setNodeHealthStatus(node, false, DateTime.now());
 
         if (--triesLeft <= 0) {

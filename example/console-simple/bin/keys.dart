@@ -26,8 +26,8 @@ Future<void> runExample(Client client) async {
           await createScopedSearchOnlyApiKey(client, unscopedSearchOnlyApiKey),
 
       // Swap out the unscoped key.
-      scopedClient = Client(Configuration.updateParameters(client.config,
-          apiKey: scopedSearchOnlyApiKey));
+      scopedClient =
+          Client(client.config.copyWith(apiKey: scopedSearchOnlyApiKey));
   await searchInScope(scopedClient);
   await searchOutOfScope(scopedClient);
 
