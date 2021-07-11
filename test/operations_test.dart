@@ -17,8 +17,8 @@ void main() {
   });
 
   group('Operations', () {
-    test('has a RESOURCEPATH', () {
-      expect(Operations.RESOURCEPATH, equals('/operations'));
+    test('has a resourcepath', () {
+      expect(Operations.resourcepath, equals('/operations'));
     });
     test('createSnapshot() calls ApiCall.post()', () async {
       when(

@@ -10,7 +10,7 @@ class Documents {
   final ApiCall _apicall;
   final DocumentsApiCall _documentApiCall;
   final String _collectionName;
-  static const String RESOURCEPATH = '/documents';
+  static const String resourcepath = '/documents';
 
   Documents(
       String collectionName, ApiCall apicall, DocumentsApiCall documentApiCall)
@@ -82,22 +82,22 @@ class Documents {
     return resultsInJSONFormat;
   }
 
-  /// Imports the [JSONL] formatted documents into the server.
+  /// Imports the [jsonl] formatted documents into the server.
   Future<String> importJSONL(
-    String JSONL, {
+    String jsonl, {
     Map<String, dynamic> options,
   }) async {
-    return await _import(JSONL, options: options);
+    return await _import(jsonl, options: options);
   }
 
   Future<String> _import(
-    String JSONL, {
+    String jsonl, {
     Map<String, dynamic> options,
   }) async {
     return await _documentApiCall.post('$_endPoint/import',
         queryParams: options,
-        bodyParameters: JSONL,
-        additionalHeaders: {CONTENT_TYPE: 'text/plain'});
+        bodyParameters: jsonl,
+        additionalHeaders: {contentType: 'text/plain'});
   }
 
   /// Returns the documents belonging to a collection in JSONL format.
@@ -123,5 +123,5 @@ class Documents {
   }
 
   String get _endPoint =>
-      "${Collections.RESOURCEPATH}/$_collectionName${Documents.RESOURCEPATH}";
+      "${Collections.resourcepath}/$_collectionName${Documents.resourcepath}";
 }

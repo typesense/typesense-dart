@@ -4,7 +4,7 @@ import 'services/api_call.dart';
 class MultiSearch {
   final ApiCall _apiCall;
   final bool useTextContentType;
-  static const String RESOURCEPATH = '/multi_search';
+  static const String resourcepath = '/multi_search';
 
   const MultiSearch(ApiCall apiCall, {this.useTextContentType = false})
       : _apiCall = apiCall;
@@ -24,10 +24,10 @@ class MultiSearch {
       {Map<String, String> queryParams}) async {
     final additionalHeaders = <String, String>{};
     if (useTextContentType) {
-      additionalHeaders[CONTENT_TYPE] = 'text/plain';
+      additionalHeaders[contentType] = 'text/plain';
     }
     return await _apiCall.post(
-      RESOURCEPATH,
+      resourcepath,
       bodyParameters: searchRequests,
       queryParams: queryParams,
       additionalHeaders: additionalHeaders,

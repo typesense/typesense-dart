@@ -17,8 +17,8 @@ void main() {
   });
 
   group('Health', () {
-    test('has a RESOURCEPATH', () {
-      expect(Health.RESOURCEPATH, equals('/health'));
+    test('has a resourcepath', () {
+      expect(Health.resourcepath, equals('/health'));
     });
     test('retrieve() calls ApiCall.get()', () async {
       when(

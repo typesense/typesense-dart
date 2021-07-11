@@ -15,8 +15,8 @@ void main() {
   });
 
   group('Debug', () {
-    test('has a RESOURCEPATH', () {
-      expect(Debug.RESOURCEPATH, '/debug');
+    test('has a resourcepath', () {
+      expect(Debug.resourcepath, '/debug');
     });
 
     test('retrieve() calls ApiCall.get()', () async {

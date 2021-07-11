@@ -5,7 +5,7 @@ import './base_api_call.dart';
 import './node_pool.dart';
 import '../configuration.dart';
 
-export './base_api_call.dart' show CONTENT_TYPE;
+export './base_api_call.dart' show contentType;
 
 /// Handles requests that expect JSON data of `List<Map<String, dynamic>>` type
 /// from the server.

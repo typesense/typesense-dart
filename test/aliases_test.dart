@@ -17,8 +17,8 @@ void main() {
   });
 
   group('Aliases', () {
-    test('has a RESOURCEPATH', () {
-      expect(Aliases.RESOURCEPATH, equals('/aliases'));
+    test('has a resourcepath', () {
+      expect(Aliases.resourcepath, equals('/aliases'));
     });
     test('upsert() calls ApiCall.put()', () async {
       when(

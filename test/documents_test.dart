@@ -22,8 +22,8 @@ void main() {
   });
 
   group("Documents", () {
-    test('has a RESOURCEPATH', () {
-      expect(Documents.RESOURCEPATH, equals('/documents'));
+    test('has a resourcepath', () {
+      expect(Documents.resourcepath, equals('/documents'));
     });
     test("create() calls ApiCall.post()", () async {
       final document = {
@@ -72,7 +72,7 @@ void main() {
         "/collections/companies/documents/import",
         bodyParameters:
             '{"id":"124","company_name":"Stark Industries","num_employees":5215,"country":"USA"}',
-        additionalHeaders: {CONTENT_TYPE: 'text/plain'},
+        additionalHeaders: {contentType: 'text/plain'},
       )).thenAnswer((realInvocation) => Future.value('{"success": true}'));
       expect(
           await documents.importDocuments([
@@ -100,7 +100,7 @@ void main() {
       when(mockDocumentsApiCall.post(
         "/collections/companies/documents/import",
         bodyParameters: documentJsonl,
-        additionalHeaders: {CONTENT_TYPE: 'text/plain'},
+        additionalHeaders: {contentType: 'text/plain'},
       )).thenAnswer((realInvocation) => Future.value(result));
       expect(await documents.importJSONL(documentJsonl), equals(result));
     });
@@ -178,7 +178,7 @@ void main() {
       bodyParameters:
           '''{"id":"124","company_name":"Stark Industries","num_employees":"5215","country":"USA"}
 {"id":"125","company_name":"Acme Corp","num_employees":2133,"country":"CA"}''',
-      additionalHeaders: {CONTENT_TYPE: 'text/plain'},
+      additionalHeaders: {contentType: 'text/plain'},
     )).thenAnswer((realInvocation) => Future.value(
         '''{"code":400,"document":"{\\"id\\": \\"124\\",\\"company_name\\": \\"Stark Industries\\",\\"num_employees\\": \\"5215\\",\\"country\\": \\"USA\\"}","error":"Field `num_employees` must be an int32.","success":false}
 {"success":true}'''));

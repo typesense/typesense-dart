@@ -4,7 +4,7 @@ import 'services/api_call.dart';
 class Synonyms {
   final String _collectionName;
   final ApiCall _apiCall;
-  static const RESOURCEPATH = '/synonyms';
+  static const resourcepath = '/synonyms';
 
   const Synonyms(String collectionName, ApiCall apiCall)
       : _collectionName = collectionName,
@@ -23,5 +23,5 @@ class Synonyms {
   }
 
   String get _endpointPath =>
-      '${Collections.RESOURCEPATH}/${this._collectionName}$RESOURCEPATH';
+      '${Collections.resourcepath}/$_collectionName$resourcepath';
 }

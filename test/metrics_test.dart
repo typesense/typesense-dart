@@ -37,8 +37,8 @@ void main() {
   });
 
   group('Metrics', () {
-    test('has a RESOURCEPATH', () {
-      expect(Metrics.RESOURCEPATH, equals('/metrics.json'));
+    test('has a resourcepath', () {
+      expect(Metrics.resourcepath, equals('/metrics.json'));
     });
     test('retrieve() calls ApiCall.get()', () async {
       when(

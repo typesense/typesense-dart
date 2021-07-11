@@ -10,14 +10,14 @@ class Alias {
   /// Deletes an alias.
   Future<Map<String, dynamic>> delete() async {
     return await _apiCall.delete(
-      '${Aliases.RESOURCEPATH}/$name',
+      '${Aliases.resourcepath}/$name',
     );
   }
 
   /// Retrieves an alias.
   Future<Map<String, dynamic>> retrieve() async {
     return await _apiCall.get(
-      '${Aliases.RESOURCEPATH}/$name',
+      '${Aliases.resourcepath}/$name',
     );
   }
 }

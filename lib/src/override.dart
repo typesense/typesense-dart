@@ -22,5 +22,5 @@ class Override {
   }
 
   String get _endpointPath =>
-      '${Collections.RESOURCEPATH}/$_collectionName${Overrides.RESOURCEPATH}/$_overrideId';
+      '${Collections.resourcepath}/$_collectionName${Overrides.resourcepath}/$_overrideId';
 }

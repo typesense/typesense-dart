@@ -22,5 +22,5 @@ class Synonym {
   }
 
   String get _endpointPath =>
-      '${Collections.RESOURCEPATH}/$_collectionName${Synonyms.RESOURCEPATH}/$_synonymId';
+      '${Collections.resourcepath}/$_collectionName${Synonyms.resourcepath}/$_synonymId';
 }

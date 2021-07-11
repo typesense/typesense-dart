@@ -4,7 +4,7 @@ import 'services/api_call.dart';
 class Overrides {
   final String _collectionName;
   final ApiCall _apiCall;
-  static const RESOURCEPATH = '/overrides';
+  static const resourcepath = '/overrides';
 
   const Overrides(String collectionName, ApiCall apiCall)
       : _collectionName = collectionName,
@@ -23,5 +23,5 @@ class Overrides {
   }
 
   String get _endpointPath =>
-      '${Collections.RESOURCEPATH}/$_collectionName$RESOURCEPATH';
+      '${Collections.resourcepath}/$_collectionName$resourcepath';
 }
