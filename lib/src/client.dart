@@ -13,6 +13,7 @@ import 'alias.dart';
 import 'keys.dart';
 import 'key.dart';
 import 'debug.dart';
+import 'stats.dart';
 import 'health.dart';
 import 'metrics.dart';
 import 'operations.dart';
@@ -26,6 +27,7 @@ class Client {
   final Aliases aliases;
   final Keys keys;
   final Debug debug;
+  final Stats stats;
   final Health health;
   final Metrics metrics;
   final Operations operations;
@@ -42,6 +44,7 @@ class Client {
       this.aliases,
       this.keys,
       this.debug,
+      this.stats,
       this.health,
       this.metrics,
       this.operations,
@@ -60,6 +63,7 @@ class Client {
         Aliases(apiCall),
         Keys(apiCall),
         Debug(apiCall),
+        Stats(apiCall),
         Health(apiCall),
         Metrics(apiCall),
         Operations(apiCall),
