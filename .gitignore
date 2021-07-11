@@ -77,3 +77,6 @@ build/
 # If your package is an application package, check the lockfile into source control. Otherwise, don’t.
 pubspec.lock
 .vscode
+
+# Include example's pubspec
+!example/console-simple/pubspec.lock
