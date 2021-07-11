@@ -13,19 +13,14 @@ Future<void> runExample(Client client) async {
   await init(client);
   await create(client);
   await upsert(client);
-  // Give Typesense cluster a few hundred ms to create collection on all nodes,
-  // before reading it right after (eventually consistent)
-  await Future.delayed(Duration(milliseconds: 500));
   await retrieve(client);
   await search(client);
   await delete(client);
   await importDocs(client);
   await update(client);
-  await Future.delayed(Duration(milliseconds: 500));
   await deleteByQuery(client);
   await importJSONL(client);
   await dirtyData(client);
-  await Future.delayed(Duration(milliseconds: 500));
   await export(client);
   await collections.delete(client);
 }
@@ -59,6 +54,8 @@ Future<void> create(Client client) async {
     logInfoln(log, 'Creating document "124".');
     log.fine(
         await client.collection('companies').documents.create(_documents[0]));
+
+    await writePropagationDelay();
   } catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
   }
@@ -69,6 +66,8 @@ Future<void> upsert(Client client) async {
     logInfoln(log, 'Upserting document "124".');
     log.fine(
         await client.collection('companies').documents.upsert(_documents[0]));
+
+    await writePropagationDelay();
   } catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
   }
@@ -99,6 +98,8 @@ Future<void> delete(Client client) async {
   try {
     logInfoln(log, 'Deleting document "124".');
     log.fine(await client.collection('companies').document('124').delete());
+
+    await writePropagationDelay();
   } catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
   }
@@ -124,6 +125,8 @@ Future<void> importDocs(
         .collection(collectionName)
         .documents
         .importDocuments(documents ?? _documents));
+
+    await writePropagationDelay();
   } catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
   }
@@ -141,6 +144,8 @@ Future<void> importJSONL(
         .collection('companies')
         .documents
         .importJSONL(JSONL ?? file.readAsStringSync()));
+
+    await writePropagationDelay();
   } catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
   }
@@ -153,6 +158,8 @@ Future<void> update(Client client) async {
         .collection('companies')
         .document('124')
         .update({'num_employees': 5500}));
+
+    await writePropagationDelay();
   } catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
   }
@@ -174,6 +181,8 @@ Future<void> deleteByQuery(Client client) async {
         .collection('companies')
         .documents
         .delete({'filter_by': 'num_employees:>100'}));
+
+    await writePropagationDelay();
   } catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
   }
@@ -186,6 +195,8 @@ Future<void> dirtyData(Client client) async {
         .collection('companies')
         .documents
         .create(_dirtyDocument, options: {'dirty_values': 'coerce_or_reject'}));
+
+    await writePropagationDelay();
   } catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
   }

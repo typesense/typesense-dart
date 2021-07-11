@@ -8,9 +8,6 @@ final log = Logger('Collections');
 Future<void> runExample(Client client) async {
   logInfoln(log, '--Collections example--');
   await create(client);
-  // Give Typesense cluster a few hundred ms to create collection on all nodes,
-  // before reading it right after (eventually consistent).
-  await Future.delayed(Duration(milliseconds: 500));
   await retrieve(client);
   await retrieveAll(client);
   await delete(client);
@@ -31,6 +28,8 @@ Future<void> create(Client client, [Schema schema]) async {
   try {
     logInfoln(log, 'Creating "$collectionName" collection.');
     log.fine(await client.collections.create(schema ?? _schema));
+
+    await writePropagationDelay();
   } on RequestException catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
 
@@ -49,6 +48,8 @@ Future<void> delete(Client client,
   try {
     logInfoln(log, 'Deleting "$collectionName" collection.');
     log.fine(await client.collection(collectionName).delete());
+
+    await writePropagationDelay();
   } catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
   }

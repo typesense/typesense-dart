@@ -10,9 +10,6 @@ final log = Logger('Overrides');
 Future<void> runExample(Client client) async {
   logInfoln(log, '--Overrides example--');
   await init(client);
-  // Give Typesense cluster a few hundred ms to create collection on all nodes,
-  // before reading it right after (eventually consistent).
-  await Future.delayed(Duration(milliseconds: 500));
   await create(client);
   await retrieveAll(client);
   await retrieve(client);
@@ -66,6 +63,8 @@ Future<void> create(Client client) async {
         },
       ),
     );
+
+    await writePropagationDelay();
   } catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
   }
@@ -99,6 +98,8 @@ Future<void> delete(Client client) async {
         .collection('companies')
         .override('promote-doofenshmirtz')
         .delete());
+
+    await writePropagationDelay();
   } catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
   }
