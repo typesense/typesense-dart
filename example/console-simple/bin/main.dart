@@ -3,14 +3,14 @@ import 'dart:io';
 import 'package:typesense/typesense.dart';
 import 'package:logging/logging.dart';
 
-import 'bin/collections.dart' as collections;
-import 'bin/documents.dart' as documents;
-import 'bin/search.dart' as search;
-import 'bin/keys.dart' as keys;
-import 'bin/overrides.dart' as overrides;
-import 'bin/synonyms.dart' as synonyms;
-import 'bin/aliases.dart' as aliases;
-import 'bin/cluster_operations.dart' as cluster_operations;
+import 'collections.dart' as collections;
+import 'documents.dart' as documents;
+import 'search.dart' as search;
+import 'keys.dart' as keys;
+import 'overrides.dart' as overrides;
+import 'synonyms.dart' as synonyms;
+import 'aliases.dart' as aliases;
+import 'cluster_operations.dart' as cluster_operations;
 
 void main() async {
   Logger.root.level = Level.ALL;
