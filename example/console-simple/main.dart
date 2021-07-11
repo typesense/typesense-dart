@@ -12,6 +12,11 @@ import 'bin/synonyms.dart' as synonyms;
 import 'bin/aliases.dart' as aliases;
 
 void main() async {
+  Logger.root.level = Level.ALL;
+  Logger.root.onRecord.listen((record) {
+    print('${record.level.name}: ${record.message}');
+  });
+
   final config = Configuration(
       nodes: {
         Node(
@@ -35,11 +40,6 @@ void main() async {
       connectionTimeout:
           Duration(seconds: 10)); // Replace with your configuration
   final client = Client(config);
-
-  Logger.root.level = Level.ALL;
-  Logger.root.onRecord.listen((record) {
-    print('${record.level.name}: ${record.message}');
-  });
 
   await collections.runExample(client);
   await documents.runExample(

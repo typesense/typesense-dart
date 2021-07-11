@@ -10,14 +10,10 @@ final log = Logger('Synonym');
 Future<void> runExample(Client client) async {
   logInfoln(log, '--Synonym example--');
   await init(client);
-  // Give Typesense cluster a few hundred ms to create collection on all nodes,
-  // before reading it right after (eventually consistent).
-  await Future.delayed(Duration(milliseconds: 500));
 
   await createMultiWay(client);
   // Searching for Heinz should now return Doofenshmirtz Inc.
   await search(client, 'Heinz');
-
   await retrieveAll(client);
 
   await createOneWay(client);
@@ -75,6 +71,8 @@ Future<void> createMultiWay(Client client) async {
         },
       ),
     );
+
+    await writePropagationDelay();
   } catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
   }
@@ -106,6 +104,8 @@ Future<void> createOneWay(Client client) async {
         },
       ),
     );
+
+    await writePropagationDelay();
   } catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
   }
@@ -139,6 +139,8 @@ Future<void> delete(Client client) async {
         .collection('companies')
         .synonym('synonyms-doofenshmirtz')
         .delete());
+
+    await writePropagationDelay();
   } catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
   }

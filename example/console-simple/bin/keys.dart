@@ -10,16 +10,15 @@ final log = Logger('Keys');
 Future<void> runExample(Client client) async {
   logInfoln(log, '--Keys example--');
   await init(client);
-  // Give Typesense cluster a few hundred ms to create collection on all nodes,
-  // before reading it right after (eventually consistent).
-  await Future.delayed(Duration(milliseconds: 500));
 
   final response = await createUnscopedSearchOnlyApiKey(client),
 
       // Save the key returned, since this will be the only time the full API
       // Key is returned, for security purposes.
-      unscopedSearchOnlyApiKey = response['value'];
-  await retrieveMetadata(client, response['id']);
+      unscopedSearchOnlyApiKey = response['value'],
+      unscopedSearchOnlyApiKeyId = response['id'];
+
+  await retrieveMetadata(client, unscopedSearchOnlyApiKeyId);
   await retrieveAllMetadata(client);
 
   final scopedSearchOnlyApiKey =
@@ -28,10 +27,10 @@ Future<void> runExample(Client client) async {
       // Swap out the unscoped key.
       scopedClient =
           Client(client.config.copyWith(apiKey: scopedSearchOnlyApiKey));
+
   await searchInScope(scopedClient);
   await searchOutOfScope(scopedClient);
-
-  await delete(client, response['id']);
+  await delete(client, unscopedSearchOnlyApiKeyId);
   await collections.delete(client, 'users');
 }
 
@@ -91,6 +90,8 @@ Future<Map<String, dynamic>> createUnscopedSearchOnlyApiKey(
       },
     );
     log.fine(response);
+
+    await writePropagationDelay();
   } catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
   }
@@ -161,6 +162,8 @@ Future<void> delete(Client client, int id) async {
   try {
     logInfoln(log, 'Deleting key "$id".');
     log.fine(await client.key(id).delete());
+
+    await writePropagationDelay();
   } catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
   }

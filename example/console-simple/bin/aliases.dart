@@ -9,9 +9,6 @@ final log = Logger('Aliases');
 Future<void> runExample(Client client) async {
   logInfoln(log, '--Aliases example--');
   await init(client);
-  // Give Typesense cluster a few hundred ms to create collection on all nodes,
-  // before reading it right after (eventually consistent).
-  await Future.delayed(Duration(milliseconds: 500));
   await create(client);
   await addDocument(client);
   await search(client);
@@ -61,6 +58,8 @@ Future<void> create(Client client) async {
         'collection_name': 'books_january',
       }),
     );
+
+    await writePropagationDelay();
   } catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
   }
@@ -72,6 +71,8 @@ Future<void> addDocument(Client client) async {
     log.fine(
       await client.collection('books').documents.create(_hungerGamesBook),
     );
+
+    await writePropagationDelay();
   } catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
   }
@@ -114,6 +115,8 @@ Future<void> delete(Client client) async {
   try {
     logInfoln(log, 'Deleting alias "books".');
     log.fine(await client.alias('books').delete());
+
+    await writePropagationDelay();
   } catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
   }
