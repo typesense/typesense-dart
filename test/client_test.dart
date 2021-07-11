@@ -9,6 +9,7 @@ import 'package:typesense/src/keys.dart';
 import 'package:typesense/src/key.dart';
 import 'package:typesense/src/debug.dart';
 import 'package:typesense/src/metrics.dart';
+import 'package:typesense/src/stats.dart';
 import 'package:typesense/src/health.dart';
 import 'package:typesense/src/operations.dart';
 import 'package:typesense/src/multi_search.dart';
@@ -40,6 +41,9 @@ void main() {
     });
     test('has a metrics field', () {
       expect(client.metrics, isA<Metrics>());
+    });
+    test('has a stats field', () {
+      expect(client.stats, isA<Stats>());
     });
     test('has a health field', () {
       expect(client.health, isA<Health>());

@@ -11,6 +11,7 @@ import 'overrides.dart' as overrides;
 import 'synonyms.dart' as synonyms;
 import 'aliases.dart' as aliases;
 import 'cluster_operations.dart' as cluster_operations;
+import 'miscellaneous.dart' as miscellaneous;
 
 void main() async {
   Logger.root.level = Level.ALL;
@@ -52,4 +53,5 @@ void main() async {
   await synonyms.runExample(client);
   await aliases.runExample(client);
   await cluster_operations.runExample(client);
+  await miscellaneous.runExample(client);
 }
