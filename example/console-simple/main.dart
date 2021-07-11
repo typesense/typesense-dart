@@ -42,9 +42,9 @@ void main() async {
   });
 
   await collections.runExample(client);
-  await documents.runExample(Client(Configuration.updateParameters(config,
+  await documents.runExample(
       // Set a longer timeout in case of large imports.
-      connectionTimeout: Duration(seconds: 120))));
+      Client(config.copyWith(connectionTimeout: Duration(seconds: 120))));
   await search.runExample(client);
   await keys.runExample(client);
   await overrides.runExample(client);
