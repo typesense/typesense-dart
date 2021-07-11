@@ -10,6 +10,7 @@ Future<void> runExample(Client client) async {
 
   await createSnapshot(client);
   await initLeaderElection(client);
+  await toggleSlowRequestLog(client);
 }
 
 Future<void> createSnapshot(Client client) async {
@@ -25,6 +26,16 @@ Future<void> initLeaderElection(Client client) async {
   try {
     logInfoln(log, 'Initiating raft voting process.');
     log.fine(await client.operations.initLeaderElection());
+  } catch (e, stackTrace) {
+    log.severe(e.message, e, stackTrace);
+  }
+}
+
+Future<void> toggleSlowRequestLog(Client client) async {
+  try {
+    logInfoln(log, 'Start logging slow requests.');
+    log.fine(
+        await client.operations.toggleSlowRequestLog(Duration(seconds: 2)));
   } catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
   }
