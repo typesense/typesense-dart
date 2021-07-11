@@ -40,5 +40,13 @@ void main() {
       ).thenAnswer((realInvocation) => Future.value({"success": true}));
       expect(await operations.initLeaderElection(), equals({"success": true}));
     });
+    test('toggleSlowRequestLog() calls ApiCall.post()', () async {
+      when(
+        mock.post('/config',
+            bodyParameters: {'log-slow-requests-time-ms': 2000}),
+      ).thenAnswer((realInvocation) => Future.value({"success": true}));
+      expect(await operations.toggleSlowRequestLog(Duration(seconds: 2)),
+          equals({"success": true}));
+    });
   });
 }

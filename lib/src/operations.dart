@@ -24,4 +24,15 @@ class Operations {
   Future<Map<String, dynamic>> initLeaderElection() async {
     return await _apiCall.post('$resourcepath/vote');
   }
+
+  /// Start logging the requests which take more than [threshold] duration to
+  /// complete.
+  ///
+  /// Slow requests are logged to the primary log file, with the prefix `SLOW
+  /// REQUEST`.
+  Future<Map<String, dynamic>> toggleSlowRequestLog(Duration threshold) async {
+    return await _apiCall.post('/config', bodyParameters: {
+      'log-slow-requests-time-ms': threshold.inMilliseconds
+    });
+  }
 }
