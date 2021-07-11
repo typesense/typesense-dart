@@ -10,6 +10,7 @@ import 'bin/keys.dart' as keys;
 import 'bin/overrides.dart' as overrides;
 import 'bin/synonyms.dart' as synonyms;
 import 'bin/aliases.dart' as aliases;
+import 'bin/cluster_operations.dart' as cluster_operations;
 
 void main() async {
   Logger.root.level = Level.ALL;
@@ -50,4 +51,5 @@ void main() async {
   await overrides.runExample(client);
   await synonyms.runExample(client);
   await aliases.runExample(client);
+  await cluster_operations.runExample(client);
 }
