@@ -16,8 +16,8 @@ void main() {
   });
 
   group('Keys', () {
-    test('has a RESOURCEPATH', () {
-      expect(Keys.RESOURCEPATH, equals('/keys'));
+    test('has a resourcepath', () {
+      expect(Keys.resourcepath, equals('/keys'));
     });
     test('create() calls Api.post()', () async {
       when(mock.post('/keys', bodyParameters: {

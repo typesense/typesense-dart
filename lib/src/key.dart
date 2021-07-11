@@ -19,5 +19,5 @@ class Key {
     return await _apiCall.delete(_endpointPath);
   }
 
-  String get _endpointPath => '${Keys.RESOURCEPATH}/$_id';
+  String get _endpointPath => '${Keys.resourcepath}/$_id';
 }

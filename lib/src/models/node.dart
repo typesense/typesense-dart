@@ -5,9 +5,9 @@ import '../exceptions/exceptions.dart';
 class Node {
   final String protocol;
   final String host;
-  int _port;
+  final int port;
   final String path;
-  Uri _uri;
+  final Uri uri;
 
   bool isHealthy = true;
 
@@ -18,12 +18,15 @@ class Node {
   /// http [client] associated with the [Node], used to complete requests.
   http.Client client;
 
-  Node({
-    this.protocol,
-    this.host,
+  Node._(
+      {this.protocol, this.host, this.port, this.path, this.uri, this.client});
+
+  factory Node({
+    String protocol,
+    String host,
     int port,
-    this.path = '',
-    this.client,
+    String path = '',
+    http.Client client,
   }) {
     if (protocol == null) {
       throw MissingConfiguration('Ensure that Node.protocol is set');
@@ -36,36 +39,38 @@ class Node {
     if (port == null) {
       switch (protocol) {
         case 'https':
-          _port = 443;
+          port = 443;
           break;
         case 'http':
-          _port = 80;
+          port = 80;
           break;
         default:
           throw MissingConfiguration('Ensure that Node.protocol is valid');
       }
     } else {
-      _port = port;
+      port = port;
     }
 
     if (path == null) {
       throw MissingConfiguration('Ensure that Node.path is set');
     }
 
-    _uri = Uri.parse('$protocol://$host:$_port$path');
+    return Node._(
+        protocol: protocol,
+        host: host,
+        port: port,
+        path: path,
+        uri: Uri.parse('$protocol://$host:$port$path'),
+        client: client);
   }
-
-  int get port => _port;
-
-  Uri get uri => _uri;
 
   @override
   int get hashCode => uri.hashCode;
 
   @override
-  bool operator ==(Object o) =>
-      identical(this, o) ||
-      (o is Node && runtimeType == o.runtimeType && this.uri == o.uri);
+  bool operator ==(other) =>
+      identical(this, other) ||
+      (other is Node && runtimeType == other.runtimeType && uri == other.uri);
 
   @override
   String toString() => uri.toString();

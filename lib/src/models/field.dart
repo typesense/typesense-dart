@@ -93,7 +93,7 @@ extension _TypeExtension on Type {
       case Type.int64:
       case Type.float:
       case Type.bool:
-        final description = this.toString(),
+        final description = toString(),
             indexOfDot = description.indexOf('.'),
             value = description.substring(indexOfDot + 1);
 

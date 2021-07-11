@@ -32,12 +32,12 @@ class Collection {
 
   /// Retrieves the [Schema] of the specified collection.
   Future<Schema> retrieve() async {
-    return Schema.fromMap(await this._apiCall.get(_endpointPath));
+    return Schema.fromMap(await _apiCall.get(_endpointPath));
   }
 
   /// Deletes the specified collection.
   Future<Schema> delete() async {
-    return Schema.fromMap(await this._apiCall.delete(_endpointPath));
+    return Schema.fromMap(await _apiCall.delete(_endpointPath));
   }
 
   Documents get documents => _documents;
@@ -67,5 +67,5 @@ class Collection {
     return _individualSynonyms[synonymId];
   }
 
-  String get _endpointPath => '${Collections.RESOURCEPATH}/$_name';
+  String get _endpointPath => '${Collections.resourcepath}/$_name';
 }

@@ -5,7 +5,7 @@ import 'services/collections_api_call.dart';
 class Collections {
   final ApiCall _apicall;
   final CollectionsApiCall _collectionsApiCall;
-  static const String RESOURCEPATH = '/collections';
+  static const String resourcepath = '/collections';
 
   Collections(ApiCall apicall, CollectionsApiCall collectionsApiCall)
       : _apicall = apicall,
@@ -14,7 +14,7 @@ class Collections {
   /// Returns [Schema] of all your collections. The collections are returned
   /// sorted by creation date, with the most recent collections appearing first.
   Future<List<Schema>> retrieve() async {
-    return (await _collectionsApiCall.get(RESOURCEPATH))
+    return (await _collectionsApiCall.get(resourcepath))
         .map((schema) => Schema.fromMap(schema))
         .toList(growable: false);
   }
@@ -22,7 +22,7 @@ class Collections {
   /// Creates a new collection with the [schema].
   Future<Schema> create(Schema schema) async {
     return Schema.fromMap(await _apicall.post(
-      RESOURCEPATH,
+      resourcepath,
       bodyParameters: schema.toMap(),
     ));
   }

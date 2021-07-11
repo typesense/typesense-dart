@@ -10,11 +10,11 @@ import '../exceptions/exceptions.dart';
 /// Key to set the content-type of the request in `additionalHeaders` map.
 ///
 /// The content-type of the request will default to "application/json".
-const CONTENT_TYPE = 'Content-Type';
+const contentType = 'Content-Type';
 
 /// Key to set the api key in either `_defaultQueryParameters` or
 /// `_defaultHeaders` map depending on `Configuration.sendApiKeyAsQueryParam`.
-const _API_KEY = 'X-TYPESENSE-API-KEY';
+const _apiKey = 'X-TYPESENSE-API-KEY';
 
 /// A generic abstract class which implements the core logic of using [NodePool]
 /// to complete the requests.
@@ -27,16 +27,14 @@ abstract class BaseApiCall<R extends Object> {
   final Map<String, String> _defaultHeaders = {};
   final Map<String, String> _defaultQueryParameters = {};
 
-  BaseApiCall(Configuration config, NodePool nodePool)
-      : config = config,
-        _nodePool = nodePool {
+  BaseApiCall(this.config, NodePool nodePool) : _nodePool = nodePool {
     if (config.sendApiKeyAsQueryParam) {
-      _defaultQueryParameters[_API_KEY] = config.apiKey;
+      _defaultQueryParameters[_apiKey] = config.apiKey;
     } else {
-      _defaultHeaders[_API_KEY] = config.apiKey;
+      _defaultHeaders[_apiKey] = config.apiKey;
     }
 
-    _defaultHeaders[CONTENT_TYPE] = 'application/json';
+    _defaultHeaders[contentType] = 'application/json';
   }
 
   /// Headers that are common in majority requests.

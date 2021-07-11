@@ -16,15 +16,15 @@ class MockResponse extends Mock implements http.Response {}
 
 void main() {
   group('DocumentsApiCall', () {
-    test('has a CONTENT_TYPE constant', () {
-      expect(CONTENT_TYPE, equals('Content-Type'));
+    test('has a contentType constant', () {
+      expect(contentType, equals('Content-Type'));
     });
     test('has a defaultHeaders field', () {
       final config = ConfigurationFactory.withNearestNode(),
           nodePool = NodePool(config),
           docsApiCall = DocumentsApiCall(config, nodePool);
       expect(docsApiCall.defaultHeaders,
-          equals({apiKeyLabel: apiKey, CONTENT_TYPE: 'application/json'}));
+          equals({apiKeyLabel: apiKey, contentType: 'application/json'}));
     });
     test('has a defaultQueryParameters field', () {
       final config = ConfigurationFactory.withNearestNode(
@@ -69,7 +69,7 @@ void main() {
                       '$protocol://$host:$mockServerPort$pathToService/documents/import?action=create'));
               expect(request.method, equals('POST'));
               expect(request.headers[apiKeyLabel], equals(apiKey));
-              expect(request.headers[CONTENT_TYPE], contains('text/plain'));
+              expect(request.headers[contentType], contains('text/plain'));
 
               return http.Response('''{"success": true}
 {"success": true}
@@ -92,7 +92,7 @@ void main() {
               'action': 'create',
             },
             additionalHeaders: {
-              CONTENT_TYPE: 'text/plain',
+              contentType: 'text/plain',
             },
             bodyParameters: jsonlData,
           ),
@@ -319,7 +319,7 @@ void main() {
     test(
       'immediately for Http response code < 500',
       () async {
-        var numTries, requestNumber = 0;
+        var numTries = 0, requestNumber = 0;
         final client = MockClient(
               (request) async {
                 expect(request.url.path, equals('$pathToService/retries/test'));

@@ -7,7 +7,7 @@ import 'node_pool.dart';
 import 'request_cache.dart';
 import '../configuration.dart';
 
-export 'base_api_call.dart' show CONTENT_TYPE;
+export 'base_api_call.dart' show contentType;
 
 /// Handles requests that expect JSON data of `Map<String, dynamic>` type from
 /// the server.
@@ -34,7 +34,7 @@ class ApiCall extends BaseApiCall<Map<String, dynamic>> {
               // SplayTreeMap ensures order of the parameters is maintained so
               // cache key won't differ because of different ordering of
               // parameters.
-              '${endpoint}${SplayTreeMap.from(queryParams)}'.hashCode,
+              '$endpoint${SplayTreeMap.from(queryParams)}'.hashCode,
               send,
               (node) => node.client.get(
                 requestUri(node, endpoint, queryParams),
@@ -84,7 +84,7 @@ class ApiCall extends BaseApiCall<Map<String, dynamic>> {
               // SplayTreeMap ensures order of the parameters is maintained so
               // cache key won't differ because of different ordering of
               // parameters.
-              '${endpoint}${SplayTreeMap.from(queryParams)}${SplayTreeMap.from(additionalHeaders)}${json.encode(bodyParameters)}'
+              '$endpoint${SplayTreeMap.from(queryParams)}${SplayTreeMap.from(additionalHeaders)}${json.encode(bodyParameters)}'
                   .hashCode,
               send,
               (node) => node.client.post(

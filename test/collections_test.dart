@@ -23,8 +23,8 @@ void main() {
   });
 
   group('Collections', () {
-    test('has a RESOURCEPATH', () {
-      expect(Collections.RESOURCEPATH, equals('/collections'));
+    test('has a resourcepath', () {
+      expect(Collections.resourcepath, equals('/collections'));
     });
     test('retrieve() calls CollectionsApiCall.get()', () async {
       final schemaList = [

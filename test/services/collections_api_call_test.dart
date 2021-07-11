@@ -39,15 +39,15 @@ void main() {
         "default_sorting_field": "from_year"
       }
     ];
-    test('has a CONTENT_TYPE constant', () {
-      expect(CONTENT_TYPE, equals('Content-Type'));
+    test('has a contentType constant', () {
+      expect(contentType, equals('Content-Type'));
     });
     test('has a defaultHeaders field', () {
       final config = ConfigurationFactory.withNearestNode(),
           nodePool = NodePool(config),
           collectionsApiCall = CollectionsApiCall(config, nodePool);
       expect(collectionsApiCall.defaultHeaders,
-          equals({apiKeyLabel: apiKey, CONTENT_TYPE: 'application/json'}));
+          equals({apiKeyLabel: apiKey, contentType: 'application/json'}));
     });
     test('has a defaultQueryParameters field', () {
       final config = ConfigurationFactory.withNearestNode(
@@ -300,7 +300,7 @@ void main() {
     test(
       'immediately for Http response code < 500',
       () async {
-        var numTries, requestNumber = 0;
+        var numTries = 0, requestNumber = 0;
         final client = MockClient(
               (request) async {
                 expect(request.url.path, equals('$pathToService/retries/test'));

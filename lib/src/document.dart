@@ -34,5 +34,5 @@ class Document {
   }
 
   String get _endpointPath =>
-      '${Collections.RESOURCEPATH}/$_collectionName${Documents.RESOURCEPATH}/$_documentId';
+      '${Collections.resourcepath}/$_collectionName${Documents.resourcepath}/$_documentId';
 }

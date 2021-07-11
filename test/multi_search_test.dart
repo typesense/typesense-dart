@@ -72,8 +72,8 @@ void main() {
   });
 
   group('MultiSearch', () {
-    test('has a RESOURCEPATH', () {
-      expect(MultiSearch.RESOURCEPATH, equals('/multi_search'));
+    test('has a resourcepath', () {
+      expect(MultiSearch.resourcepath, equals('/multi_search'));
     });
     test('perform() calls ApiCall.post() with shouldCacheResult true',
         () async {

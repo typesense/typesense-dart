@@ -12,14 +12,14 @@ class SearchClient {
   final Configuration config;
   final ApiCall _apiCall;
   final DocumentsApiCall _documentsApiCall;
-  final MultiSearch _multiSearch;
+  final MultiSearch multiSearch;
   final _individualCollections = HashMap<String, Collection>();
 
   SearchClient._(
     this.config,
     this._apiCall,
     this._documentsApiCall,
-    this._multiSearch,
+    this.multiSearch,
   );
 
   factory SearchClient(Configuration config) {
@@ -41,8 +41,7 @@ class SearchClient {
     );
   }
 
-  MultiSearch get multiSearch => _multiSearch;
-
+  /// Perform operation on an individual collection having [collectionName].
   Collection collection(String collectionName) {
     if (!_individualCollections.containsKey(collectionName)) {
       _individualCollections[collectionName] =

@@ -6,7 +6,7 @@ import 'services/api_call.dart';
 
 class Keys {
   final ApiCall _apiCall;
-  static const RESOURCEPATH = '/keys';
+  static const resourcepath = '/keys';
 
   Keys(ApiCall apiCall) : _apiCall = apiCall;
 
@@ -15,12 +15,12 @@ class Keys {
   /// Typesense allows creating API Keys with fine-grain access control. The
   /// acess can be restricted on both a per-collection and per-action level.
   Future<Map<String, dynamic>> create(Map<String, dynamic> params) async {
-    return await _apiCall.post(RESOURCEPATH, bodyParameters: params);
+    return await _apiCall.post(resourcepath, bodyParameters: params);
   }
 
   /// Retrieves metadata of all the keys.
   Future<Map<String, dynamic>> retrieve() async {
-    return await _apiCall.get(RESOURCEPATH);
+    return await _apiCall.get(resourcepath);
   }
 
   /// Generates scoped search API keys that have embedded search parameters in

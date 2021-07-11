@@ -43,7 +43,9 @@ void main() {
       config = ConfigurationFactory.withNearestNode(
           apiKey: () {
             var key = 'abc123';
-            while (key.length <= 2000) key += key;
+            while (key.length <= 2000) {
+              key += key;
+            }
             return key;
           }(),
           sendApiKeyAsQueryParam: true);

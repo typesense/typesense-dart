@@ -1,11 +1,11 @@
 import 'services/api_call.dart';
 
 class Debug {
-  static const String RESOURCEPATH = '/debug';
+  static const String resourcepath = '/debug';
   final ApiCall _apicall;
 
   Debug(ApiCall apicall) : _apicall = apicall;
   Future<Map<String, dynamic>> retrieve() async {
-    return this._apicall.get(Debug.RESOURCEPATH);
+    return _apicall.get(Debug.resourcepath);
   }
 }
