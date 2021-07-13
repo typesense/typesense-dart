@@ -1,5 +1,8 @@
 version: 2.1
 
+orbs:
+  codecov: codecov/codecov@1.2.3
+
 commands:
   dependencies:
     description: "Download dependencies"
