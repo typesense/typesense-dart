@@ -1,4 +1,4 @@
-# typesense-dart [![pub package][pubShield]][package] [![CircleCI][CircleCIShield]][CircleCI] [![codecov][codecovBadge]][codecov] [![pub points][pubScoreBadge]][pubScore]
+# Typesense [![pub package][pubShield]][package] [![CircleCI][CircleCIShield]][CircleCI] [![codecov][codecovBadge]][codecov] [![pub points][pubScoreBadge]][pubScore]
 
 Dart client library for accessing the [Typesense HTTP API][typesense].
 
@@ -6,11 +6,11 @@ Note: This package is still under development. Version `0.2.0` will be fully mig
 
 ## Installation
 
-Add `typesense-dart` as a [dependency in your pubspec.yaml file](https://flutter.dev/using-packages/).
+Add `typesense` as a [dependency in your pubspec.yaml file](https://flutter.dev/using-packages/).
 
 ```@yaml
 dependencies:
-  typesense-dart: ^0.1.0
+  typesense: ^0.1.0
 ```
 
 ## Usage
