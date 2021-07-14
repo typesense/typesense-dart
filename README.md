@@ -41,6 +41,6 @@ Visit [CONTRIBUTING.md](CONTRIBUTING.md)
 [CircleCI]: https://circleci.com/gh/typesense/typesense-dart
 [codecovBadge]: https://codecov.io/gh/typesense/typesense-dart/branch/master/graph/badge.svg?token=UV6MPDKS07
 [codecov]: https://codecov.io/gh/typesense/typesense-dart
-[pubScoreBadge]: https://badges.bar/typesense-dart/pub%20points
-[pubScore]: https://pub.dev/packages/typesense-dart/score
+[pubScoreBadge]: https://badges.bar/typesense/pub%20points
+[pubScore]: https://pub.dev/packages/typesense/score
 [typesense]: https://github.com/typesense/typesense
