@@ -25,12 +25,12 @@ void main() async {
     nodes: {
       Node(
         host: host,
-        port: 8108,
+        port: 7108,
         protocol: 'http',
       ),
       Node(
         host: host,
-        port: 7108,
+        port: 8108,
         protocol: 'http',
       ),
       Node(
