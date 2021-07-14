@@ -3,32 +3,34 @@ import 'dart:io';
 
 import 'package:typesense/typesense.dart';
 
+
 void main() async {
-  // Replace with your configuration
+  final host = InternetAddress.loopbackIPv4.address;
   final config = Configuration(
-      nodes: {
-        Node(
-          protocol: 'http',
-          host: InternetAddress.loopbackIPv4.address,
-          port: 8108,
-        ),
-        Node(
-          protocol: 'http',
-          host: InternetAddress.loopbackIPv4.address,
-          port: 7108,
-        ),
-        Node(
-          protocol: 'http',
-          host: InternetAddress.loopbackIPv4.address,
-          port: 9108,
-        ),
-      },
-      apiKey: 'xyz',
-      numRetries: 3, // A total of 4 tries (1 original try + 3 retries)
-      connectionTimeout:
-          Duration(seconds: 10));
-  
+    // Replace with your configuration
+    nodes: {
+      Node(
+        host: host,
+        port: 7108,
+        protocol: 'http',
+      ),
+      Node(
+        host: host,
+        port: 8108,
+        protocol: 'http',
+      ),
+      Node(
+        host: host,
+        port: 9108,
+        protocol: 'http',
+      ),
+    },
+    apiKey: 'xyz',
+    numRetries: 3, // A total of 4 tries (1 original try + 3 retries)
+    connectionTimeout: Duration(seconds: 2),
+  );
   final client = Client(config);
+  
   await client.collections.retrieve();
 }
 ```
