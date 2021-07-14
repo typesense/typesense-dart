@@ -2,7 +2,7 @@
 
 Dart client library for accessing the [Typesense HTTP API][typesense].
 
-Note: This package is still under development. Version `0.2.0` will be fully migrated to null safety; [related issue][nnbd]. Some existing APIs might change or new APIs might be available in future.
+Note: This package is still under development. Version `0.2.0` will be fully migrated to null safety; [related issue][nnbd]. Some existing APIs might change or new APIs might be available in the future.
 
 ## Installation
 
@@ -25,7 +25,7 @@ See [Configuration](lib/src/configuration.dart) class for a list of all client c
 
 ### Examples
 
-Here are the examples that walk you through on how to use the client: [main.dart](example/console-simple/main.dart)
+The examples that walk you through on how to use the client: [main.dart](example/console-simple/main.dart)
 
 Make sure to [README](example/console-simple/README.md) beforehand.
 
