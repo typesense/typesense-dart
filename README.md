@@ -35,8 +35,8 @@ Visit [CONTRIBUTING.md](CONTRIBUTING.md)
 
 [nnbd]: https://github.com/typesense/typesense-dart/issues/37
 [docs]: https://typesense.org/docs/api/
-[pubShield]: https://img.shields.io/pub/v/typesense-dart.svg
-[package]: https://pub.dev/packages/typesense-dart
+[pubShield]: https://img.shields.io/pub/v/typesense.svg
+[package]: https://pub.dev/packages/typesense
 [CircleCIShield]: https://circleci.com/gh/typesense/typesense-dart.svg?style=shield
 [CircleCI]: https://circleci.com/gh/typesense/typesense-dart
 [codecovBadge]: https://codecov.io/gh/typesense/typesense-dart/branch/master/graph/badge.svg?token=UV6MPDKS07
