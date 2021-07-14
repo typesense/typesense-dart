@@ -25,7 +25,7 @@ See [Configuration](lib/src/configuration.dart) class for a list of all client c
 
 ### Examples
 
-The examples that walk you through on how to use the client: [main.dart](example/console-simple/main.dart)
+The examples that walk you through on how to use the client: [main.dart](example/console-simple/bin/main.dart)
 
 Make sure to [README](example/console-simple/README.md) beforehand.
 
