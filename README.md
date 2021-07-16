@@ -1,6 +1,6 @@
 # Typesense [![pub package][pubShield]][package] [![CircleCI][CircleCIShield]][CircleCI] [![codecov][codecovBadge]][codecov] [![pub points][pubScoreBadge]][pubScore]
 
-Dart client library for accessing the [Typesense HTTP API][typesense].
+Dart client library for accessing the HTTP API of [Typesense][typesense] search engine.
 
 Note: This package is still under development. Version `0.2.0` will be fully migrated to null safety; [related issue][nnbd]. Some existing APIs might change or new APIs might be available in the future.
 
