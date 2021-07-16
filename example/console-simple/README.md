@@ -25,5 +25,9 @@ After all three nodes are running, change current directory to `typesense-dart/e
 
 `dart bin/main.dart`
 
+or
+
+`dart example/console-simple/bin/main.dart` if still in root.
+
 [arguments]: https://typesense.org/docs/0.21.0/guide/configure-typesense.html#using-command-line-arguments
 [conf]: server_configuration/

@@ -101,8 +101,14 @@ class Documents {
   }
 
   /// Returns the documents belonging to a collection in JSONL format.
-  Future<String> exportJSONL() async {
-    return await _documentApiCall.get('$_endPoint/export');
+  ///
+  /// If [queryParams] is specified, only documents matching the criteria would
+  /// be returned.
+  Future<String> exportJSONL({Map<String, dynamic> queryParams}) async {
+    return await _documentApiCall.get(
+      '$_endPoint/export',
+      queryParams: queryParams,
+    );
   }
 
   /// Search through the documents with the [searchParameters].

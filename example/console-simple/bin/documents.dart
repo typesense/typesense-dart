@@ -17,6 +17,7 @@ Future<void> runExample(Client client) async {
   await search(client);
   await delete(client);
   await importDocs(client);
+  await exportByQuery(client);
   await update(client);
   await deleteByQuery(client);
   await importJSONL(client);
@@ -169,6 +170,20 @@ Future<void> export(Client client) async {
   try {
     logInfoln(log, 'Exporting documents of "companies".');
     log.fine(await client.collection('companies').documents.exportJSONL());
+  } catch (e, stackTrace) {
+    log.severe(e.message, e, stackTrace);
+  }
+}
+
+Future<void> exportByQuery(Client client) async {
+  try {
+    logInfoln(log, 'Exporting only documents having more than 1000 employees.');
+    log.fine(await client
+        .collection('companies')
+        .documents
+        .exportJSONL(queryParams: {'filter_by': 'num_employees:>1000'}));
+
+    await writePropagationDelay();
   } catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
   }
