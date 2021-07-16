@@ -10,7 +10,7 @@ Add `typesense` as a [dependency in your pubspec.yaml file](https://flutter.dev/
 
 ```@yaml
 dependencies:
-  typesense: ^0.1.0
+  typesense: ^0.1.1
 ```
 
 ## Usage
