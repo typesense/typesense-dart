@@ -29,9 +29,23 @@ The examples that walk you through on how to use the client: [main.dart](example
 
 Make sure to [README](example/console-simple/README.md) beforehand.
 
+## Compatibility
+
+| Typesense Server | typesense-dart |
+|------------------|----------------|
+| \>= v0.21.0 | \>= v0.1.1 |
+
 ## Contributing
 
 Visit [CONTRIBUTING.md](CONTRIBUTING.md)
+
+## Credits
+
+This library is authored and maintained by our awesome community of contributors:
+
+- [happy-san](https://github.com/happy-san) (Primary Contributor)
+- [harisarang](https://github.com/harisarang)
+- [mafreud](https://github.com/mafreud)
 
 [nnbd]: https://github.com/typesense/typesense-dart/issues/37
 [docs]: https://typesense.org/docs/api/
