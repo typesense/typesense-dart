@@ -112,8 +112,13 @@ void main() {
 ''';
       when(mockDocumentsApiCall.get(
         "/collections/companies/documents/export",
+        queryParams: {'filter_by': 'num_employees:>100'},
       )).thenAnswer((realInvocation) => Future.value(documentJsonl));
-      expect(await documents.exportJSONL(), equals(documentJsonl));
+      expect(
+          await documents.exportJSONL(
+            queryParams: {'filter_by': 'num_employees:>100'},
+          ),
+          equals(documentJsonl));
     });
     test('search() calls ApiCall.get with shouldCacheResult true', () async {
       final searchResult = {
