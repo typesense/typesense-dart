@@ -11,6 +11,7 @@ Future<void> runExample(Client client) async {
   logInfoln(log, '--Search example--');
   await init(client);
   await search(client);
+  await geosearch(client);
   await multisearch(client);
   await collections.delete(client);
 }
@@ -94,6 +95,41 @@ Future<void> search(Client client) async {
         },
       ),
     );
+  } catch (e, stackTrace) {
+    log.severe(e.message, e, stackTrace);
+  }
+}
+
+Future<void> geosearch(Client client) async {
+  try {
+    await collections.create(
+        client,
+        Schema(
+          'places',
+          {
+            Field('title', Type.string),
+            Field('points', Type.int32),
+            Field('location', Type.geopoint),
+          },
+          defaultSortingField: Field('points', Type.int32),
+        ));
+    await documents.importDocs(client, 'places', [
+      {
+        'title': 'Louvre Museuem',
+        'points': 1,
+        'location': [48.86093481609114, 2.33698396872901]
+      }
+    ]);
+
+    logInfoln(log, 'Geosearching.');
+    log.fine(await client.collection('places').documents.search({
+      'q': '*',
+      'query_by': 'title',
+      'filter_by': 'location:(48.90615915923891, 2.3435897727061175, 5.1 km)',
+      'sort_by': 'location(48.853, 2.344):asc'
+    }));
+
+    await collections.delete(client, 'places');
   } catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
   }

@@ -229,6 +229,12 @@ void main() {
         "type": "string*",
       });
       expect(field.type, equals(Type.stringify));
+
+      field = Field.fromMap({
+        "name": "name",
+        "type": "geopoint",
+      });
+      expect(field.type, equals(Type.geopoint));
     });
     test('sets default values to fields when null', () {
       final field = Field.fromMap({"name": "num_employees", "type": "int32"});
@@ -259,6 +265,9 @@ void main() {
 
       field = Field('country', Type.stringify);
       expect(field.toMap()['type'], equals('string*'));
+
+      field = Field('country', Type.geopoint);
+      expect(field.toMap()['type'], equals('geopoint'));
     });
     test('suffixes basic types with "[]" when isMultivalued set to true', () {
       var field = Field('country', Type.string, isMultivalued: true);
@@ -288,6 +297,11 @@ void main() {
       expect(field.toMap()['type'], equals('string*'));
       field = Field('country', Type.stringify, isMultivalued: true);
       expect(field.toMap()['type'], equals('string*'));
+
+      field = Field('country', Type.geopoint);
+      expect(field.toMap()['type'], equals('geopoint'));
+      field = Field('country', Type.geopoint, isMultivalued: true);
+      expect(field.toMap()['type'], equals('geopoint'));
     });
   });
 

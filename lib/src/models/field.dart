@@ -75,7 +75,7 @@ class Field extends Equatable {
 
 /// Enumerates the allowed field types.
 ///
-/// - [Type.auto] and [Type.stringify] are special field types that are used for
+/// [Type.auto] and [Type.stringify] are special field types that are used for
 /// handling data sources with varying schema via automatic schema detection.
 ///
 /// - [Type.auto] is used to let Typesense detect the type of the fields
@@ -83,7 +83,9 @@ class Field extends Equatable {
 ///
 /// - [Type.stringify] (`string*`) is a way to store the field value (both
 /// singular and multi-value/array values) as string.
-enum Type { string, int32, int64, float, bool, auto, stringify }
+///
+/// [Type.geopoint] is used to index locations, filter and sort on them.
+enum Type { string, int32, int64, float, bool, auto, stringify, geopoint }
 
 extension _TypeExtension on Type {
   String value(bool isMultivalued) {
@@ -106,7 +108,8 @@ extension _TypeExtension on Type {
       case Type.stringify:
         return 'string*';
         break;
-
+      case Type.geopoint:
+        return 'geopoint';
       default:
         return '';
     }
