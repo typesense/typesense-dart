@@ -5,24 +5,24 @@ import 'package:typesense/typesense.dart';
 
 
 void main() async {
-  final host = InternetAddress.loopbackIPv4.address;
+  final host = InternetAddress.loopbackIPv4.address, protocol = 'http';
   final config = Configuration(
     // Replace with your configuration
     nodes: {
       Node(
         host: host,
         port: 7108,
-        protocol: 'http',
+        protocol: protocol,
       ),
       Node(
         host: host,
         port: 8108,
-        protocol: 'http',
+        protocol: protocol,
       ),
       Node(
         host: host,
         port: 9108,
-        protocol: 'http',
+        protocol: protocol,
       ),
     },
     apiKey: 'xyz',
