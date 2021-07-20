@@ -4,4 +4,9 @@ import 'request_exception.dart';
 /// connection timeouts, etc.
 class HttpError extends RequestException {
   HttpError(String message, int statusCode) : super(message, statusCode);
+
+  @override
+  String toString() {
+    return '$statusCode: $message';
+  }
 }
