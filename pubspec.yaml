@@ -5,14 +5,14 @@ homepage: https://typesense.org/
 repository: https://github.com/typesense/typesense-dart
 
 environment:
-  sdk: ">=2.10.0 <3.0.0"
+  sdk: ">=2.12.0 <3.0.0"
 
 dependencies:
   http: ^0.13.3
   crypto: ^3.0.1
-  equatable: ^2.0.2
+  equatable: ^2.0.3
 
 dev_dependencies:
-  test: ^1.17.7
-  mockito: ^5.0.10
+  test: ^1.17.10
+  mockito: ^5.0.12
   lints: ^1.0.1
