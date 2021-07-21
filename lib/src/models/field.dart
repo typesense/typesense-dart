@@ -33,11 +33,8 @@ class Field extends Equatable {
     this.isMultivalued = false,
     this.shouldIndex = true,
   }) {
-    if (name == null || name.isEmpty) {
+    if (name.isEmpty) {
       throw ArgumentError('Ensure Field.name is set');
-    }
-    if (type == null) {
-      throw ArgumentError('Ensure Field.type is set');
     }
   }
 
@@ -100,14 +97,13 @@ extension _TypeExtension on Type {
             value = description.substring(indexOfDot + 1);
 
         return isMultivalued ? value + '[]' : value;
-        break;
 
       case Type.auto:
         return 'auto';
-        break;
+
       case Type.stringify:
         return 'string*';
-        break;
+
       case Type.geopoint:
         return 'geopoint';
       default:
@@ -116,7 +112,6 @@ extension _TypeExtension on Type {
   }
 }
 
-Type _getTypeFrom(String value, bool isMultiValued) => (value != null)
-    ? Type.values.firstWhere((type) => value == type.value(isMultiValued),
-        orElse: () => null)
-    : null;
+Type _getTypeFrom(String value, bool isMultiValued) =>
+    Type.values.firstWhere((type) => value == type.value(isMultiValued),
+        orElse: () => throw ArgumentError('$value is not a defined Type.'));
