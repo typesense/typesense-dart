@@ -19,24 +19,24 @@ void main() async {
     print('${record.level.name}: ${record.message}');
   });
 
-  final host = InternetAddress.loopbackIPv4.address, protocol = 'http';
+  final host = InternetAddress.loopbackIPv4.address, protocol = Protocol.http;
   final config = Configuration(
     // Replace with your configuration
     nodes: {
       Node(
-        host: host,
+        protocol,
+        host,
         port: 7108,
-        protocol: protocol,
       ),
       Node(
-        host: host,
+        protocol,
+        host,
         port: 8108,
-        protocol: protocol,
       ),
       Node(
-        host: host,
+        protocol,
+        host,
         port: 9108,
-        protocol: protocol,
       ),
     },
     apiKey: 'xyz',

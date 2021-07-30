@@ -108,9 +108,9 @@ abstract class BaseApiCall<R extends Object> {
   ) =>
       Uri(
         scheme: node.uri.scheme,
-        host: node.uri.host,
-        port: node.uri.port,
-        path: '${node.uri.path}$endpoint',
+        host: node.host,
+        port: node.port,
+        path: '${node.path}$endpoint',
         queryParameters: {..._defaultQueryParameters, ...?queryParams},
       );
 

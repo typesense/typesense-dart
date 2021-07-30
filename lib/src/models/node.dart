@@ -3,66 +3,54 @@ import 'package:http/http.dart' as http;
 import '../exceptions/exceptions.dart';
 
 class Node {
-  final String protocol;
-  final String host;
-  final int port;
-  final String path;
   final Uri uri;
 
   bool isHealthy = true;
 
   /// Records the latest timestamp when the [Node] was accessed to complete a
   /// request.
-  DateTime lastAccessTimestamp;
+  ///
+  /// Nodes are assumed to be healthy at start. So the node is used and
+  /// [lastAccessTimestamp] is set before getting it's value.
+  late DateTime lastAccessTimestamp;
 
   /// http [client] associated with the [Node], used to complete requests.
-  http.Client client;
+  http.Client? client;
 
-  Node._(
-      {this.protocol, this.host, this.port, this.path, this.uri, this.client});
+  Node._(this.uri, {this.client});
 
-  factory Node({
-    String protocol,
-    String host,
-    int port,
+  factory Node(
+    Protocol protocol,
+    String host, {
+    int? port,
     String path = '',
-    http.Client client,
+    http.Client? client,
   }) {
-    if (protocol == null) {
-      throw MissingConfiguration('Ensure that Node.protocol is set');
-    }
-
-    if (host == null) {
+    if (host.isEmpty) {
       throw MissingConfiguration('Ensure that Node.host is set');
     }
 
     if (port == null) {
       switch (protocol) {
-        case 'https':
+        case Protocol.https:
           port = 443;
           break;
-        case 'http':
+        case Protocol.http:
           port = 80;
           break;
-        default:
-          throw MissingConfiguration('Ensure that Node.protocol is valid');
       }
-    } else {
-      port = port;
-    }
-
-    if (path == null) {
-      throw MissingConfiguration('Ensure that Node.path is set');
     }
 
     return Node._(
-        protocol: protocol,
-        host: host,
-        port: port,
-        path: path,
-        uri: Uri.parse('$protocol://$host:$port$path'),
-        client: client);
+      Uri.parse('${protocol.value()}://$host:$port$path'),
+      client: client,
+    );
   }
+
+  Protocol get protocol => _ProtocolsExtension.fromValue(uri.scheme);
+  String get host => uri.host;
+  int get port => uri.port;
+  String get path => uri.path;
 
   @override
   int get hashCode => uri.hashCode;
@@ -77,4 +65,26 @@ class Node {
 
   bool isDueForHealthCheck(Duration healthcheckInterval) =>
       DateTime.now().difference(lastAccessTimestamp) > healthcheckInterval;
+}
+
+enum Protocol {
+  http,
+  https,
+}
+
+extension _ProtocolsExtension on Protocol {
+  String value() => toString().split('.')[1];
+
+  static Protocol fromValue(String value) {
+    switch (value) {
+      case 'http':
+        return Protocol.http;
+
+      case 'https':
+        return Protocol.https;
+
+      default:
+        throw ArgumentError('$value is an unsupported protocol');
+    }
+  }
 }

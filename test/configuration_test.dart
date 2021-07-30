@@ -39,7 +39,7 @@ void main() {
           equals('https://localhost/path/to/service'));
     });
     test('has a nearestNode field', () {
-      expect(config.nearestNode.uri.port, equals(80));
+      expect(config.nearestNode.port, equals(80));
       expect(config.nearestNode.uri.toString(),
           equals('http://localhost/path/to/service'));
     });

@@ -7,11 +7,11 @@ import 'package:typesense/src/exceptions/exceptions.dart'
 
 void main() {
   group('Node', () {
-    Node node;
+    late Node node;
     setUp(() {
       node = Node(
-        protocol: 'http',
-        host: 'localhost',
+        Protocol.http,
+        'localhost',
         port: 8080,
         path: '/path/to/service',
         client: http.Client(),
@@ -19,7 +19,7 @@ void main() {
     });
 
     test('has a protocol field', () {
-      expect(node.protocol, equals('http'));
+      expect(node.protocol, equals(Protocol.http));
     });
     test('has a host field', () {
       expect(node.host, equals('localhost'));
@@ -39,8 +39,8 @@ void main() {
     });
     test('has a lastAccessTimestamp field', () {
       final dateTime = DateTime.now();
-      expect(node.lastAccessTimestamp, isNull);
       node.lastAccessTimestamp = dateTime;
+
       expect(node.lastAccessTimestamp, equals(dateTime));
     });
     test('has a client field', () {
@@ -62,54 +62,36 @@ void main() {
   group('Node initialization', () {
     test('with missing port and http protocol, sets port to 80', () {
       final node = Node(
-        protocol: 'http',
-        host: 'localhost',
+        Protocol.http,
+        'localhost',
         path: '/path/to/service',
       );
-      expect(node.protocol, equals('http'));
+
       expect(node.port, equals(80));
     });
     test('with missing port and https protocol, sets port to 443', () {
       final node = Node(
-        protocol: 'https',
-        host: 'localhost',
+        Protocol.https,
+        'localhost',
         path: '/path/to/service',
       );
-      expect(node.protocol, equals('https'));
+
       expect(node.port, equals(443));
     });
     test('with missing path, sets path as empty String', () {
       final node = Node(
-        protocol: 'http',
-        host: 'localhost',
+        Protocol.http,
+        'localhost',
         port: 80,
       );
-      expect(node.protocol, equals('http'));
-      expect(node.host, equals('localhost'));
-      expect(node.port, equals(80));
+
       expect(node.path, equals(''));
     });
-
-    test('with missing protocol throws', () {
+    test('with empty host throws', () {
       expect(
         () => Node(
-          host: 'localhost',
-          port: 80,
-          path: '/path/to/service',
-        ),
-        throwsA(
-          isA<MissingConfiguration>().having(
-            (e) => e.message,
-            'message',
-            'Ensure that Node.protocol is set',
-          ),
-        ),
-      );
-    });
-    test('with missing host throws', () {
-      expect(
-        () => Node(
-          protocol: 'http',
+          Protocol.http,
+          '',
           port: 80,
           path: '/path/to/service',
         ),
@@ -118,39 +100,6 @@ void main() {
             (e) => e.message,
             'message',
             'Ensure that Node.host is set',
-          ),
-        ),
-      );
-    });
-    test('with missing port and invalid protocol throws', () {
-      expect(
-        () => Node(
-          protocol: 'ws',
-          host: 'localhost',
-          path: '/path/to/service',
-        ),
-        throwsA(
-          isA<MissingConfiguration>().having(
-            (e) => e.message,
-            'message',
-            'Ensure that Node.protocol is valid',
-          ),
-        ),
-      );
-    });
-    test('with null path throws', () {
-      expect(
-        () => Node(
-          protocol: 'http',
-          host: 'localhost',
-          port: 80,
-          path: null,
-        ),
-        throwsA(
-          isA<MissingConfiguration>().having(
-            (e) => e.message,
-            'message',
-            'Ensure that Node.path is set',
           ),
         ),
       );
