@@ -10,44 +10,46 @@ class Schema {
   /// A field in [fields] which will determine the order in which the search
   /// results are ranked when a `sort_by` clause is not provided during
   /// searching.
-  final Field defaultSortingField;
+  final Field? defaultSortingField;
 
   /// Number of documents currently in the collection [name].
-  final int documentCount;
+  final int? documentCount;
 
   Schema(this.name, this.fields,
-      {this.defaultSortingField, this.documentCount = 0}) {
-    if (name == null || name.isEmpty) {
-      throw ArgumentError('Ensure Schema.name is set');
+      {this.defaultSortingField, this.documentCount}) {
+    if (name.isEmpty) {
+      throw ArgumentError('Ensure Schema.name is not empty');
     }
-    if (fields == null || fields.isEmpty) {
-      throw ArgumentError('Ensure Schema.fields is set');
+    if (fields.isEmpty) {
+      throw ArgumentError('Ensure Schema.fields is not empty');
     }
-    if (defaultSortingField != null) {
+    if (defaultSortingField != null && defaultSortingField!.name.isNotEmpty) {
       if (!fields.contains(defaultSortingField)) {
-        throw ArgumentError(
-            'Ensure Schema.defaultSortingField is present in Schema.fields');
+        throw _defaultSortingFieldNotInSchema(defaultSortingField!.name);
       }
-      if (!(defaultSortingField.type == Type.int32 ||
-          defaultSortingField.type == Type.float)) {
+      if (!(defaultSortingField!.type == Type.int32 ||
+          defaultSortingField!.type == Type.float)) {
         throw ArgumentError(
-            'Ensure type of Schema.defaultSortingField is int32 / float');
+            'Ensure type of Schema.defaultSortingField "${defaultSortingField!.name}" is int32 / float');
       }
     }
   }
 
   factory Schema.fromMap(Map<String, dynamic> map) {
-    final fields = (map['fields'] != null)
-            ? (map['fields'] as List)
-                .map((field) => Field.fromMap(field))
-                .toSet()
-            : null,
-        defaultSortingField = (fields != null)
-            ? fields.firstWhere(
-                (field) => map['default_sorting_field'] == field.name,
-                orElse: () => null,
-              )
-            : null;
+    final Set<Field> fields = (map['fields'] != null)
+        ? (map['fields'] as List).map((field) => Field.fromMap(field)).toSet()
+        : throw ArgumentError('Ensure Schema.fields is set');
+
+    final String? sortingFieldName = map['default_sorting_field'];
+    final Field? defaultSortingField = (fields.isNotEmpty &&
+            sortingFieldName != null &&
+            sortingFieldName.isNotEmpty)
+        ? fields.firstWhere(
+            (field) => map['default_sorting_field'] == field.name,
+            orElse: () =>
+                throw _defaultSortingFieldNotInSchema(sortingFieldName),
+          )
+        : null;
 
     return Schema(
       map['name'],
@@ -68,3 +70,6 @@ class Schema {
   @override
   String toString() => toMap().toString();
 }
+
+ArgumentError _defaultSortingFieldNotInSchema(String name) => ArgumentError(
+    'Ensure Schema.defaultSortingField "$name" is present in Schema.fields');

@@ -5,7 +5,7 @@ import 'package:typesense/src/models/schema.dart';
 
 void main() {
   group('Schema', () {
-    Schema s1, s2;
+    late Schema s1, s2;
     setUp(() {
       s1 = Schema(
         'companies',
@@ -94,25 +94,7 @@ void main() {
   });
 
   group('Schema initialization', () {
-    test('with null/empty name throws', () {
-      expect(
-        () => Schema(
-          null,
-          {
-            Field('company_name', Type.string),
-            Field('num_employees', Type.int32),
-            Field('country', Type.string, isFacetable: true),
-          },
-          defaultSortingField: Field('num_employees', Type.int32),
-        ),
-        throwsA(
-          isA<ArgumentError>().having(
-            (e) => e.message,
-            'message',
-            'Ensure Schema.name is set',
-          ),
-        ),
-      );
+    test('with empty name throws', () {
       expect(
         () => Schema(
           '',
@@ -127,26 +109,12 @@ void main() {
           isA<ArgumentError>().having(
             (e) => e.message,
             'message',
-            'Ensure Schema.name is set',
+            'Ensure Schema.name is not empty',
           ),
         ),
       );
     });
-    test('with null/empty fields throws', () {
-      expect(
-        () => Schema(
-          'companies',
-          null,
-          defaultSortingField: Field('num_employees', Type.int32),
-        ),
-        throwsA(
-          isA<ArgumentError>().having(
-            (e) => e.message,
-            'message',
-            'Ensure Schema.fields is set',
-          ),
-        ),
-      );
+    test('with empty fields throws', () {
       expect(
         () => Schema(
           'companies',
@@ -157,7 +125,7 @@ void main() {
           isA<ArgumentError>().having(
             (e) => e.message,
             'message',
-            'Ensure Schema.fields is set',
+            'Ensure Schema.fields is not empty',
           ),
         ),
       );
@@ -178,7 +146,7 @@ void main() {
           isA<ArgumentError>().having(
             (e) => e.message,
             'message',
-            'Ensure Schema.defaultSortingField is present in Schema.fields',
+            'Ensure Schema.defaultSortingField "num_employees" is present in Schema.fields',
           ),
         ),
       );
@@ -200,7 +168,7 @@ void main() {
           isA<ArgumentError>().having(
             (e) => e.message,
             'message',
-            'Ensure type of Schema.defaultSortingField is int32 / float',
+            'Ensure type of Schema.defaultSortingField "company_name" is int32 / float',
           ),
         ),
       );
@@ -220,11 +188,7 @@ void main() {
           "default_sorting_field": "num_employees"
         }),
         throwsA(
-          isA<ArgumentError>().having(
-            (e) => e.message,
-            'message',
-            'Ensure Schema.name is set',
-          ),
+          isA<TypeError>(),
         ),
       );
       expect(
@@ -242,7 +206,7 @@ void main() {
           isA<ArgumentError>().having(
             (e) => e.message,
             'message',
-            'Ensure Schema.name is set',
+            'Ensure Schema.name is not empty',
           ),
         ),
       );
@@ -254,13 +218,11 @@ void main() {
           "num_documents": 0,
           "default_sorting_field": "num_employees"
         }),
-        throwsA(
-          isA<ArgumentError>().having(
-            (e) => e.message,
-            'message',
-            'Ensure Schema.fields is set',
-          ),
-        ),
+        throwsA(isA<ArgumentError>().having(
+          (e) => e.message,
+          'message',
+          'Ensure Schema.fields is set',
+        )),
       );
       expect(
         () => Schema.fromMap({
@@ -273,12 +235,12 @@ void main() {
           isA<ArgumentError>().having(
             (e) => e.message,
             'message',
-            'Ensure Schema.fields is set',
+            'Ensure Schema.fields is not empty',
           ),
         ),
       );
     });
-    test("with invalid defaultSortingField is successful", () {
+    test("with null/empty defaultSortingField is successful", () {
       var schema = Schema.fromMap({
         "name": "companies",
         "num_documents": 0,
@@ -300,10 +262,30 @@ void main() {
           {"name": "num_employees", "type": "int32"},
           {"name": "country", "type": "string", "facet": true}
         ],
-        "default_sorting_field": "not_present"
       });
       expect(schema.name, equals('companies'));
       expect(schema.defaultSortingField, isNull);
+    });
+    test('with invalid defaultSortingField throws', () {
+      expect(
+        () => Schema.fromMap({
+          "name": "companies",
+          "num_documents": 0,
+          "fields": [
+            {"name": "company_name", "type": "string"},
+            {"name": "num_employees", "type": "int32"},
+            {"name": "country", "type": "string", "facet": true}
+          ],
+          "default_sorting_field": "not_present"
+        }),
+        throwsA(
+          isA<ArgumentError>().having(
+            (e) => e.message,
+            'message',
+            'Ensure Schema.defaultSortingField "not_present" is present in Schema.fields',
+          ),
+        ),
+      );
     });
     test('with defaultSortingField\'s type other than int32 and float throws',
         () {
@@ -322,7 +304,7 @@ void main() {
           isA<ArgumentError>().having(
             (e) => e.message,
             'message',
-            'Ensure type of Schema.defaultSortingField is int32 / float',
+            'Ensure type of Schema.defaultSortingField "company_name" is int32 / float',
           ),
         ),
       );
