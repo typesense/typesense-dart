@@ -8,6 +8,7 @@ void main() async {
   final host = InternetAddress.loopbackIPv4.address, protocol = Protocol.http;
   final config = Configuration(
     // Replace with your configuration
+    'xyz',
     nodes: {
       Node(
         protocol,
@@ -25,7 +26,6 @@ void main() async {
         port: 9108,
       ),
     },
-    apiKey: 'xyz',
     numRetries: 3, // A total of 4 tries (1 original try + 3 retries)
     connectionTimeout: Duration(seconds: 2),
   );
