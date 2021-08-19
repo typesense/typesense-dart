@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:http/http.dart' as http;
 
+import 'typedefs.dart';
 import 'node_pool.dart';
 import '../configuration.dart';
 import '../models/node.dart';
@@ -46,12 +47,12 @@ abstract class BaseApiCall<R extends Object> {
   Map<String, String> get defaultQueryParameters =>
       Map.from(_defaultQueryParameters);
 
-  /// Retries the [request] untill a node responds or [Configuration.numRetries]
+  /// Retries the [request] untill a node functionresponds or [Configuration.numRetries]
   /// run out.
   ///
   /// Also sets the health status of nodes after each request so it can be put
   /// in/out of [NodePool]'s circulation.
-  Future<R> send(Future<http.Response> Function(Node) request) async {
+  Future<R> send(Request request) async {
     http.Response response;
     Node node;
     for (var triesLeft = config.numRetries;;) {

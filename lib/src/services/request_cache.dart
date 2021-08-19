@@ -1,20 +1,18 @@
 import 'dart:collection';
 
-import 'package:http/http.dart' as http;
-
-import '../models/node.dart';
+import 'typedefs.dart';
 
 /// Cache store which uses a [HashMap] internally to serve requests.
 class RequestCache {
   final _cachedResponses = HashMap<int, _Cache>();
 
+  // TODO(harisarang): rename this function to getResponse
   /// Caches the response of the [request], identified by [key]. The cached
   /// response is valid till [cacheTTL].
   Future<Map<String, dynamic>> cache(
     int key,
-    Future<Map<String, dynamic>> Function(Future<http.Response> Function(Node))
-        send,
-    Future<http.Response> Function(Node) request,
+    Send<Map<String, dynamic>> send, // Only being used by ApiCall for now.
+    Request request,
     Duration cacheTTL,
   ) async {
     if (_cachedResponses.containsKey(key)) {

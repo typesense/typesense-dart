@@ -27,6 +27,7 @@ void main() {
     retryInterval: Duration(seconds: 3),
     sendApiKeyAsQueryParam: true,
     cachedSearchResultsTTL: Duration(seconds: 30),
+    cacheCapacity: 101,
   );
 
   group('Configuration', () {
@@ -61,8 +62,11 @@ void main() {
     test('has a sendApiKeyAsQueryParam field', () {
       expect(config.sendApiKeyAsQueryParam, isTrue);
     });
-    test('has a cacheSearchResults field', () {
+    test('has a cacheSearchResultsTTL field', () {
       expect(config.cachedSearchResultsTTL, equals(Duration(seconds: 30)));
+    });
+    test('has a cacheCapacity field', () {
+      expect(config.cacheCapacity, equals(101));
     });
   });
 
@@ -179,6 +183,31 @@ void main() {
         sendApiKeyAsQueryParam: true,
       );
       expect(config.retryInterval, equals(Duration(milliseconds: 100)));
+    });
+    test('with missing cacheCapacity, sets cacheCapacity to 100', () {
+      final config = Configuration(
+        apiKey: 'abc123',
+        connectionTimeout: Duration(seconds: 10),
+        healthcheckInterval: Duration(seconds: 5),
+        nearestNode: Node(
+          protocol: 'http',
+          host: 'localhost',
+          path: '/path/to/service',
+        ),
+        nodes: {
+          Node(
+            protocol: 'https',
+            host: 'localhost',
+            path: '/path/to/service',
+          ),
+        },
+        numRetries: 5,
+        retryInterval: Duration(seconds: 3),
+        sendApiKeyAsQueryParam: true,
+        cachedSearchResultsTTL: Duration(seconds: 30),
+      );
+
+      expect(config.cacheCapacity, equals(100));
     });
     test(
         'with missing sendApiKeyAsQueryParam, sets sendApiKeyAsQueryParam to false',
