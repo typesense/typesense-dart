@@ -47,7 +47,7 @@ abstract class BaseApiCall<R extends Object> {
   Map<String, String> get defaultQueryParameters =>
       Map.from(_defaultQueryParameters);
 
-  /// Retries the [request] untill a node functionresponds or [Configuration.numRetries]
+  /// Retries the [request] untill a node responds or [Configuration.numRetries]
   /// run out.
   ///
   /// Also sets the health status of nodes after each request so it can be put
