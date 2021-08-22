@@ -35,11 +35,11 @@ class ApiCall extends BaseApiCall<Map<String, dynamic>> {
               // cache key won't differ because of different ordering of
               // parameters.
               '$endpoint${SplayTreeMap.from(queryParams)}',
-              send,
               (node) => node.client.get(
                 requestUri(node, endpoint, queryParams),
                 headers: defaultHeaders,
               ),
+              send,
             )
           : send((node) => node.client.get(
                 requestUri(node, endpoint, queryParams),
@@ -84,12 +84,12 @@ class ApiCall extends BaseApiCall<Map<String, dynamic>> {
               // cache key won't differ because of different ordering of
               // parameters.
               '$endpoint${SplayTreeMap.from(queryParams)}${SplayTreeMap.from(additionalHeaders)}${json.encode(bodyParameters)}',
-              send,
               (node) => node.client.post(
                 requestUri(node, endpoint, queryParams),
                 headers: {...defaultHeaders, ...additionalHeaders},
                 body: json.encode(bodyParameters),
               ),
+              send,
             )
           : send((node) => node.client.post(
                 requestUri(node, endpoint, queryParams),
