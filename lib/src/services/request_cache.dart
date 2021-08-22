@@ -1,6 +1,5 @@
 import 'dart:collection';
 import 'package:dcache/dcache.dart';
-import 'package:http/http.dart' as http;
 
 import 'typedefs.dart';
 
@@ -9,9 +8,8 @@ class RequestCache {
   Cache<String, Map<String, dynamic>> _cachedResponses;
   final Duration timeToUse;
   final int size;
-  final Send<Map<String, dynamic>> send;
 
-  RequestCache(this.size, this.timeToUse, this.send) {
+  RequestCache(this.size, this.timeToUse) {
     _cachedResponses = LruCache<String, Map<String, dynamic>>(storage: InMemoryStorage(size));
   }
 
@@ -21,6 +19,7 @@ class RequestCache {
   Future<Map<String, dynamic>> getResponse(
     String key,
     Request request,
+    Send<Map<String, dynamic>> send
   ) async {
     if (_cachedResponses.containsKey(key)) {
       return Future<Map<String, dynamic>>.value(_cachedResponses.get(key));

@@ -30,7 +30,7 @@ void main() {
   Request request;
 
   setUp(() {
-    requestCache = RequestCache(5, Duration(seconds: 1), send);
+    requestCache = RequestCache(5, Duration(seconds: 1));
 
     mockResponse = MockResponse();
     requestNumber = 1;
@@ -60,11 +60,9 @@ void main() {
           await requestCache.getResponse(
             '/value',
             request,
+            send
           ),
           equals({'value': 'initial'}));
-    });
-    test('has a send method', () async {
-      expect(await requestCache.send(request), equals({'value': 'initial'}));
     });
   });
 
@@ -74,12 +72,14 @@ void main() {
           await requestCache.getResponse(
             '/value',
             request,
+            send
           ),
           equals({'value': 'initial'}));
       expect(
           await requestCache.getResponse(
             '/value',
             request,
+            send
           ),
           equals({'value': 'initial'}));
     });
@@ -88,12 +88,14 @@ void main() {
           await requestCache.getResponse(
             '/value',
             request,
+            send
           ),
           equals({'value': 'initial'}));
       expect(
           await requestCache.getResponse(
             '/value',
             request,
+            send
           ),
           equals({'value': 'initial'}));
 
@@ -102,11 +104,12 @@ void main() {
           await requestCache.getResponse(
             '/value',
             request,
+            send
           ),
           equals({'value': 'updated'}));
     });
     test('evicts the least recently used response', () async {
-      requestCache = RequestCache(5, Duration(seconds: 10), send);
+      requestCache = RequestCache(5, Duration(seconds: 10));
 
       final mockResponses = List.generate(6, (_) => MockResponse()),
           callCounters = List.filled(6, 0);
@@ -124,6 +127,7 @@ void main() {
             await requestCache.getResponse(
               i.toString(),
               (node) => Future.value(mockResponses[i]),
+              send
             ),
             equals({'$i': '1'}));
       }
@@ -135,6 +139,7 @@ void main() {
             await requestCache.getResponse(
               i.toString(),
               (node) => Future.value(mockResponses[i]),
+              send
             ),
             equals({'$i': '1'}));
       }
@@ -145,6 +150,7 @@ void main() {
           await requestCache.getResponse(
             5.toString(),
             (node) => Future.value(mockResponses[5]),
+            send
           ),
           equals({'5': '1'}));
 
@@ -156,6 +162,7 @@ void main() {
             await requestCache.getResponse(
               i.toString(),
               (node) => Future.value(mockResponses[i]),
+              send
             ),
             equals({'$i': '2'}));
       }
