@@ -12,14 +12,14 @@ class RequestCache {
   final defs.Send<Map<String, dynamic>> send;
 
   RequestCache(this.size, this.timeToUse, this.send) {
-    _cachedResponses = LruCache<dynamic, Response>(storage: InMemoryStorage(size));
+    _cachedResponses = LruCache<String, Response>(storage: InMemoryStorage(size));
   }
 
   // TODO(harisarang): rename this function to getResponse
   /// Caches the response of the [request], identified by [key]. The cached
   /// response is valid till [cacheTTL].
   Future<Map<String, dynamic>> getResponse(
-    int key,
+    String key,
     defs.Request request,
   ) async {
     if (_cachedResponses.containsKey(key)) {
