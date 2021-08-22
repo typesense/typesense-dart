@@ -30,17 +30,16 @@ class ApiCall extends BaseApiCall<Map<String, dynamic>> {
     bool shouldCacheResult = false,
   }) =>
       shouldCacheResult && config.cachedSearchResultsTTL != Duration.zero
-          ? _requestCache.cache(
+          ? _requestCache.getResponse(
               // SplayTreeMap ensures order of the parameters is maintained so
               // cache key won't differ because of different ordering of
               // parameters.
-              '$endpoint${SplayTreeMap.from(queryParams)}'.hashCode,
-              send,
+              '$endpoint${SplayTreeMap.from(queryParams)}',
               (node) => node.client.get(
                 requestUri(node, endpoint, queryParams),
                 headers: defaultHeaders,
               ),
-              config.cachedSearchResultsTTL,
+              send,
             )
           : send((node) => node.client.get(
                 requestUri(node, endpoint, queryParams),
@@ -80,19 +79,17 @@ class ApiCall extends BaseApiCall<Map<String, dynamic>> {
     bool shouldCacheResult = false,
   }) =>
       shouldCacheResult && config.cachedSearchResultsTTL != Duration.zero
-          ? _requestCache.cache(
+          ? _requestCache.getResponse(
               // SplayTreeMap ensures order of the parameters is maintained so
               // cache key won't differ because of different ordering of
               // parameters.
-              '$endpoint${SplayTreeMap.from(queryParams)}${SplayTreeMap.from(additionalHeaders)}${json.encode(bodyParameters)}'
-                  .hashCode,
-              send,
+              '$endpoint${SplayTreeMap.from(queryParams)}${SplayTreeMap.from(additionalHeaders)}${json.encode(bodyParameters)}',
               (node) => node.client.post(
                 requestUri(node, endpoint, queryParams),
                 headers: {...defaultHeaders, ...additionalHeaders},
                 body: json.encode(bodyParameters),
               ),
-              config.cachedSearchResultsTTL,
+              send,
             )
           : send((node) => node.client.post(
                 requestUri(node, endpoint, queryParams),

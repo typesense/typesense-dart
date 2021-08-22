@@ -1,44 +1,36 @@
 import 'dart:collection';
+import 'package:dcache/dcache.dart';
 
-import 'package:http/http.dart' as http;
-
-import '../models/node.dart';
+import 'typedefs.dart';
 
 /// Cache store which uses a [HashMap] internally to serve requests.
 class RequestCache {
-  final _cachedResponses = HashMap<int, _Cache>();
+  Cache<String, Map<String, dynamic>> _cachedResponses;
+  final _cachedTimestamp = HashMap<String, DateTime>();
+  final Duration timeToUse;
+  final int size;
+
+  RequestCache(this.size, this.timeToUse) {
+    _cachedResponses = LruCache<String, Map<String, dynamic>>(storage: InMemoryStorage(size));
+  }
 
   /// Caches the response of the [request], identified by [key]. The cached
   /// response is valid till [cacheTTL].
-  Future<Map<String, dynamic>> cache(
-    int key,
-    Future<Map<String, dynamic>> Function(Future<http.Response> Function(Node))
-        send,
-    Future<http.Response> Function(Node) request,
-    Duration cacheTTL,
+  Future<Map<String, dynamic>> getResponse(
+    String key,
+    Request request,
+    Send<Map<String, dynamic>> send
   ) async {
-    if (_cachedResponses.containsKey(key)) {
-      if (_isCacheValid(_cachedResponses[key], cacheTTL)) {
-        // Cache entry is still valid, return it
-        return Future.value(_cachedResponses[key].data);
-      } else {
-        // Cache entry has expired, so delete it explicitly
-        _cachedResponses.remove(key);
-      }
+    if (_cachedResponses.containsKey(key) && _isCacheValid(key)) {
+      return Future<Map<String, dynamic>>.value(_cachedResponses.get(key));
     }
 
-    final response = await send(request);
-    _cachedResponses[key] = _Cache(response, DateTime.now());
+    var response = await send(request);
+    _cachedResponses.set(key, response);
+    _cachedTimestamp[key] = DateTime.now();
     return response;
   }
 
-  bool _isCacheValid(_Cache cache, Duration cacheTTL) =>
-      DateTime.now().difference(cache.creationTime) < cacheTTL;
-}
-
-class _Cache {
-  final DateTime creationTime;
-  final Map<String, dynamic> data;
-
-  const _Cache(this.data, this.creationTime);
+  bool _isCacheValid(String key) =>
+      DateTime.now().difference(_cachedTimestamp[key]) < timeToUse;
 }
