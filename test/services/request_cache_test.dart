@@ -58,7 +58,7 @@ void main() {
     test('has a getResponse method', () async {
       expect(
           await requestCache.getResponse(
-            '/value'.hashCode,
+            '/value',
             request,
           ),
           equals({'value': 'initial'}));
@@ -72,13 +72,13 @@ void main() {
     test('returns cached response', () async {
       expect(
           await requestCache.getResponse(
-            '/value'.hashCode,
+            '/value',
             request,
           ),
           equals({'value': 'initial'}));
       expect(
           await requestCache.getResponse(
-            '/value'.hashCode,
+            '/value',
             request,
           ),
           equals({'value': 'initial'}));
@@ -86,13 +86,13 @@ void main() {
     test('refreshes the cache after timeToUse duration', () async {
       expect(
           await requestCache.getResponse(
-            '/value'.hashCode,
+            '/value',
             request,
           ),
           equals({'value': 'initial'}));
       expect(
           await requestCache.getResponse(
-            '/value'.hashCode,
+            '/value',
             request,
           ),
           equals({'value': 'initial'}));
@@ -100,7 +100,7 @@ void main() {
       await Future.delayed(Duration(seconds: 1, milliseconds: 100));
       expect(
           await requestCache.getResponse(
-            '/value'.hashCode,
+            '/value',
             request,
           ),
           equals({'value': 'updated'}));
@@ -122,7 +122,7 @@ void main() {
       for (; i < 5; i++) {
         expect(
             await requestCache.getResponse(
-              i,
+              i.toString(),
               (node) => Future.value(mockResponses[i]),
             ),
             equals({'$i': '1'}));
@@ -133,7 +133,7 @@ void main() {
       for (; i < 5; i++) {
         expect(
             await requestCache.getResponse(
-              i,
+              i.toString(),
               (node) => Future.value(mockResponses[i]),
             ),
             equals({'$i': '1'}));
@@ -143,7 +143,7 @@ void main() {
       // should be evicted by the following call.
       expect(
           await requestCache.getResponse(
-            5,
+            5.toString(),
             (node) => Future.value(mockResponses[5]),
           ),
           equals({'5': '1'}));
@@ -154,7 +154,7 @@ void main() {
       for (; i < 5; i++) {
         expect(
             await requestCache.getResponse(
-              i,
+              i.toString(),
               (node) => Future.value(mockResponses[i]),
             ),
             equals({'$i': '2'}));

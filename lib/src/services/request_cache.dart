@@ -1,18 +1,18 @@
 import 'dart:collection';
 import 'package:dcache/dcache.dart';
-import 'package:http/http.dart';
+import 'package:http/http.dart' as http;
 
-import 'typedefs.dart' as defs;
+import 'typedefs.dart';
 
 /// Cache store which uses a [HashMap] internally to serve requests.
 class RequestCache {
-  Cache _cachedResponses;
+  Cache<String, Map<String, dynamic>> _cachedResponses;
   final Duration timeToUse;
   final int size;
-  final defs.Send<Map<String, dynamic>> send;
+  final Send<Map<String, dynamic>> send;
 
   RequestCache(this.size, this.timeToUse, this.send) {
-    _cachedResponses = LruCache<String, Response>(storage: InMemoryStorage(size));
+    _cachedResponses = LruCache<String, Map<String, dynamic>>(storage: InMemoryStorage(size));
   }
 
   // TODO(harisarang): rename this function to getResponse
@@ -20,10 +20,10 @@ class RequestCache {
   /// response is valid till [cacheTTL].
   Future<Map<String, dynamic>> getResponse(
     String key,
-    defs.Request request,
+    Request request,
   ) async {
     if (_cachedResponses.containsKey(key)) {
-      return send(_cachedResponses.get(key));
+      return Future<Map<String, dynamic>>.value(_cachedResponses.get(key));
     }
     
     var response = await send(request);
