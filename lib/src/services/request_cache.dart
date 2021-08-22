@@ -6,6 +6,7 @@ import 'typedefs.dart';
 /// Cache store which uses a [HashMap] internally to serve requests.
 class RequestCache {
   Cache<String, Map<String, dynamic>> _cachedResponses;
+  final _cachedTimestamp = HashMap<String, DateTime>();
   final Duration timeToUse;
   final int size;
 
@@ -20,12 +21,16 @@ class RequestCache {
     Request request,
     Send<Map<String, dynamic>> send
   ) async {
-    if (_cachedResponses.containsKey(key)) {
+    if (_cachedResponses.containsKey(key) && _isCacheValid(key)) {
       return Future<Map<String, dynamic>>.value(_cachedResponses.get(key));
     }
 
     var response = await send(request);
     _cachedResponses.set(key, response);
+    _cachedTimestamp[key] = DateTime.now();
     return response;
   }
+
+  bool _isCacheValid(String key) =>
+      DateTime.now().difference(_cachedTimestamp[key]) < timeToUse;
 }
