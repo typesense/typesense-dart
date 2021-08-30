@@ -1,15 +1,14 @@
 import 'package:test/test.dart';
 import 'package:mockito/mockito.dart';
 
-import 'package:typesense/src/services/api_call.dart';
 import 'package:typesense/src/synonym.dart';
 
-class MockApiCall extends Mock implements ApiCall {}
+import 'test_utils.mocks.dart';
 
 void main() {
   group('Synonym', () {
-    Synonym synonym;
-    MockApiCall mock;
+    late Synonym synonym;
+    late MockApiCall mock;
 
     setUp(() {
       mock = MockApiCall();

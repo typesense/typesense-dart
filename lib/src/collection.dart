@@ -46,7 +46,7 @@ class Collection {
     if (!_individualDocuments.containsKey(documentId)) {
       _individualDocuments[documentId] = Document(_name, documentId, _apiCall);
     }
-    return _individualDocuments[documentId];
+    return _individualDocuments[documentId]!;
   }
 
   Overrides get overrides => _overrides;
@@ -55,7 +55,7 @@ class Collection {
     if (!_individualOverrides.containsKey(overrideId)) {
       _individualOverrides[overrideId] = Override(_name, overrideId, _apiCall);
     }
-    return _individualOverrides[overrideId];
+    return _individualOverrides[overrideId]!;
   }
 
   Synonyms get synonyms => _synonyms;
@@ -64,7 +64,7 @@ class Collection {
     if (!_individualSynonyms.containsKey(synonymId)) {
       _individualSynonyms[synonymId] = Synonym(_name, synonymId, _apiCall);
     }
-    return _individualSynonyms[synonymId];
+    return _individualSynonyms[synonymId]!;
   }
 
   String get _endpointPath => '${Collections.resourcepath}/$_name';

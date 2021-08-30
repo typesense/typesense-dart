@@ -43,7 +43,7 @@ class Field extends Equatable {
 
     return Field(
       map['name'],
-      _getTypeFrom(map['type'], isMultivalued),
+      _Type.fromValue(map['type'], isMultivalued),
       isFacetable: map['facet'] ?? false,
       isOptional: map['optional'] ?? false,
       shouldIndex: map['index'] ?? true,
@@ -84,7 +84,7 @@ class Field extends Equatable {
 /// [Type.geopoint] is used to index locations, filter and sort on them.
 enum Type { string, int32, int64, float, bool, auto, stringify, geopoint }
 
-extension _TypeExtension on Type {
+extension _Type on Type {
   String value(bool isMultivalued) {
     switch (this) {
       case Type.string:
@@ -110,8 +110,8 @@ extension _TypeExtension on Type {
         return '';
     }
   }
-}
 
-Type _getTypeFrom(String value, bool isMultiValued) =>
-    Type.values.firstWhere((type) => value == type.value(isMultiValued),
-        orElse: () => throw ArgumentError('$value is not a defined Type.'));
+  static Type fromValue(String value, bool isMultiValued) =>
+      Type.values.firstWhere((type) => value == type.value(isMultiValued),
+          orElse: () => throw ArgumentError('$value is not a defined Type.'));
+}

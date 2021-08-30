@@ -21,7 +21,7 @@ class MultiSearch {
   /// To cache the search result locally, [Configuration.cachedSearchResultsTTL]
   /// must be specified.
   Future<Map<String, dynamic>> perform(Map<String, dynamic> searchRequests,
-      {Map<String, String> queryParams}) async {
+      {Map<String, String>? queryParams}) async {
     final additionalHeaders = <String, String>{};
     if (useTextContentType) {
       additionalHeaders[contentType] = 'text/plain';

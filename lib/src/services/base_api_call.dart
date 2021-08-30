@@ -21,7 +21,7 @@ const _apiKey = 'X-TYPESENSE-API-KEY';
 ///
 /// [R] stands for the response type that the sub-class implementing
 /// [BaseApiCall] promises.
-abstract class BaseApiCall<R extends Object> {
+abstract class BaseApiCall<R> {
   final Configuration config;
   final NodePool _nodePool;
   final Map<String, String> _defaultHeaders = {};
@@ -96,16 +96,16 @@ abstract class BaseApiCall<R extends Object> {
     }
   }
 
-  /// [responseBody] decoder specific to each implementation of [BaseApiCall].
+  /// [responseBody] decoder specific to the sub-class.
   R decode(String responseBody);
 
   /// Constructs the final [Uri] by combining the [Node.uri] with [endpoint] and
   /// [queryParams].
-  Uri requestUri(
+  Uri getRequestUri(
     Node node,
-    String endpoint,
-    Map<String, dynamic> queryParams,
-  ) =>
+    String endpoint, {
+    Map<String, dynamic>? queryParams,
+  }) =>
       Uri(
         scheme: node.uri.scheme,
         host: node.host,

@@ -1,15 +1,13 @@
 import 'package:test/test.dart';
 import 'package:mockito/mockito.dart';
 
-import 'package:typesense/src/services/api_call.dart';
-
 import 'package:typesense/src/health.dart';
 
-class MockApiCall extends Mock implements ApiCall {}
+import 'test_utils.mocks.dart';
 
 void main() {
-  Health health;
-  MockApiCall mock;
+  late Health health;
+  late MockApiCall mock;
 
   setUp(() {
     mock = MockApiCall();

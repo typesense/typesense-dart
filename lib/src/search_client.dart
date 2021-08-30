@@ -32,7 +32,8 @@ class SearchClient {
     );
 
     final nodePool = NodePool(config),
-        apiCall = ApiCall(config, nodePool, RequestCache());
+        apiCall = ApiCall(
+            config, nodePool, RequestCache(config.cachedSearchResultsTTL));
     return SearchClient._(
       config,
       apiCall,
@@ -47,6 +48,6 @@ class SearchClient {
       _individualCollections[collectionName] =
           Collection(collectionName, _apiCall, _documentsApiCall);
     }
-    return _individualCollections[collectionName];
+    return _individualCollections[collectionName]!;
   }
 }

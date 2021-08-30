@@ -3,17 +3,14 @@ import 'package:mockito/mockito.dart';
 
 import 'package:typesense/src/documents.dart';
 import 'package:typesense/src/services/api_call.dart';
-import 'package:typesense/src/services/documents_api_call.dart';
 import 'package:typesense/src/exceptions/exceptions.dart';
 
-class MockApiCall extends Mock implements ApiCall {}
-
-class MockDocumentsApiCall extends Mock implements DocumentsApiCall {}
+import 'test_utils.mocks.dart';
 
 void main() {
-  Documents documents;
-  MockApiCall mockApiCall;
-  MockDocumentsApiCall mockDocumentsApiCall;
+  late Documents documents;
+  late MockApiCall mockApiCall;
+  late MockDocumentsApiCall mockDocumentsApiCall;
 
   setUp(() {
     mockApiCall = MockApiCall();

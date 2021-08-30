@@ -2,26 +2,28 @@ import 'dart:convert';
 
 import 'package:test/test.dart';
 import 'package:mockito/mockito.dart';
+import 'package:mockito/annotations.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:typesense/src/services/request_cache.dart';
 import 'package:typesense/src/models/node.dart';
 
 import '../test_utils.dart';
+import 'request_cache_test.mocks.dart';
 
-class MockResponse extends Mock implements http.Response {}
-
+@GenerateMocks([http.Response])
 void main() {
   group('RequestCache', () {
-    RequestCache requestCache;
-    MockResponse mockResponse;
-    int requestNumber;
-    Future<Map<String, dynamic>> Function(Future<http.Response> Function(Node))
-        send;
-    Future<http.Response> Function(Node) request;
+    late RequestCache requestCache;
+    late MockResponse mockResponse;
+    late int requestNumber;
+    late Future<Map<String, dynamic>> Function(
+        Future<http.Response> Function(Node)) send;
+    late Future<http.Response> Function(Node) request;
     final cacheTTL = Duration(seconds: 1);
+
     setUp(() {
-      requestCache = RequestCache();
+      requestCache = RequestCache(cacheTTL);
       mockResponse = MockResponse();
       requestNumber = 1;
 
@@ -39,8 +41,8 @@ void main() {
       });
 
       send = (request) async {
-        final response = await request(
-            Node(protocol: protocol, host: host, path: pathToService));
+        final response =
+            await request(Node(protocol, host, path: pathToService));
         return json.decode(response.body);
       };
       request = (node) => Future.value(mockResponse);
@@ -49,46 +51,41 @@ void main() {
     test('caches the response', () async {
       expect(
           await requestCache.cache(
-            '/value'.hashCode,
+            '/value',
             send,
             request,
-            cacheTTL,
           ),
           equals({'value': 'initial'}));
       expect(
           await requestCache.cache(
-            '/value'.hashCode,
+            '/value',
             send,
             request,
-            cacheTTL,
           ),
           equals({'value': 'initial'}));
     });
     test('refreshes the cache after TTL duration', () async {
       expect(
           await requestCache.cache(
-            '/value'.hashCode,
+            '/value',
             send,
             request,
-            cacheTTL,
           ),
           equals({'value': 'initial'}));
       expect(
           await requestCache.cache(
-            '/value'.hashCode,
+            '/value',
             send,
             request,
-            cacheTTL,
           ),
           equals({'value': 'initial'}));
 
       await Future.delayed(Duration(seconds: 1, milliseconds: 100));
       expect(
           await requestCache.cache(
-            '/value'.hashCode,
+            '/value',
             send,
             request,
-            cacheTTL,
           ),
           equals({'value': 'updated'}));
     });

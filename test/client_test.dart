@@ -17,7 +17,7 @@ import 'package:typesense/src/multi_search.dart';
 import 'test_utils.dart';
 
 void main() {
-  Client client;
+  late Client client;
 
   setUp(() {
     client = Client(ConfigurationFactory.withNearestNode());

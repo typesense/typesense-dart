@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import '../exceptions/exceptions.dart';
 
 class Node {
-  final Uri uri;
+  late final Uri uri;
 
   bool isHealthy = true;
 
@@ -17,17 +17,15 @@ class Node {
   /// http [client] associated with the [Node], used to complete requests.
   http.Client? client;
 
-  Node._(this.uri, {this.client});
-
-  factory Node(
+  Node(
     Protocol protocol,
     String host, {
     int? port,
     String path = '',
-    http.Client? client,
+    this.client,
   }) {
     if (host.isEmpty) {
-      throw MissingConfiguration('Ensure that Node.host is set');
+      throw MissingConfiguration('Ensure that Node.host is not empty');
     }
 
     if (port == null) {
@@ -41,13 +39,21 @@ class Node {
       }
     }
 
-    return Node._(
-      Uri.parse('${protocol.value()}://$host:$port$path'),
-      client: client,
+    uri = Uri(
+      scheme: protocol.value(),
+      host: host,
+      port: port,
+      path: path,
     );
   }
 
-  Protocol get protocol => _ProtocolsExtension.fromValue(uri.scheme);
+  Node.withUri(this.uri, {this.client}) {
+    if (host.isEmpty) {
+      throw MissingConfiguration('Ensure that Node.host is not empty');
+    }
+  }
+
+  Protocol get protocol => _Protocol.fromValue(uri.scheme);
   String get host => uri.host;
   int get port => uri.port;
   String get path => uri.path;
@@ -72,7 +78,7 @@ enum Protocol {
   https,
 }
 
-extension _ProtocolsExtension on Protocol {
+extension _Protocol on Protocol {
   String value() => toString().split('.')[1];
 
   static Protocol fromValue(String value) {

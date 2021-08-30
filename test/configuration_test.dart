@@ -5,23 +5,24 @@ import 'package:typesense/src/configuration.dart';
 import 'package:typesense/src/models/node.dart';
 import 'package:typesense/src/exceptions/exceptions.dart'
     show MissingConfiguration;
+import 'package:typesense/typesense.dart';
+
+import 'test_utils.dart';
 
 void main() {
-  // TODO: Import configuration objects from test_utils and use copyWith to fit
-  // the scenario.
   final config = Configuration(
     'abc123',
     nodes: {
       Node(
         Protocol.https,
         'localhost',
-        path: '/path/to/service',
+        path: pathToService,
       ),
     },
     nearestNode: Node(
       Protocol.http,
       'localhost',
-      path: '/path/to/service',
+      path: pathToService,
     ),
     connectionTimeout: Duration(seconds: 10),
     healthcheckInterval: Duration(seconds: 5),
@@ -98,18 +99,8 @@ void main() {
           '',
           connectionTimeout: Duration(seconds: 10),
           healthcheckInterval: Duration(seconds: 5),
-          nearestNode: Node(
-            Protocol.http,
-            'localhost',
-            path: '/path/to/service',
-          ),
-          nodes: {
-            Node(
-              Protocol.https,
-              'localhost',
-              path: '/path/to/service',
-            ),
-          },
+          nearestNode: NearestNode,
+          nodes: {MockNode},
           numRetries: 5,
           retryInterval: Duration(seconds: 3),
           sendApiKeyAsQueryParam: true,
@@ -149,18 +140,8 @@ void main() {
         'abc123',
         connectionTimeout: Duration(seconds: 10),
         healthcheckInterval: Duration(seconds: 5),
-        nearestNode: Node(
-          Protocol.http,
-          'localhost',
-          path: '/path/to/service',
-        ),
-        nodes: {
-          Node(
-            Protocol.https,
-            'localhost',
-            path: '/path/to/service',
-          ),
-        },
+        nearestNode: NearestNode,
+        nodes: {MockNode},
         retryInterval: Duration(seconds: 3),
         sendApiKeyAsQueryParam: true,
       );
@@ -173,18 +154,8 @@ void main() {
         'abc123',
         connectionTimeout: Duration(seconds: 10),
         healthcheckInterval: Duration(seconds: 5),
-        nearestNode: Node(
-          Protocol.http,
-          'localhost',
-          path: '/path/to/service',
-        ),
-        nodes: {
-          Node(
-            Protocol.https,
-            'localhost',
-            path: '/path/to/service',
-          ),
-        },
+        nearestNode: NearestNode,
+        nodes: {MockNode},
         numRetries: 5,
         sendApiKeyAsQueryParam: true,
       );
@@ -195,18 +166,8 @@ void main() {
       final config = Configuration(
         'abc123',
         healthcheckInterval: Duration(seconds: 5),
-        nearestNode: Node(
-          Protocol.http,
-          'localhost',
-          path: '/path/to/service',
-        ),
-        nodes: {
-          Node(
-            Protocol.https,
-            'localhost',
-            path: '/path/to/service',
-          ),
-        },
+        nearestNode: NearestNode,
+        nodes: {MockNode},
         numRetries: 5,
         retryInterval: Duration(seconds: 3),
         sendApiKeyAsQueryParam: true,
@@ -219,18 +180,8 @@ void main() {
       final config = Configuration(
         'abc123',
         connectionTimeout: Duration(seconds: 10),
-        nearestNode: Node(
-          Protocol.http,
-          'localhost',
-          path: '/path/to/service',
-        ),
-        nodes: {
-          Node(
-            Protocol.https,
-            'localhost',
-            path: '/path/to/service',
-          ),
-        },
+        nearestNode: NearestNode,
+        nodes: {MockNode},
         numRetries: 5,
         retryInterval: Duration(seconds: 3),
         sendApiKeyAsQueryParam: true,
@@ -242,18 +193,8 @@ void main() {
         () {
       final config = Configuration(
         'abc123',
-        nodes: {
-          Node(
-            Protocol.https,
-            'localhost',
-            path: '/path/to/service',
-          ),
-        },
-        nearestNode: Node(
-          Protocol.http,
-          'localhost',
-          path: '/path/to/service',
-        ),
+        nearestNode: NearestNode,
+        nodes: {MockNode},
         connectionTimeout: Duration(seconds: 10),
         healthcheckInterval: Duration(seconds: 5),
         numRetries: 5,
@@ -269,18 +210,8 @@ void main() {
         'abc123',
         connectionTimeout: Duration(seconds: 10),
         healthcheckInterval: Duration(seconds: 5),
-        nearestNode: Node(
-          Protocol.http,
-          'localhost',
-          path: '/path/to/service',
-        ),
-        nodes: {
-          Node(
-            Protocol.https,
-            'localhost',
-            path: '/path/to/service',
-          ),
-        },
+        nearestNode: NearestNode,
+        nodes: {MockNode},
         numRetries: 5,
         retryInterval: Duration(seconds: 3),
       );

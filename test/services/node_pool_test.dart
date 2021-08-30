@@ -7,7 +7,7 @@ import '../test_utils.dart';
 
 void main() {
   group('NodePool', () {
-    NodePool nodePool;
+    late NodePool nodePool;
     setUp(() {
       nodePool = NodePool(ConfigurationFactory.withoutNearestNode());
     });
@@ -16,8 +16,8 @@ void main() {
       expect(
           nodePool.nextNode,
           equals(Node(
-            protocol: protocol,
-            host: host,
+            protocol,
+            host,
             port: mockServerPort,
             path: pathToService,
           )));
@@ -34,14 +34,14 @@ void main() {
   group('NodePool.nextNode', () {
     test('returns a node even when all the nodes are unhealthy', () {
       final node1 = Node(
-            protocol: protocol,
-            host: host,
+            protocol,
+            host,
             port: nearestServerPort,
             path: pathToService,
           ),
           node2 = Node(
-            protocol: protocol,
-            host: host,
+            protocol,
+            host,
             port: mockServerPort,
             path: pathToService,
           ),
@@ -60,8 +60,8 @@ void main() {
         expect(
             node,
             equals(Node(
-              protocol: protocol,
-              host: host,
+              protocol,
+              host,
               port: nearestServerPort,
               path: pathToService,
             )));
@@ -73,23 +73,24 @@ void main() {
       expect(
           node,
           equals(Node(
-            protocol: protocol,
-            host: host,
+            protocol,
+            host,
             port: mockServerPort, // nearest node is not returned
             path: pathToService,
           )));
       NodePool.setNodeHealthStatus(node, true, DateTime.now());
     });
+    test('return ', () {});
     test('loops through nodes if nearest node is absent', () {
       final node1 = Node(
-            protocol: protocol,
-            host: host,
+            protocol,
+            host,
             port: nearestServerPort,
             path: pathToService,
           ),
           node2 = Node(
-            protocol: protocol,
-            host: host,
+            protocol,
+            host,
             port: mockServerPort,
             path: pathToService,
           ),
@@ -110,14 +111,14 @@ void main() {
         'reconsiders an unhealthy node after Configuration.healthcheckInterval',
         () async {
       final node1 = Node(
-            protocol: protocol,
-            host: host,
+            protocol,
+            host,
             port: nearestServerPort,
             path: pathToService,
           ),
           node2 = Node(
-            protocol: protocol,
-            host: host,
+            protocol,
+            host,
             port: mockServerPort,
             path: pathToService,
           ),

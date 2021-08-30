@@ -4,16 +4,12 @@ import 'dart:convert';
 import 'package:test/test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
-import 'package:mockito/mockito.dart';
 
 import 'package:typesense/src/services/collections_api_call.dart';
 import 'package:typesense/src/services/node_pool.dart';
-import 'package:typesense/src/models/node.dart';
 import 'package:typesense/src/exceptions/exceptions.dart';
 
 import '../test_utils.dart';
-
-class MockResponse extends Mock implements http.Response {}
 
 void main() {
   group('CollectionsApiCall', () {
@@ -63,7 +59,7 @@ void main() {
               expect(
                   request.url.toString(),
                   equals(
-                      '$protocol://$host:$mockServerPort$pathToService/collections?'));
+                      'http://$host:$mockServerPort$pathToService/collections?'));
               expect(request.method, equals('GET'));
               expect(request.headers[apiKeyLabel], equals(apiKey));
 
@@ -80,42 +76,37 @@ void main() {
           equals(schemas));
     });
     test('has a send method', () async {
-      final config = ConfigurationFactory.withNearestNode(),
+      final client = MockClient(
+            (request) async {
+              return http.Response(json.encode(schemas), 200, request: request);
+            },
+          ),
+          config = ConfigurationFactory.withNearestNode(mockClient: client),
           nodePool = NodePool(config),
-          collectionsApiCall = CollectionsApiCall(config, nodePool),
-          mockReponse = MockResponse();
-      when(mockReponse.statusCode).thenAnswer((realInvocation) => 200);
-      when(mockReponse.body)
-          .thenAnswer((realInvocation) => json.encode(schemas));
+          collectionsApiCall = CollectionsApiCall(config, nodePool);
 
-      expect(await collectionsApiCall.send((node) => Future.value(mockReponse)),
+      expect(
+          await collectionsApiCall.send((node) => node.client!.get(
+                Uri.http("example.org", "/path"),
+              )),
           equals(schemas));
     });
-    test('has a handleNodeResponse method', () {
+    test('has a decode method', () {
       final config = ConfigurationFactory.withNearestNode(),
           nodePool = NodePool(config),
-          collectionsApiCall = CollectionsApiCall(config, nodePool),
-          mockReponse = MockResponse();
-      when(mockReponse.statusCode).thenAnswer((realInvocation) => 200);
-      when(mockReponse.body)
-          .thenAnswer((realInvocation) => json.encode(schemas));
+          collectionsApiCall = CollectionsApiCall(config, nodePool);
 
-      expect(collectionsApiCall.decode(mockReponse.body), equals(schemas));
+      expect(collectionsApiCall.decode(json.encode(schemas)), equals(schemas));
     });
     test('has a requestUri method', () {
       final config = ConfigurationFactory.withNearestNode(),
           nodePool = NodePool(config);
       expect(
-          CollectionsApiCall(config, nodePool).requestUri(
-              Node(
-                  protocol: protocol,
-                  host: host,
-                  port: nearestServerPort,
-                  path: pathToService),
-              '/endpoint',
-              {'howCool': 'isThat'}).toString(),
+          CollectionsApiCall(config, nodePool).getRequestUri(
+              NearestNode, '/endpoint',
+              queryParams: {'howCool': 'isThat'}).toString(),
           equals(
-              '$protocol://$host:$nearestServerPort$pathToService/endpoint?howCool=isThat'));
+              'http://$host:$nearestServerPort$pathToService/endpoint?howCool=isThat'));
     });
   });
 
@@ -172,27 +163,9 @@ void main() {
               }
             },
           ),
-          node1 = Node(
-            client: client,
-            protocol: protocol,
-            host: host,
-            port: nearestServerPort,
-            path: pathToService,
-          ),
-          node2 = Node(
-            client: client,
-            protocol: protocol,
-            host: host,
-            port: mockServerPort,
-            path: pathToService,
-          ),
-          node3 = Node(
-            client: client,
-            protocol: protocol,
-            host: host,
-            port: unavailableServerPort,
-            path: pathToService,
-          ),
+          node1 = NearestNode.copyWith(client: client),
+          node2 = MockNode.copyWith(client: client),
+          node3 = UnavailableNode.copyWith(client: client),
           config = ConfigurationFactory.withoutNearestNode(
             nodes: {node1, node2, node3},
             retryInterval: Duration.zero,
@@ -200,11 +173,8 @@ void main() {
           nodePool = NodePool(config);
 
       expect(node1.isHealthy, isTrue);
-      expect(node1.lastAccessTimestamp, isNull);
       expect(node2.isHealthy, isTrue);
-      expect(node2.lastAccessTimestamp, isNull);
       expect(node3.isHealthy, isTrue);
-      expect(node3.lastAccessTimestamp, isNull);
 
       final now = DateTime.now();
       await CollectionsApiCall(config, nodePool).get('/health/status/test');
@@ -218,7 +188,7 @@ void main() {
     });
     test('retries a request after Configuration.retryInterval duration',
         () async {
-      DateTime firstRequestTime, secondRequestTime;
+      DateTime? firstRequestTime, secondRequestTime;
       final retryInterval = Duration(milliseconds: 900),
           client = MockClient(
             (request) async {
@@ -239,7 +209,7 @@ void main() {
 
       await CollectionsApiCall(config, nodePool).get('/retry/interval/test');
       // Atleast [retryInterval] delay between requests.
-      expect(secondRequestTime.difference(firstRequestTime) > retryInterval,
+      expect(secondRequestTime!.difference(firstRequestTime!) > retryInterval,
           isTrue);
     });
     test(
