@@ -57,8 +57,10 @@ Future<void> create(Client client) async {
         await client.collection('companies').documents.create(_documents[0]));
 
     await writePropagationDelay();
-  } catch (e, stackTrace) {
+  } on RequestException catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
+  } catch (e, stackTrace) {
+    log.severe(e, stackTrace);
   }
 }
 
@@ -69,8 +71,10 @@ Future<void> upsert(Client client) async {
         await client.collection('companies').documents.upsert(_documents[0]));
 
     await writePropagationDelay();
-  } catch (e, stackTrace) {
+  } on RequestException catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
+  } catch (e, stackTrace) {
+    log.severe(e, stackTrace);
   }
 }
 
@@ -90,8 +94,10 @@ Future<void> search(Client client) async {
         .collection('companies')
         .documents
         .search(searchParameters));
-  } catch (e, stackTrace) {
+  } on RequestException catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
+  } catch (e, stackTrace) {
+    log.severe(e, stackTrace);
   }
 }
 
@@ -101,8 +107,10 @@ Future<void> delete(Client client) async {
     log.fine(await client.collection('companies').document('124').delete());
 
     await writePropagationDelay();
-  } catch (e, stackTrace) {
+  } on RequestException catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
+  } catch (e, stackTrace) {
+    log.severe(e, stackTrace);
   }
 }
 
@@ -110,15 +118,17 @@ Future<void> retrieve(Client client) async {
   try {
     logInfoln(log, 'Retrieving document "124".');
     log.fine(await client.collection('companies').document('124').retrieve());
-  } catch (e, stackTrace) {
+  } on RequestException catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
+  } catch (e, stackTrace) {
+    log.severe(e, stackTrace);
   }
 }
 
 Future<void> importDocs(
   Client client, [
   String collectionName = 'companies',
-  List<Map<String, Object>> documents,
+  List<Map<String, Object>>? documents,
 ]) async {
   try {
     logInfoln(log, 'Importing documents.');
@@ -128,14 +138,16 @@ Future<void> importDocs(
         .importDocuments(documents ?? _documents));
 
     await writePropagationDelay();
-  } catch (e, stackTrace) {
+  } on RequestException catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
+  } catch (e, stackTrace) {
+    log.severe(e, stackTrace);
   }
 }
 
 Future<void> importJSONL(
   Client client, [
-  String JSONL,
+  String? JSONL,
 ]) async {
   try {
     final file = File('assets/documents.jsonl');
@@ -147,8 +159,10 @@ Future<void> importJSONL(
         .importJSONL(JSONL ?? file.readAsStringSync()));
 
     await writePropagationDelay();
-  } catch (e, stackTrace) {
+  } on RequestException catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
+  } catch (e, stackTrace) {
+    log.severe(e, stackTrace);
   }
 }
 
@@ -161,8 +175,10 @@ Future<void> update(Client client) async {
         .update({'num_employees': 5500}));
 
     await writePropagationDelay();
-  } catch (e, stackTrace) {
+  } on RequestException catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
+  } catch (e, stackTrace) {
+    log.severe(e, stackTrace);
   }
 }
 
@@ -170,8 +186,10 @@ Future<void> export(Client client) async {
   try {
     logInfoln(log, 'Exporting documents of "companies".');
     log.fine(await client.collection('companies').documents.exportJSONL());
-  } catch (e, stackTrace) {
+  } on RequestException catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
+  } catch (e, stackTrace) {
+    log.severe(e, stackTrace);
   }
 }
 
@@ -184,8 +202,10 @@ Future<void> exportByQuery(Client client) async {
         .exportJSONL(queryParams: {'filter_by': 'num_employees:>1000'}));
 
     await writePropagationDelay();
-  } catch (e, stackTrace) {
+  } on RequestException catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
+  } catch (e, stackTrace) {
+    log.severe(e, stackTrace);
   }
 }
 
@@ -198,8 +218,10 @@ Future<void> deleteByQuery(Client client) async {
         .delete({'filter_by': 'num_employees:>100'}));
 
     await writePropagationDelay();
-  } catch (e, stackTrace) {
+  } on RequestException catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
+  } catch (e, stackTrace) {
+    log.severe(e, stackTrace);
   }
 }
 
@@ -212,7 +234,9 @@ Future<void> dirtyData(Client client) async {
         .create(_dirtyDocument, options: {'dirty_values': 'coerce_or_reject'}));
 
     await writePropagationDelay();
-  } catch (e, stackTrace) {
+  } on RequestException catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
+  } catch (e, stackTrace) {
+    log.severe(e, stackTrace);
   }
 }

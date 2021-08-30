@@ -13,7 +13,7 @@ Future<void> runExample(Client client) async {
   await delete(client);
 }
 
-Future<void> create(Client client, [Schema schema]) async {
+Future<void> create(Client client, [Schema? schema]) async {
   final _schema = Schema(
         'companies',
         {
@@ -39,7 +39,7 @@ Future<void> create(Client client, [Schema schema]) async {
       await create(client, schema);
     }
   } catch (e, stackTrace) {
-    log.severe(e.message, e, stackTrace);
+    log.severe(e, stackTrace);
   }
 }
 
@@ -50,8 +50,10 @@ Future<void> delete(Client client,
     log.fine(await client.collection(collectionName).delete());
 
     await writePropagationDelay();
-  } catch (e, stackTrace) {
+  } on RequestException catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
+  } catch (e, stackTrace) {
+    log.severe(e, stackTrace);
   }
 }
 
@@ -59,8 +61,10 @@ Future<void> retrieve(Client client) async {
   try {
     logInfoln(log, 'Retrieving "companies" collection.');
     log.fine(await client.collection('companies').retrieve());
-  } catch (e, stackTrace) {
+  } on RequestException catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
+  } catch (e, stackTrace) {
+    log.severe(e, stackTrace);
   }
 }
 
@@ -68,7 +72,9 @@ Future<void> retrieveAll(Client client) async {
   try {
     logInfoln(log, 'Retrieving all collections.');
     log.fine(await client.collections.retrieve());
-  } catch (e, stackTrace) {
+  } on RequestException catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
+  } catch (e, stackTrace) {
+    log.severe(e, stackTrace);
   }
 }

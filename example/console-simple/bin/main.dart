@@ -29,10 +29,12 @@ void main() async {
         host,
         port: 7108,
       ),
-      Node(
-        protocol,
-        host,
-        port: 8108,
+      Node.withUri(
+        Uri(
+          scheme: 'http',
+          host: host,
+          port: 8108,
+        ),
       ),
       Node(
         protocol,

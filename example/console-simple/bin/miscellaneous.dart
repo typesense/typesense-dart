@@ -17,8 +17,10 @@ Future<void> metrics(Client client) async {
   try {
     logInfoln(log, 'Retrieving node metrics.');
     log.fine(await client.metrics.retrieve());
-  } catch (e, stackTrace) {
+  } on RequestException catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
+  } catch (e, stackTrace) {
+    log.severe(e, stackTrace);
   }
 }
 
@@ -26,8 +28,10 @@ Future<void> health(Client client) async {
   try {
     logInfoln(log, 'Retrieving node health status.');
     log.fine(await client.health.retrieve());
-  } catch (e, stackTrace) {
+  } on RequestException catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
+  } catch (e, stackTrace) {
+    log.severe(e, stackTrace);
   }
 }
 
@@ -35,7 +39,9 @@ Future<void> stats(Client client) async {
   try {
     logInfoln(log, 'Retrieving api stats.');
     log.fine(await client.stats.retrieve());
-  } catch (e, stackTrace) {
+  } on RequestException catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
+  } catch (e, stackTrace) {
+    log.severe(e, stackTrace);
   }
 }
