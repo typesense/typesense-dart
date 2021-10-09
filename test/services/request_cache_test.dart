@@ -6,7 +6,7 @@ import 'package:mockito/annotations.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:typesense/src/services/request_cache.dart';
-import 'package:typesense/src/models/node.dart';
+import 'package:typesense/src/models/models.dart';
 
 import '../test_utils.dart';
 import 'request_cache_test.mocks.dart';

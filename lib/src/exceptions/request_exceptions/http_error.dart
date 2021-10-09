@@ -1,4 +1,4 @@
-import 'request_exception.dart';
+part of exceptions;
 
 /// The request has failed because of some network layer issues like
 /// connection timeouts, etc.

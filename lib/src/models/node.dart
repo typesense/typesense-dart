@@ -1,6 +1,4 @@
-import 'package:http/http.dart' as http;
-
-import '../exceptions/exceptions.dart';
+part of models;
 
 class Node {
   late final Uri uri;

@@ -5,7 +5,7 @@ import 'package:http/testing.dart';
 import 'package:mockito/annotations.dart';
 
 import 'package:typesense/src/configuration.dart';
-import 'package:typesense/src/models/node.dart';
+import 'package:typesense/src/models/models.dart';
 import 'package:typesense/src/services/api_call.dart';
 import 'package:typesense/src/services/documents_api_call.dart';
 import 'package:typesense/src/services/collections_api_call.dart';

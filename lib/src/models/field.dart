@@ -1,4 +1,4 @@
-import 'package:equatable/equatable.dart';
+part of models;
 
 class Field extends Equatable {
   /// [name] of the field.

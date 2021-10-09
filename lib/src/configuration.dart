@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 
 import 'exceptions/exceptions.dart' show MissingConfiguration;
-import 'models/node.dart';
+import 'models/models.dart';
 
 class Configuration extends Equatable {
   final String apiKey;

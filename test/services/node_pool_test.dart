@@ -1,7 +1,7 @@
 import 'package:test/test.dart';
 
 import 'package:typesense/src/services/node_pool.dart';
-import 'package:typesense/src/models/node.dart';
+import 'package:typesense/src/models/models.dart';
 
 import '../test_utils.dart';
 

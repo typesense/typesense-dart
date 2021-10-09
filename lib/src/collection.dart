@@ -1,6 +1,6 @@
 import 'dart:collection';
 
-import 'models/schema.dart';
+import 'models/models.dart';
 import 'document.dart';
 import 'override.dart';
 import 'synonym.dart';

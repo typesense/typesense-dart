@@ -1,4 +1,4 @@
-import 'request_exception.dart';
+part of exceptions;
 
 /// 409 Conflict
 class ObjectAlreadyExists extends RequestException {

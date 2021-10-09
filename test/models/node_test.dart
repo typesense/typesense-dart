@@ -1,7 +1,7 @@
 import 'package:test/test.dart';
 import 'package:http/http.dart' as http;
 
-import 'package:typesense/src/models/node.dart';
+import 'package:typesense/src/models/models.dart';
 import 'package:typesense/src/exceptions/exceptions.dart'
     show MissingConfiguration;
 

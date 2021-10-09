@@ -1,4 +1,4 @@
-import 'field.dart';
+part of models;
 
 class Schema {
   /// [name] of the collection.

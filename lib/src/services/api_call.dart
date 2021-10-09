@@ -8,7 +8,7 @@ import 'base_api_call.dart';
 import 'node_pool.dart';
 import 'request_cache.dart';
 import '../configuration.dart';
-import '../models/node.dart';
+import '../models/models.dart';
 
 export 'base_api_call.dart' show contentType;
 

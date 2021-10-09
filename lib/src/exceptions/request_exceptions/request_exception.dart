@@ -1,4 +1,4 @@
-import '../typesense_exception.dart';
+part of exceptions;
 
 abstract class RequestException implements TypesenseException {
   final String message;

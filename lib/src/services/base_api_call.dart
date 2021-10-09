@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 
 import 'node_pool.dart';
 import '../configuration.dart';
-import '../models/node.dart';
+import '../models/models.dart';
 import '../exceptions/exceptions.dart';
 
 /// Key to set the content-type of the request in `additionalHeaders` map.

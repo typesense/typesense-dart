@@ -1,6 +1,6 @@
 import 'package:test/test.dart';
 
-import 'package:typesense/src/models/field.dart';
+import 'package:typesense/src/models/models.dart';
 
 void main() {
   group('Field', () {

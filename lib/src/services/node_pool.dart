@@ -1,8 +1,8 @@
 import 'package:http/http.dart' as http;
 
 import '../configuration.dart';
-import '../models/node.dart';
-import '../exceptions/missing_configuration.dart';
+import '../models/models.dart';
+import '../exceptions/exceptions.dart';
 
 /// Regulates the ciculation of the nodes specified in the [Configuration].
 class NodePool {

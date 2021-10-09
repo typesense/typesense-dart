@@ -1,13 +1,15 @@
-export 'typesense_exception.dart';
+library exceptions;
 
-export 'import_error.dart';
-export 'missing_configuration.dart';
+part 'typesense_exception.dart';
 
-export 'request_exceptions/request_exception.dart';
-export 'request_exceptions/http_error.dart';
-export 'request_exceptions/object_already_exists.dart';
-export 'request_exceptions/object_not_found.dart';
-export 'request_exceptions/object_unprocessable.dart';
-export 'request_exceptions/request_malformed.dart';
-export 'request_exceptions/request_unauthorized.dart';
-export 'request_exceptions/server_error.dart';
+part 'import_error.dart';
+part 'missing_configuration.dart';
+
+part 'request_exceptions/request_exception.dart';
+part 'request_exceptions/http_error.dart';
+part 'request_exceptions/object_already_exists.dart';
+part 'request_exceptions/object_not_found.dart';
+part 'request_exceptions/object_unprocessable.dart';
+part 'request_exceptions/request_malformed.dart';
+part 'request_exceptions/request_unauthorized.dart';
+part 'request_exceptions/server_error.dart';

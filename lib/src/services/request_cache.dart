@@ -2,7 +2,7 @@ import 'dart:collection';
 
 import 'package:http/http.dart' as http;
 
-import '../models/node.dart';
+import '../models/models.dart';
 
 /// Cache store which uses a Map internally to serve requests.
 class RequestCache {
