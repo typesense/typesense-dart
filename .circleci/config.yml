@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  codecov: codecov/codecov@1.2.3
+  codecov: codecov/codecov@1.2.5
 
 commands:
   dependencies:
@@ -26,7 +26,9 @@ jobs:
           shell: "/bin/bash -eo pipefail"
       - run:
           name: Run tests
-          command: pub run test
+          command: |
+            dart run build_runner build
+            pub run test
 
 workflows:
   version: 2.1
