@@ -4,31 +4,31 @@ import 'dart:convert';
 import 'package:test/test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
-import 'package:mockito/mockito.dart';
 
 import 'package:typesense/src/services/api_call.dart';
 import 'package:typesense/src/services/node_pool.dart';
 import 'package:typesense/src/services/request_cache.dart';
-import 'package:typesense/src/models/node.dart';
 import 'package:typesense/src/exceptions/exceptions.dart';
 
 import '../test_utils.dart';
 
-class MockResponse extends Mock implements http.Response {}
-
 void main() {
   group('ApiCall', () {
-    final requestCache = RequestCache();
+    final requestCache = RequestCache(Duration.zero);
     const companyCollection = {
-      "name": "companies",
-      "num_documents": 0,
-      "fields": [
-        {"name": "company_name", "type": "string"},
-        {"name": "num_employees", "type": "int32"},
-        {"name": "country", "type": "string", "facet": true}
-      ],
-      "default_sorting_field": "num_employees"
-    };
+          "name": "companies",
+          "num_documents": 0,
+          "fields": [
+            {"name": "company_name", "type": "string"},
+            {"name": "num_employees", "type": "int32"},
+            {"name": "country", "type": "string", "facet": true}
+          ],
+          "default_sorting_field": "num_employees"
+        },
+        companiesAlias = {
+          'name': 'companies',
+          'collection_name': 'companies_june11',
+        };
     test('has a contentType constant', () {
       expect(contentType, equals('Content-Type'));
     });
@@ -36,6 +36,7 @@ void main() {
       final config = ConfigurationFactory.withNearestNode(),
           nodePool = NodePool(config),
           apiCall = ApiCall(config, nodePool, requestCache);
+
       expect(apiCall.defaultHeaders,
           equals({apiKeyLabel: apiKey, contentType: 'application/json'}));
     });
@@ -44,19 +45,16 @@ void main() {
               sendApiKeyAsQueryParam: true),
           nodePool = NodePool(config),
           apiCall = ApiCall(config, nodePool, requestCache);
+
       expect(apiCall.defaultQueryParameters, equals({apiKeyLabel: apiKey}));
     });
     test('has a get method', () async {
-      final companiesAlias = {
-            'name': 'companies',
-            'collection_name': 'companies_june11',
-          },
-          client = MockClient(
+      final client = MockClient(
             (request) async {
               expect(
                   request.url.toString(),
                   equals(
-                      '$protocol://$host:$mockServerPort$pathToService/aliases/companies?'));
+                      'http://$host:$mockServerPort$pathToService/aliases/companies?'));
               expect(request.method, equals('GET'));
               expect(request.headers[apiKeyLabel], equals(apiKey));
 
@@ -74,16 +72,12 @@ void main() {
           equals(companiesAlias));
     });
     test('has a delete method', () async {
-      final companiesAlias = {
-            'name': 'companies',
-            'collection_name': 'companies_june11',
-          },
-          client = MockClient(
+      final client = MockClient(
             (request) async {
               expect(
                   request.url.toString(),
                   equals(
-                      '$protocol://$host:$mockServerPort$pathToService/aliases/companies?'));
+                      'http://$host:$mockServerPort$pathToService/aliases/companies?'));
               expect(request.method, equals('DELETE'));
               expect(request.headers[apiKeyLabel], equals(apiKey));
 
@@ -106,7 +100,7 @@ void main() {
               expect(
                   request.url.toString(),
                   equals(
-                      '$protocol://$host:$mockServerPort$pathToService/collections?'));
+                      'http://$host:$mockServerPort$pathToService/collections?'));
               expect(request.method, equals('POST'));
               expect(request.headers[apiKeyLabel], equals(apiKey));
               expect(
@@ -127,16 +121,12 @@ void main() {
           equals(companyCollection));
     });
     test('has a put method', () async {
-      final companiesAlias = {
-            'name': 'companies',
-            'collection_name': 'companies_june11',
-          },
-          client = MockClient(
+      final client = MockClient(
             (request) async {
               expect(
                   request.url.toString(),
                   equals(
-                      '$protocol://$host:$mockServerPort$pathToService/aliases/companies?'));
+                      'http://$host:$mockServerPort$pathToService/aliases/companies?'));
               expect(request.method, equals('PUT'));
               expect(request.headers[apiKeyLabel], equals(apiKey));
               expect(
@@ -166,7 +156,7 @@ void main() {
               expect(
                   request.url.toString(),
                   equals(
-                      '$protocol://$host:$mockServerPort$pathToService/collections/companies/documents/124?'));
+                      'http://$host:$mockServerPort$pathToService/collections/companies/documents/124?'));
               expect(request.method, equals('PATCH'));
               expect(request.headers[apiKeyLabel], equals(apiKey));
               expect(
@@ -187,49 +177,49 @@ void main() {
           equals(partialDocument));
     });
     test('has a send method', () async {
-      final config = ConfigurationFactory.withNearestNode(),
+      final client = MockClient(
+            (request) async {
+              return http.Response(json.encode(companyCollection), 200,
+                  request: request);
+            },
+          ),
+          config = ConfigurationFactory.withNearestNode(mockClient: client),
           nodePool = NodePool(config),
-          apiCall = ApiCall(config, nodePool, requestCache),
-          mockReponse = MockResponse();
-      when(mockReponse.statusCode).thenAnswer((realInvocation) => 200);
-      when(mockReponse.body)
-          .thenAnswer((realInvocation) => json.encode(companyCollection));
+          apiCall = ApiCall(config, nodePool, requestCache);
 
-      expect(await apiCall.send((node) => Future.value(mockReponse)),
+      expect(
+          await apiCall.send((node) => node.client!.post(
+                Uri.http("example.org", "/path"),
+              )),
           equals(companyCollection));
     });
     test('has a decode method', () {
       final config = ConfigurationFactory.withNearestNode(),
           nodePool = NodePool(config),
-          apiCall = ApiCall(config, nodePool, requestCache),
-          mockReponse = MockResponse();
-      when(mockReponse.statusCode).thenAnswer((realInvocation) => 200);
-      when(mockReponse.body)
-          .thenAnswer((realInvocation) => json.encode(companyCollection));
+          apiCall = ApiCall(config, nodePool, requestCache);
 
-      expect(apiCall.decode(mockReponse.body), equals(companyCollection));
+      expect(apiCall.decode(json.encode(companyCollection)),
+          equals(companyCollection));
     });
     test('has a requestUri method', () {
       final config = ConfigurationFactory.withNearestNode(),
           nodePool = NodePool(config);
+
       expect(
-          ApiCall(config, nodePool, requestCache).requestUri(
-              Node(
-                  protocol: protocol,
-                  host: host,
-                  port: nearestServerPort,
-                  path: pathToService),
-              '/endpoint',
-              {'howCool': 'isThat'}).toString(),
+          ApiCall(config, nodePool, requestCache).getRequestUri(
+            NearestNode,
+            '/endpoint',
+            queryParams: {'howCool': 'isThat'},
+          ).toString(),
           equals(
-              '$protocol://$host:$nearestServerPort$pathToService/endpoint?howCool=isThat'));
+              'http://$host:$nearestServerPort$pathToService/endpoint?howCool=isThat'));
     });
   });
 
   group('ApiCall', () {
-    RequestCache requestCache;
+    late RequestCache requestCache;
     setUp(() {
-      requestCache = RequestCache();
+      requestCache = RequestCache(Duration.zero);
     });
     test('sends api key in the header or query according to the configuration',
         () async {
@@ -282,27 +272,9 @@ void main() {
               }
             },
           ),
-          node1 = Node(
-            client: client,
-            protocol: protocol,
-            host: host,
-            port: nearestServerPort,
-            path: pathToService,
-          ),
-          node2 = Node(
-            client: client,
-            protocol: protocol,
-            host: host,
-            port: mockServerPort,
-            path: pathToService,
-          ),
-          node3 = Node(
-            client: client,
-            protocol: protocol,
-            host: host,
-            port: unavailableServerPort,
-            path: pathToService,
-          ),
+          node1 = NearestNode.copyWith(client: client),
+          node2 = MockNode.copyWith(client: client),
+          node3 = UnavailableNode.copyWith(client: client),
           config = ConfigurationFactory.withoutNearestNode(
             nodes: {node1, node2, node3},
             retryInterval: Duration.zero,
@@ -310,11 +282,8 @@ void main() {
           nodePool = NodePool(config);
 
       expect(node1.isHealthy, isTrue);
-      expect(node1.lastAccessTimestamp, isNull);
       expect(node2.isHealthy, isTrue);
-      expect(node2.lastAccessTimestamp, isNull);
       expect(node3.isHealthy, isTrue);
-      expect(node3.lastAccessTimestamp, isNull);
 
       final now = DateTime.now();
       await ApiCall(config, nodePool, requestCache).post('/health/status/test');
@@ -328,7 +297,7 @@ void main() {
     });
     test('retries a request after Configuration.retryInterval duration',
         () async {
-      DateTime firstRequestTime, secondRequestTime;
+      DateTime? firstRequestTime, secondRequestTime;
       final retryInterval = Duration(milliseconds: 900),
           client = MockClient(
             (request) async {
@@ -350,7 +319,7 @@ void main() {
       await ApiCall(config, nodePool, requestCache)
           .post('/retry/interval/test');
       // Atleast [retryInterval] delay between requests.
-      expect(secondRequestTime.difference(firstRequestTime) > retryInterval,
+      expect(secondRequestTime!.difference(firstRequestTime!) > retryInterval,
           isTrue);
     });
     test(
@@ -382,7 +351,7 @@ void main() {
   });
 
   group('ApiCall caches', () {
-    ApiCall apiCall;
+    late ApiCall apiCall;
 
     setUp(() {
       var requestNumber = 1;
@@ -407,13 +376,14 @@ void main() {
               }
             },
           ),
+          cacheTTL = Duration(milliseconds: 500),
           config = ConfigurationFactory.withoutNearestNode(
             mockClient: client,
-            cachedSearchResultsTTL: Duration(milliseconds: 500),
+            cachedSearchResultsTTL: cacheTTL,
           ),
           nodePool = NodePool(config);
 
-      apiCall = ApiCall(config, nodePool, RequestCache());
+      apiCall = ApiCall(config, nodePool, RequestCache(cacheTTL));
     });
     test(
         'get requests if shouldCacheResult is true and Configuration.cachedSearchResultsTTL is set',
@@ -475,7 +445,7 @@ void main() {
   });
 
   group('ApiCall throws', () {
-    final requestCache = RequestCache();
+    final requestCache = RequestCache(Duration.zero);
     test(
         'TimeoutException when no response is received for Configuration.connectionTimeout duration',
         () {

@@ -1,4 +1,4 @@
-import 'typesense_exception.dart';
+part of exceptions;
 
 class ImportError implements TypesenseException {
   final String message;

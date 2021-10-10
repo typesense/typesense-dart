@@ -1,4 +1,4 @@
-import 'package:equatable/equatable.dart';
+part of models;
 
 class Field extends Equatable {
   /// [name] of the field.
@@ -33,11 +33,8 @@ class Field extends Equatable {
     this.isMultivalued = false,
     this.shouldIndex = true,
   }) {
-    if (name == null || name.isEmpty) {
+    if (name.isEmpty) {
       throw ArgumentError('Ensure Field.name is set');
-    }
-    if (type == null) {
-      throw ArgumentError('Ensure Field.type is set');
     }
   }
 
@@ -46,7 +43,7 @@ class Field extends Equatable {
 
     return Field(
       map['name'],
-      _getTypeFrom(map['type'], isMultivalued),
+      _Type.fromValue(map['type'], isMultivalued),
       isFacetable: map['facet'] ?? false,
       isOptional: map['optional'] ?? false,
       shouldIndex: map['index'] ?? true,
@@ -87,7 +84,7 @@ class Field extends Equatable {
 /// [Type.geopoint] is used to index locations, filter and sort on them.
 enum Type { string, int32, int64, float, bool, auto, stringify, geopoint }
 
-extension _TypeExtension on Type {
+extension _Type on Type {
   String value(bool isMultivalued) {
     switch (this) {
       case Type.string:
@@ -100,23 +97,21 @@ extension _TypeExtension on Type {
             value = description.substring(indexOfDot + 1);
 
         return isMultivalued ? value + '[]' : value;
-        break;
 
       case Type.auto:
         return 'auto';
-        break;
+
       case Type.stringify:
         return 'string*';
-        break;
+
       case Type.geopoint:
         return 'geopoint';
       default:
         return '';
     }
   }
-}
 
-Type _getTypeFrom(String value, bool isMultiValued) => (value != null)
-    ? Type.values.firstWhere((type) => value == type.value(isMultiValued),
-        orElse: () => null)
-    : null;
+  static Type fromValue(String value, bool isMultiValued) =>
+      Type.values.firstWhere((type) => value == type.value(isMultiValued),
+          orElse: () => throw ArgumentError('$value is not a defined Type.'));
+}

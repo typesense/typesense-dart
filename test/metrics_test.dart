@@ -1,15 +1,14 @@
 import 'package:test/test.dart';
 import 'package:mockito/mockito.dart';
 
-import 'package:typesense/src/services/api_call.dart';
-
 import 'package:typesense/src/metrics.dart';
 
-class MockApiCall extends Mock implements ApiCall {}
+import 'test_utils.mocks.dart';
 
 void main() {
-  Metrics metrics;
-  MockApiCall mock;
+  late Metrics metrics;
+  late MockApiCall mock;
+
   final map = {
     "system_cpu1_active_percentage": "0.00",
     "system_cpu2_active_percentage": "0.00",

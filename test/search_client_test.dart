@@ -7,7 +7,7 @@ import 'package:typesense/src/collection.dart';
 import 'test_utils.dart';
 
 void main() {
-  SearchClient searchClient;
+  late SearchClient searchClient;
 
   setUp(() {
     searchClient = SearchClient(ConfigurationFactory.withNearestNode());

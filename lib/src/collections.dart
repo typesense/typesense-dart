@@ -1,4 +1,4 @@
-import 'models/schema.dart';
+import 'models/models.dart';
 import 'services/api_call.dart';
 import 'services/collections_api_call.dart';
 

@@ -2,13 +2,12 @@ import 'package:test/test.dart';
 import 'package:mockito/mockito.dart';
 
 import 'package:typesense/src/keys.dart';
-import 'package:typesense/src/services/api_call.dart';
 
-class MockApiCall extends Mock implements ApiCall {}
+import 'test_utils.mocks.dart';
 
 void main() {
-  Keys keys;
-  MockApiCall mock;
+  late Keys keys;
+  late MockApiCall mock;
 
   setUp(() {
     mock = MockApiCall();

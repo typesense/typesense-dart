@@ -1,15 +1,14 @@
 import 'package:test/test.dart';
 import 'package:mockito/mockito.dart';
 
-import 'package:typesense/src/services/api_call.dart';
 import 'package:typesense/src/alias.dart';
 
-class MockApiCall extends Mock implements ApiCall {}
+import 'test_utils.mocks.dart';
 
 void main() {
   group('Alias', () {
-    Alias alias;
-    MockApiCall mock;
+    late Alias alias;
+    late MockApiCall mock;
 
     setUp(() {
       mock = MockApiCall();

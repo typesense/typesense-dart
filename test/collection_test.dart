@@ -5,21 +5,17 @@ import 'package:typesense/src/collection.dart';
 import 'package:typesense/src/document.dart';
 import 'package:typesense/src/override.dart';
 import 'package:typesense/src/synonym.dart';
-import 'package:typesense/src/models/field.dart';
+import 'package:typesense/src/models/models.dart';
 import 'package:typesense/src/documents.dart';
 import 'package:typesense/src/overrides.dart';
 import 'package:typesense/src/synonyms.dart';
-import 'package:typesense/src/services/api_call.dart';
-import 'package:typesense/src/services/documents_api_call.dart';
 
-class MockApiCall extends Mock implements ApiCall {}
-
-class MockDocumentsApiCall extends Mock implements DocumentsApiCall {}
+import 'test_utils.mocks.dart';
 
 void main() {
-  MockApiCall mockApiCall;
-  MockDocumentsApiCall mockDocumentsApiCall;
-  Collection collection;
+  late MockApiCall mockApiCall;
+  late MockDocumentsApiCall mockDocumentsApiCall;
+  late Collection collection;
 
   setUp(() {
     mockApiCall = MockApiCall();

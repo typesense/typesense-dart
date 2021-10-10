@@ -79,7 +79,7 @@ Future<void> init(Client client) async {
 
 Future<Map<String, dynamic>> createUnscopedSearchOnlyApiKey(
     Client client) async {
-  Map<String, dynamic> response;
+  Map<String, dynamic>? response;
   try {
     logInfoln(log, 'Creating unscoped search-only api key.');
     response = await client.keys.create(
@@ -92,18 +92,22 @@ Future<Map<String, dynamic>> createUnscopedSearchOnlyApiKey(
     log.fine(response);
 
     await writePropagationDelay();
-  } catch (e, stackTrace) {
+  } on RequestException catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
+  } catch (e, stackTrace) {
+    log.severe(e, stackTrace);
   }
-  return response;
+  return response ?? {};
 }
 
 Future<void> retrieveAllMetadata(Client client) async {
   try {
     logInfoln(log, 'Retrieving metadata of all keys.');
     log.fine(await client.keys.retrieve());
-  } catch (e, stackTrace) {
+  } on RequestException catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
+  } catch (e, stackTrace) {
+    log.severe(e, stackTrace);
   }
 }
 
@@ -111,14 +115,16 @@ Future<void> retrieveMetadata(Client client, int id) async {
   try {
     logInfoln(log, 'Retrieving metadata of api key "$id".');
     log.fine(await client.key(id).retrieve());
-  } catch (e, stackTrace) {
+  } on RequestException catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
+  } catch (e, stackTrace) {
+    log.severe(e, stackTrace);
   }
 }
 
 Future<String> createScopedSearchOnlyApiKey(
     Client client, String unscopedSearchOnlyApiKey) async {
-  String key;
+  String? key;
   try {
     logInfoln(log, 'Creating scoped search-only api key.');
     key = client.keys.generateScopedSearchKey(
@@ -126,10 +132,12 @@ Future<String> createScopedSearchOnlyApiKey(
       {'filter_by': 'company_id:124'},
     );
     log.fine(key);
-  } catch (e, stackTrace) {
+  } on RequestException catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
+  } catch (e, stackTrace) {
+    log.severe(e, stackTrace);
   }
-  return key;
+  return key ?? '';
 }
 
 Future<void> searchInScope(Client scopedClient) async {
@@ -140,8 +148,10 @@ Future<void> searchInScope(Client scopedClient) async {
         .collection('users')
         .documents
         .search({'q': 'Hilary', 'query_by': 'user_name'}));
-  } catch (e, stackTrace) {
+  } on RequestException catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
+  } catch (e, stackTrace) {
+    log.severe(e, stackTrace);
   }
 }
 
@@ -153,8 +163,10 @@ Future<void> searchOutOfScope(Client scopedClient) async {
         .collection('users')
         .documents
         .search({'q': 'Maxwell', 'query_by': 'user_name'}));
-  } catch (e, stackTrace) {
+  } on RequestException catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
+  } catch (e, stackTrace) {
+    log.severe(e, stackTrace);
   }
 }
 
@@ -164,7 +176,9 @@ Future<void> delete(Client client, int id) async {
     log.fine(await client.key(id).delete());
 
     await writePropagationDelay();
-  } catch (e, stackTrace) {
+  } on RequestException catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
+  } catch (e, stackTrace) {
+    log.severe(e, stackTrace);
   }
 }

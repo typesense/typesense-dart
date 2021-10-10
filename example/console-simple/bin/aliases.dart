@@ -60,8 +60,10 @@ Future<void> create(Client client) async {
     );
 
     await writePropagationDelay();
-  } catch (e, stackTrace) {
+  } on RequestException catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
+  } catch (e, stackTrace) {
+    log.severe(e, stackTrace);
   }
 }
 
@@ -73,8 +75,10 @@ Future<void> addDocument(Client client) async {
     );
 
     await writePropagationDelay();
-  } catch (e, stackTrace) {
+  } on RequestException catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
+  } catch (e, stackTrace) {
+    log.severe(e, stackTrace);
   }
 }
 
@@ -88,8 +92,10 @@ Future<void> search(Client client) async {
         'sort_by': 'ratings_count:desc'
       }),
     );
-  } catch (e, stackTrace) {
+  } on RequestException catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
+  } catch (e, stackTrace) {
+    log.severe(e, stackTrace);
   }
 }
 
@@ -97,8 +103,10 @@ Future<void> retrieveAll(Client client) async {
   try {
     logInfoln(log, 'Retrieving all aliases.');
     log.fine(await client.aliases.retrieve());
-  } catch (e, stackTrace) {
+  } on RequestException catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
+  } catch (e, stackTrace) {
+    log.severe(e, stackTrace);
   }
 }
 
@@ -106,8 +114,10 @@ Future<void> retrieve(Client client) async {
   try {
     logInfoln(log, 'Retrieving alias "books".');
     log.fine(await client.alias('books').retrieve());
-  } catch (e, stackTrace) {
+  } on RequestException catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
+  } catch (e, stackTrace) {
+    log.severe(e, stackTrace);
   }
 }
 
@@ -117,7 +127,9 @@ Future<void> delete(Client client) async {
     log.fine(await client.alias('books').delete());
 
     await writePropagationDelay();
-  } catch (e, stackTrace) {
+  } on RequestException catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
+  } catch (e, stackTrace) {
+    log.severe(e, stackTrace);
   }
 }

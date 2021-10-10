@@ -2,7 +2,7 @@
 
 Dart client library for accessing the HTTP API of [Typesense][typesense] search engine.
 
-Note: This package is still under development. Version `0.2.0` will be fully migrated to null safety; [related issue][nnbd]. Some existing APIs might change or new APIs might be available in the future.
+Note: This package is still under development. Some existing APIs might change or new APIs might be available in the future.
 
 ## Installation
 
@@ -10,7 +10,7 @@ Add `typesense` as a [dependency in your pubspec.yaml file](https://flutter.dev/
 
 ```@yaml
 dependencies:
-  typesense: ^0.1.1
+  typesense: ^0.2.0
 ```
 
 ## Usage
@@ -43,7 +43,7 @@ Visit [CONTRIBUTING.md](CONTRIBUTING.md)
 
 This library is authored and maintained by our awesome community of contributors:
 
-- [happy-san](https://github.com/happy-san) (Primary Contributor)
+- [happy-san](https://github.com/happy-san)
 - [harisarang](https://github.com/harisarang)
 - [mafreud](https://github.com/mafreud)
 

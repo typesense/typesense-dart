@@ -1,15 +1,14 @@
 import 'package:test/test.dart';
 import 'package:mockito/mockito.dart';
 
-import 'package:typesense/src/services/api_call.dart';
 import 'package:typesense/src/document.dart';
 
-class MockApiCall extends Mock implements ApiCall {}
+import 'test_utils.mocks.dart';
 
 void main() {
   group('Document', () {
-    Document document;
-    MockApiCall mock;
+    late Document document;
+    late MockApiCall mock;
     final documentMap = {
       "id": "124",
       "company_name": "Stark Industries",

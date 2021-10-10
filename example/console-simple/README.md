@@ -10,13 +10,13 @@ The configuration of the client can be updated to reflect your setup. The includ
 
   `mkdir /tmp/typesense-server-data-7108`
 
-  Same for `typesense-server-data-8108` and `typesense-server-data-9108`. Update the respective [config files][conf] if using some other directory.
+  Similarly for `typesense-server-data-8108` and `typesense-server-data-9108`. Update the respective [config files][conf] if using some other directory.
   
 4. Spin up three instances of the server following the pattern: 
 
   `./typesense-server --config=[path to node7108.ini] --nodes=[path to typesense-server-nodes]`.
   
-  Same for `node8108.ini` and `node9108.ini`. These files are present in [`server_configuration/`][conf].
+  Similarly for `node8108.ini` and `node9108.ini`. These files are present in [`server_configuration/`][conf].
 
 **To know more about command line arguments,** [follow this link][arguments].
 

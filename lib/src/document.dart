@@ -27,7 +27,7 @@ class Document {
   /// allowed.
   Future<Map<String, dynamic>> update(
     Map<String, dynamic> partialDocument, {
-    Map<String, dynamic> options,
+    Map<String, dynamic>? options,
   }) async {
     return await _apiCall.patch(_endpointPath,
         bodyParameters: partialDocument, queryParams: options);

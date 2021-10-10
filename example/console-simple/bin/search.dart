@@ -95,8 +95,10 @@ Future<void> search(Client client) async {
         },
       ),
     );
-  } catch (e, stackTrace) {
+  } on RequestException catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
+  } catch (e, stackTrace) {
+    log.severe(e, stackTrace);
   }
 }
 
@@ -130,8 +132,10 @@ Future<void> geosearch(Client client) async {
     }));
 
     await collections.delete(client, 'places');
-  } catch (e, stackTrace) {
+  } on RequestException catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
+  } catch (e, stackTrace) {
+    log.severe(e, stackTrace);
   }
 }
 
@@ -147,7 +151,9 @@ Future<void> multisearch(Client client) async {
       'query_by': 'company_name',
       'collection': 'companies'
     }));
-  } catch (e, stackTrace) {
+  } on RequestException catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
+  } catch (e, stackTrace) {
+    log.severe(e, stackTrace);
   }
 }

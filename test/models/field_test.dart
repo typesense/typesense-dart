@@ -1,10 +1,10 @@
 import 'package:test/test.dart';
 
-import 'package:typesense/src/models/field.dart';
+import 'package:typesense/src/models/models.dart';
 
 void main() {
   group('Field', () {
-    Field f1, f2;
+    late Field f1, f2;
     setUp(() {
       f1 = Field(
         'country',
@@ -61,23 +61,7 @@ void main() {
   });
 
   group('Field initialization', () {
-    test('with null/empty name throws', () {
-      expect(
-        () => Field(
-          null,
-          Type.string,
-          isFacetable: true,
-          isMultivalued: false,
-          isOptional: false,
-        ),
-        throwsA(
-          isA<ArgumentError>().having(
-            (e) => e.message,
-            'message',
-            'Ensure Field.name is set',
-          ),
-        ),
-      );
+    test('with empty name throws', () {
       expect(
         () => Field(
           '',
@@ -95,12 +79,6 @@ void main() {
         ),
       );
     });
-    test('with null type throws', () {
-      expect(
-          () => Field('country', null),
-          throwsA(isA<ArgumentError>().having(
-              (e) => e.message, 'message', 'Ensure Field.type is set')));
-    });
   });
 
   group('Field.fromMap initialization', () {
@@ -113,11 +91,7 @@ void main() {
           "index": true,
         }),
         throwsA(
-          isA<ArgumentError>().having(
-            (e) => e.message,
-            'message',
-            'Ensure Field.name is set',
-          ),
+          isA<TypeError>(),
         ),
       );
       expect(
@@ -139,13 +113,11 @@ void main() {
     });
     test('with null/unknown type throws', () {
       expect(
-          () => Field.fromMap({"name": "country"}),
-          throwsA(isA<ArgumentError>().having(
-              (e) => e.message, 'message', 'Ensure Field.type is set')));
+          () => Field.fromMap({"name": "country"}), throwsA(isA<TypeError>()));
       expect(
           () => Field.fromMap({"name": "country", "type": "not_a_type"}),
-          throwsA(isA<ArgumentError>().having(
-              (e) => e.message, 'message', 'Ensure Field.type is set')));
+          throwsA(isA<ArgumentError>().having((e) => e.message, 'message',
+              'not_a_type is not a defined Type.')));
     });
     test('identifies type of the field', () {
       var field = Field.fromMap({

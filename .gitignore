@@ -80,3 +80,6 @@ pubspec.lock
 
 # Include example's pubspec
 !example/console-simple/pubspec.lock
+
+# Ignore generated mocks
+*.mocks.dart

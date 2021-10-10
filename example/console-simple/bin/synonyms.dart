@@ -73,8 +73,10 @@ Future<void> createMultiWay(Client client) async {
     );
 
     await writePropagationDelay();
-  } catch (e, stackTrace) {
+  } on RequestException catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
+  } catch (e, stackTrace) {
+    log.severe(e, stackTrace);
   }
 }
 
@@ -87,8 +89,10 @@ Future<void> search(Client client, String query) async {
           .documents
           .search({'q': query, 'query_by': 'company_name'}),
     );
-  } catch (e, stackTrace) {
+  } on RequestException catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
+  } catch (e, stackTrace) {
+    log.severe(e, stackTrace);
   }
 }
 
@@ -106,8 +110,10 @@ Future<void> createOneWay(Client client) async {
     );
 
     await writePropagationDelay();
-  } catch (e, stackTrace) {
+  } on RequestException catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
+  } catch (e, stackTrace) {
+    log.severe(e, stackTrace);
   }
 }
 
@@ -115,8 +121,10 @@ Future<void> retrieveAll(Client client) async {
   try {
     logInfoln(log, 'Retrieving all synonyms.');
     log.fine(await client.collection('companies').synonyms.retrieve());
-  } catch (e, stackTrace) {
+  } on RequestException catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
+  } catch (e, stackTrace) {
+    log.severe(e, stackTrace);
   }
 }
 
@@ -127,8 +135,10 @@ Future<void> retrieve(Client client) async {
         .collection('companies')
         .synonym('synonyms-doofenshmirtz')
         .retrieve());
-  } catch (e, stackTrace) {
+  } on RequestException catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
+  } catch (e, stackTrace) {
+    log.severe(e, stackTrace);
   }
 }
 
@@ -141,7 +151,9 @@ Future<void> delete(Client client) async {
         .delete());
 
     await writePropagationDelay();
-  } catch (e, stackTrace) {
+  } on RequestException catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
+  } catch (e, stackTrace) {
+    log.severe(e, stackTrace);
   }
 }

@@ -1,15 +1,15 @@
 import 'package:test/test.dart';
 import 'package:mockito/mockito.dart';
 
-import 'package:typesense/src/services/api_call.dart';
 import 'package:typesense/src/synonyms.dart';
 
-class MockApiCall extends Mock implements ApiCall {}
+import 'test_utils.mocks.dart';
 
 void main() {
   group('Synonyms', () {
-    Synonyms synonyms;
-    MockApiCall mock;
+    late Synonyms synonyms;
+    late MockApiCall mock;
+
     final multiwaySynonymMap = {
           "synonyms": ["blazer", "coat", "jacket"]
         },

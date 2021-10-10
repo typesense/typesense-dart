@@ -1,4 +1,4 @@
-import 'request_exception.dart';
+part of exceptions;
 
 /// 5xx server errors
 class ServerError extends RequestException {

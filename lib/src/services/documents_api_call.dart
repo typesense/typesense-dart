@@ -15,10 +15,10 @@ class DocumentsApiCall extends BaseApiCall<String> {
   /// [endpoint] and [queryParams].
   Future<String> get(
     String endpoint, {
-    Map<String, dynamic> queryParams,
+    Map<String, dynamic>? queryParams,
   }) =>
-      send((node) => node.client.get(
-            requestUri(node, endpoint, queryParams),
+      send((node) => node.client!.get(
+            getRequestUri(node, endpoint, queryParams: queryParams),
             headers: defaultHeaders,
           ));
 
@@ -31,12 +31,12 @@ class DocumentsApiCall extends BaseApiCall<String> {
   /// "application/json".
   Future<String> post(
     String endpoint, {
-    Map<String, dynamic> queryParams,
-    Map<String, String> additionalHeaders,
-    String bodyParameters,
+    Map<String, dynamic>? queryParams,
+    Map<String, String>? additionalHeaders,
+    String? bodyParameters,
   }) =>
-      send((node) => node.client.post(
-            requestUri(node, endpoint, queryParams),
+      send((node) => node.client!.post(
+            getRequestUri(node, endpoint, queryParams: queryParams),
             headers: {...defaultHeaders, ...?additionalHeaders},
             body: bodyParameters,
           ));

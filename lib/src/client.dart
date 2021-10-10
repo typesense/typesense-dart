@@ -53,7 +53,13 @@ class Client {
   factory Client(Configuration config) {
     // ApiCall, DocumentsApiCall, and CollectionsApiCall share the same NodePool.
     final nodePool = NodePool(config),
-        apiCall = ApiCall(config, nodePool, RequestCache());
+        apiCall = ApiCall(
+          config,
+          nodePool,
+          RequestCache(
+            config.cachedSearchResultsTTL,
+          ),
+        );
 
     return Client._(
         config,
@@ -76,7 +82,7 @@ class Client {
       _individualCollections[collectionName] =
           Collection(collectionName, _apiCall, _documentsApiCall);
     }
-    return _individualCollections[collectionName];
+    return _individualCollections[collectionName]!;
   }
 
   /// Perform operation on an individual alias having [aliasName].
@@ -84,7 +90,7 @@ class Client {
     if (!_individualAliases.containsKey(aliasName)) {
       _individualAliases[aliasName] = Alias(aliasName, _apiCall);
     }
-    return _individualAliases[aliasName];
+    return _individualAliases[aliasName]!;
   }
 
   /// Perform operation on an individual key having [id].
@@ -92,6 +98,6 @@ class Client {
     if (!_individualKeys.containsKey(id)) {
       _individualKeys[id] = Key(id, _apiCall);
     }
-    return _individualKeys[id];
+    return _individualKeys[id]!;
   }
 }

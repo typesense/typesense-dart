@@ -30,7 +30,7 @@ class Documents {
   /// Note that the id should not include spaces or any other characters that
   /// encoding in [urls](https://www.w3schools.com/tags/ref_urlencode.asp).
   Future<Map<String, dynamic>> create(Map<String, dynamic> document,
-      {Map<String, dynamic> options}) async {
+      {Map<String, dynamic>? options}) async {
     return await _apicall.post(_endPoint,
         bodyParameters: document,
         queryParams: {...?options, "action": "create"});
@@ -38,7 +38,7 @@ class Documents {
 
   /// Upserts a [document].
   Future<Map<String, dynamic>> upsert(Map<String, dynamic> document,
-      {Map<String, dynamic> options}) async {
+      {Map<String, dynamic>? options}) async {
     return await _apicall.post(_endPoint,
         bodyParameters: document,
         queryParams: {...?options, "action": "upsert"});
@@ -46,7 +46,7 @@ class Documents {
 
   /// Updates a [document].
   Future<Map<String, dynamic>> update(Map<String, dynamic> document,
-      {Map<String, dynamic> options}) async {
+      {Map<String, dynamic>? options}) async {
     return await _apicall.post(_endPoint,
         bodyParameters: document,
         queryParams: {...?options, "action": "update"});
@@ -61,7 +61,7 @@ class Documents {
   /// Imports the [documents] into the server.
   Future<List<Map<String, dynamic>>> importDocuments(
     List<Map<String, dynamic>> documents, {
-    Map<String, dynamic> options,
+    Map<String, dynamic>? options,
   }) async {
     final documentsInJSONLFormat =
             documents.map((document) => json.encode(document)).join('\n'),
@@ -85,14 +85,14 @@ class Documents {
   /// Imports the [jsonl] formatted documents into the server.
   Future<String> importJSONL(
     String jsonl, {
-    Map<String, dynamic> options,
+    Map<String, dynamic>? options,
   }) async {
     return await _import(jsonl, options: options);
   }
 
   Future<String> _import(
     String jsonl, {
-    Map<String, dynamic> options,
+    Map<String, dynamic>? options,
   }) async {
     return await _documentApiCall.post('$_endPoint/import',
         queryParams: options,
@@ -104,7 +104,7 @@ class Documents {
   ///
   /// If [queryParams] is specified, only documents matching the criteria would
   /// be returned.
-  Future<String> exportJSONL({Map<String, dynamic> queryParams}) async {
+  Future<String> exportJSONL({Map<String, dynamic>? queryParams}) async {
     return await _documentApiCall.get(
       '$_endPoint/export',
       queryParams: queryParams,

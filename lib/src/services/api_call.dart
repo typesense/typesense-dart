@@ -2,10 +2,13 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:collection';
 
+import 'package:http/http.dart' as http;
+
 import 'base_api_call.dart';
 import 'node_pool.dart';
 import 'request_cache.dart';
 import '../configuration.dart';
+import '../models/models.dart';
 
 export 'base_api_call.dart' show contentType;
 
@@ -26,35 +29,40 @@ class ApiCall extends BaseApiCall<Map<String, dynamic>> {
   /// to be set.
   Future<Map<String, dynamic>> get(
     String endpoint, {
-    Map<String, dynamic> queryParams = const {},
+    Map<String, dynamic>? queryParams,
     bool shouldCacheResult = false,
-  }) =>
-      shouldCacheResult && config.cachedSearchResultsTTL != Duration.zero
-          ? _requestCache.cache(
-              // SplayTreeMap ensures order of the parameters is maintained so
-              // cache key won't differ because of different ordering of
-              // parameters.
-              '$endpoint${SplayTreeMap.from(queryParams)}'.hashCode,
-              send,
-              (node) => node.client.get(
-                requestUri(node, endpoint, queryParams),
-                headers: defaultHeaders,
-              ),
-              config.cachedSearchResultsTTL,
-            )
-          : send((node) => node.client.get(
-                requestUri(node, endpoint, queryParams),
-                headers: defaultHeaders,
-              ));
+  }) {
+    if (shouldCacheResult && config.cachedSearchResultsTTL != Duration.zero) {
+      // SplayTreeMap ensures order of the parameters is maintained so
+      // cache key won't differ because of different ordering of
+      // parameters.
+      final queryParamsSplay =
+          queryParams == null ? null : SplayTreeMap.from(queryParams);
+
+      return _requestCache.cache(
+        '$endpoint${queryParamsSplay ?? ''}',
+        send,
+        (node) => node.client!.get(
+          getRequestUri(node, endpoint, queryParams: queryParams),
+          headers: defaultHeaders,
+        ),
+      );
+    } else {
+      return send((node) => node.client!.get(
+            getRequestUri(node, endpoint, queryParams: queryParams),
+            headers: defaultHeaders,
+          ));
+    }
+  }
 
   /// Sends an HTTP DELETE request to the URL constructed using the [Node.uri],
   /// [endpoint] and [queryParams].
   Future<Map<String, dynamic>> delete(
     String endpoint, {
-    Map<String, dynamic> queryParams,
+    Map<String, dynamic>? queryParams,
   }) =>
-      send((node) => node.client.delete(
-            requestUri(node, endpoint, queryParams),
+      send((node) => node.client!.delete(
+            getRequestUri(node, endpoint, queryParams: queryParams),
             headers: defaultHeaders,
           ));
 
@@ -74,31 +82,38 @@ class ApiCall extends BaseApiCall<Map<String, dynamic>> {
   /// to be set.
   Future<Map<String, dynamic>> post(
     String endpoint, {
-    Map<String, dynamic> queryParams = const {},
-    Map<String, String> additionalHeaders = const {},
-    Object bodyParameters,
+    Map<String, dynamic>? queryParams,
+    Map<String, String>? additionalHeaders,
+    Object? bodyParameters,
     bool shouldCacheResult = false,
-  }) =>
-      shouldCacheResult && config.cachedSearchResultsTTL != Duration.zero
-          ? _requestCache.cache(
-              // SplayTreeMap ensures order of the parameters is maintained so
-              // cache key won't differ because of different ordering of
-              // parameters.
-              '$endpoint${SplayTreeMap.from(queryParams)}${SplayTreeMap.from(additionalHeaders)}${json.encode(bodyParameters)}'
-                  .hashCode,
-              send,
-              (node) => node.client.post(
-                requestUri(node, endpoint, queryParams),
-                headers: {...defaultHeaders, ...additionalHeaders},
-                body: json.encode(bodyParameters),
-              ),
-              config.cachedSearchResultsTTL,
-            )
-          : send((node) => node.client.post(
-                requestUri(node, endpoint, queryParams),
-                headers: {...defaultHeaders, ...additionalHeaders},
-                body: json.encode(bodyParameters),
-              ));
+  }) {
+    final headers = {...defaultHeaders, ...?additionalHeaders};
+    final encodedBody = json.encode(bodyParameters);
+
+    Future<http.Response> request(Node node) => node.client!.post(
+          getRequestUri(node, endpoint, queryParams: queryParams),
+          headers: headers,
+          body: encodedBody,
+        );
+
+    if (shouldCacheResult && config.cachedSearchResultsTTL != Duration.zero) {
+      // SplayTreeMap ensures order of the parameters is maintained so the cache
+      // key won't differ because of different ordering of parameters.
+      final queryParamsSplay =
+          queryParams == null ? null : SplayTreeMap.from(queryParams);
+      final additionalHeadersSplay = additionalHeaders == null
+          ? null
+          : SplayTreeMap.from(additionalHeaders);
+
+      return _requestCache.cache(
+        '$endpoint${queryParamsSplay ?? ''}${additionalHeadersSplay ?? ''}$encodedBody',
+        send,
+        request,
+      );
+    } else {
+      return send(request);
+    }
+  }
 
   /// Sends an HTTP PUT request with the given [bodyParameters] to the URL
   /// constructed using the [Node.uri], [endpoint] and [queryParams].
@@ -111,11 +126,11 @@ class ApiCall extends BaseApiCall<Map<String, dynamic>> {
   /// of calling `.toJson()` on the unencodable object.
   Future<Map<String, dynamic>> put(
     String endpoint, {
-    Map<String, dynamic> queryParams,
-    Object bodyParameters,
+    Map<String, dynamic>? queryParams,
+    Object? bodyParameters,
   }) =>
-      send((node) => node.client.put(
-            requestUri(node, endpoint, queryParams),
+      send((node) => node.client!.put(
+            getRequestUri(node, endpoint, queryParams: queryParams),
             headers: defaultHeaders,
             body: json.encode(bodyParameters),
           ));
@@ -131,11 +146,11 @@ class ApiCall extends BaseApiCall<Map<String, dynamic>> {
   /// of calling `.toJson()` on the unencodable object.
   Future<Map<String, dynamic>> patch(
     String endpoint, {
-    Map<String, dynamic> queryParams,
-    Object bodyParameters,
+    Map<String, dynamic>? queryParams,
+    Object? bodyParameters,
   }) =>
-      send((node) => node.client.patch(
-            requestUri(node, endpoint, queryParams),
+      send((node) => node.client!.patch(
+            getRequestUri(node, endpoint, queryParams: queryParams),
             headers: defaultHeaders,
             body: json.encode(bodyParameters),
           ));

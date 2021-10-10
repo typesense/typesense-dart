@@ -1,14 +1,14 @@
 import 'package:test/test.dart';
 import 'package:mockito/mockito.dart';
 
-import 'package:typesense/src/services/api_call.dart';
 import 'package:typesense/src/multi_search.dart';
 
-class MockApiCall extends Mock implements ApiCall {}
+import 'test_utils.mocks.dart';
 
 void main() {
-  MultiSearch multiSearch;
-  MockApiCall mock;
+  late MultiSearch multiSearch;
+  late MockApiCall mock;
+
   final map = {
     "results": [
       {
@@ -97,6 +97,7 @@ void main() {
             'query_by': 'name',
           },
           shouldCacheResult: true,
+          additionalHeaders: {},
         ),
       ).thenAnswer((realInvocation) => Future.value(map));
       expect(

@@ -3,16 +3,12 @@ import 'dart:async';
 import 'package:test/test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
-import 'package:mockito/mockito.dart';
 
 import 'package:typesense/src/services/documents_api_call.dart';
 import 'package:typesense/src/services/node_pool.dart';
-import 'package:typesense/src/models/node.dart';
 import 'package:typesense/src/exceptions/exceptions.dart';
 
 import '../test_utils.dart';
-
-class MockResponse extends Mock implements http.Response {}
 
 void main() {
   group('DocumentsApiCall', () {
@@ -44,7 +40,7 @@ void main() {
               expect(
                   request.url.toString(),
                   equals(
-                      '$protocol://$host:$mockServerPort$pathToService/documents/export?'));
+                      'http://$host:$mockServerPort$pathToService/documents/export?'));
               expect(request.method, equals('GET'));
               expect(request.headers[apiKeyLabel], equals(apiKey));
 
@@ -66,7 +62,7 @@ void main() {
               expect(
                   request.url.toString(),
                   equals(
-                      '$protocol://$host:$mockServerPort$pathToService/documents/import?action=create'));
+                      'http://$host:$mockServerPort$pathToService/documents/import?action=create'));
               expect(request.method, equals('POST'));
               expect(request.headers[apiKeyLabel], equals(apiKey));
               expect(request.headers[contentType], contains('text/plain'));
@@ -99,42 +95,38 @@ void main() {
           contains('{"success": true}'));
     });
     test('has a send method', () async {
-      final config = ConfigurationFactory.withNearestNode(),
+      final client = MockClient(
+            (request) async {
+              return http.Response('{"success": true}', 200, request: request);
+            },
+          ),
+          config = ConfigurationFactory.withNearestNode(mockClient: client),
           nodePool = NodePool(config),
-          docsApiCall = DocumentsApiCall(config, nodePool),
-          mockReponse = MockResponse();
-      when(mockReponse.statusCode).thenAnswer((realInvocation) => 200);
-      when(mockReponse.body)
-          .thenAnswer((realInvocation) => '{"success": true}');
+          docsApiCall = DocumentsApiCall(config, nodePool);
 
-      expect(await docsApiCall.send((node) => Future.value(mockReponse)),
+      expect(
+          await docsApiCall.send((node) => node.client!.post(
+                Uri.http("example.org", "/path"),
+              )),
           equals('{"success": true}'));
     });
     test('has a decode method', () {
       final config = ConfigurationFactory.withNearestNode(),
           nodePool = NodePool(config),
-          docsApiCall = DocumentsApiCall(config, nodePool),
-          mockReponse = MockResponse();
-      when(mockReponse.statusCode).thenAnswer((realInvocation) => 200);
-      when(mockReponse.body)
-          .thenAnswer((realInvocation) => '{"success": true}');
+          docsApiCall = DocumentsApiCall(config, nodePool);
 
-      expect(docsApiCall.decode(mockReponse.body), equals('{"success": true}'));
+      expect(
+          docsApiCall.decode('{"success": true}'), equals('{"success": true}'));
     });
     test('has a requestUri method', () {
       final config = ConfigurationFactory.withNearestNode(),
           nodePool = NodePool(config);
       expect(
-          DocumentsApiCall(config, nodePool).requestUri(
-              Node(
-                  protocol: protocol,
-                  host: host,
-                  port: nearestServerPort,
-                  path: pathToService),
-              '/endpoint',
-              {'howCool': 'isThat'}).toString(),
+          DocumentsApiCall(config, nodePool).getRequestUri(
+              NearestNode, '/endpoint',
+              queryParams: {'howCool': 'isThat'}).toString(),
           equals(
-              '$protocol://$host:$nearestServerPort$pathToService/endpoint?howCool=isThat'));
+              'http://$host:$nearestServerPort$pathToService/endpoint?howCool=isThat'));
     });
   });
 
@@ -191,27 +183,9 @@ void main() {
               }
             },
           ),
-          node1 = Node(
-            client: client,
-            protocol: protocol,
-            host: host,
-            port: nearestServerPort,
-            path: pathToService,
-          ),
-          node2 = Node(
-            client: client,
-            protocol: protocol,
-            host: host,
-            port: mockServerPort,
-            path: pathToService,
-          ),
-          node3 = Node(
-            client: client,
-            protocol: protocol,
-            host: host,
-            port: unavailableServerPort,
-            path: pathToService,
-          ),
+          node1 = NearestNode.copyWith(client: client),
+          node2 = MockNode.copyWith(client: client),
+          node3 = UnavailableNode.copyWith(client: client),
           config = ConfigurationFactory.withoutNearestNode(
             nodes: {node1, node2, node3},
             retryInterval: Duration.zero,
@@ -219,11 +193,8 @@ void main() {
           nodePool = NodePool(config);
 
       expect(node1.isHealthy, isTrue);
-      expect(node1.lastAccessTimestamp, isNull);
       expect(node2.isHealthy, isTrue);
-      expect(node2.lastAccessTimestamp, isNull);
       expect(node3.isHealthy, isTrue);
-      expect(node3.lastAccessTimestamp, isNull);
 
       final now = DateTime.now();
       await DocumentsApiCall(config, nodePool).post('/health/status/test');
@@ -237,7 +208,7 @@ void main() {
     });
     test('retries a request after Configuration.retryInterval duration',
         () async {
-      DateTime firstRequestTime, secondRequestTime;
+      DateTime? firstRequestTime, secondRequestTime;
       final retryInterval = Duration(milliseconds: 900),
           client = MockClient(
             (request) async {
@@ -258,7 +229,7 @@ void main() {
 
       await DocumentsApiCall(config, nodePool).post('/retry/interval/test');
       // Atleast [retryInterval] delay between requests.
-      expect(secondRequestTime.difference(firstRequestTime) > retryInterval,
+      expect(secondRequestTime!.difference(firstRequestTime!) > retryInterval,
           isTrue);
     });
     test(

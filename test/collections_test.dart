@@ -2,19 +2,14 @@ import 'package:test/test.dart';
 import 'package:mockito/mockito.dart';
 
 import 'package:typesense/src/collections.dart';
-import 'package:typesense/src/models/field.dart';
-import 'package:typesense/src/models/schema.dart';
-import 'package:typesense/src/services/api_call.dart';
-import 'package:typesense/src/services/collections_api_call.dart';
+import 'package:typesense/src/models/models.dart';
 
-class MockApiCall extends Mock implements ApiCall {}
-
-class MockCollectionsApiCall extends Mock implements CollectionsApiCall {}
+import 'test_utils.mocks.dart';
 
 void main() {
-  Collections collections;
-  MockApiCall mockApiCall;
-  MockCollectionsApiCall mockCollectionsApiCall;
+  late Collections collections;
+  late MockApiCall mockApiCall;
+  late MockCollectionsApiCall mockCollectionsApiCall;
 
   setUp(() {
     mockApiCall = MockApiCall();

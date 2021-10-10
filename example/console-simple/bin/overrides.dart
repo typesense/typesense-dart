@@ -65,8 +65,10 @@ Future<void> create(Client client) async {
     );
 
     await writePropagationDelay();
-  } catch (e, stackTrace) {
+  } on RequestException catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
+  } catch (e, stackTrace) {
+    log.severe(e, stackTrace);
   }
 }
 
@@ -74,8 +76,10 @@ Future<void> retrieveAll(Client client) async {
   try {
     logInfoln(log, 'Retrieving all overrides.');
     log.fine(await client.collection('companies').overrides.retrieve());
-  } catch (e, stackTrace) {
+  } on RequestException catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
+  } catch (e, stackTrace) {
+    log.severe(e, stackTrace);
   }
 }
 
@@ -86,8 +90,10 @@ Future<void> retrieve(Client client) async {
         .collection('companies')
         .override('promote-doofenshmirtz')
         .retrieve());
-  } catch (e, stackTrace) {
+  } on RequestException catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
+  } catch (e, stackTrace) {
+    log.severe(e, stackTrace);
   }
 }
 
@@ -100,7 +106,9 @@ Future<void> delete(Client client) async {
         .delete());
 
     await writePropagationDelay();
-  } catch (e, stackTrace) {
+  } on RequestException catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
+  } catch (e, stackTrace) {
+    log.severe(e, stackTrace);
   }
 }

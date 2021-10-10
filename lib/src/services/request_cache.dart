@@ -2,25 +2,27 @@ import 'dart:collection';
 
 import 'package:http/http.dart' as http;
 
-import '../models/node.dart';
+import '../models/models.dart';
 
-/// Cache store which uses a [HashMap] internally to serve requests.
+/// Cache store which uses a Map internally to serve requests.
 class RequestCache {
-  final _cachedResponses = HashMap<int, _Cache>();
+  final Duration cacheTTL;
+  final _cachedResponses = HashMap<String, _CachedResult>();
+
+  RequestCache(this.cacheTTL);
 
   /// Caches the response of the [request], identified by [key]. The cached
-  /// response is valid till [cacheTTL].
+  /// response is valid till [cacheTTL] after it's creation.
   Future<Map<String, dynamic>> cache(
-    int key,
+    String key,
     Future<Map<String, dynamic>> Function(Future<http.Response> Function(Node))
         send,
     Future<http.Response> Function(Node) request,
-    Duration cacheTTL,
   ) async {
     if (_cachedResponses.containsKey(key)) {
-      if (_isCacheValid(_cachedResponses[key], cacheTTL)) {
+      if (_isCacheValid(_cachedResponses[key]!)) {
         // Cache entry is still valid, return it
-        return Future.value(_cachedResponses[key].data);
+        return Future.value(_cachedResponses[key]!.data);
       } else {
         // Cache entry has expired, so delete it explicitly
         _cachedResponses.remove(key);
@@ -28,17 +30,18 @@ class RequestCache {
     }
 
     final response = await send(request);
-    _cachedResponses[key] = _Cache(response, DateTime.now());
+    _cachedResponses[key] =
+        _CachedResult(response, DateTime.now().add(cacheTTL));
     return response;
   }
 
-  bool _isCacheValid(_Cache cache, Duration cacheTTL) =>
-      DateTime.now().difference(cache.creationTime) < cacheTTL;
+  bool _isCacheValid(_CachedResult cache) =>
+      cache.validTill.difference(DateTime.now()) > Duration.zero;
 }
 
-class _Cache {
-  final DateTime creationTime;
+class _CachedResult {
   final Map<String, dynamic> data;
+  final DateTime validTill;
 
-  const _Cache(this.data, this.creationTime);
+  const _CachedResult(this.data, this.validTill);
 }
