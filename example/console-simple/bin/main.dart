@@ -16,6 +16,7 @@ import 'miscellaneous.dart' as miscellaneous;
 void main() async {
   Logger.root.level = Level.ALL;
   Logger.root.onRecord.listen((record) {
+    // ignore: avoid_print
     print('${record.level.name}: ${record.message}');
   });
 
@@ -43,14 +44,14 @@ void main() async {
       ),
     },
     numRetries: 3, // A total of 4 tries (1 original try + 3 retries)
-    connectionTimeout: Duration(seconds: 2),
+    connectionTimeout: const Duration(seconds: 2),
   );
   final client = Client(config);
 
   await collections.runExample(client);
   await documents.runExample(
       // Set a longer timeout in case of large imports.
-      Client(config.copyWith(connectionTimeout: Duration(seconds: 120))));
+      Client(config.copyWith(connectionTimeout: const Duration(seconds: 120))));
   await search.runExample(client);
   await keys.runExample(client);
   await overrides.runExample(client);
