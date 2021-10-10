@@ -29,7 +29,7 @@ void main() async {
       ),
     },
     numRetries: 3, // A total of 4 tries (1 original try + 3 retries)
-    connectionTimeout: Duration(seconds: 2),
+    connectionTimeout: const Duration(seconds: 2),
   );
   final client = Client(config);
   

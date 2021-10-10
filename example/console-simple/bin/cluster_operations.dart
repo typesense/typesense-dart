@@ -38,8 +38,8 @@ Future<void> initLeaderElection(Client client) async {
 Future<void> toggleSlowRequestLog(Client client) async {
   try {
     logInfoln(log, 'Start logging slow requests.');
-    log.fine(
-        await client.operations.toggleSlowRequestLog(Duration(seconds: 2)));
+    log.fine(await client.operations
+        .toggleSlowRequestLog(const Duration(seconds: 2)));
   } on RequestException catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
   } catch (e, stackTrace) {
