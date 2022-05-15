@@ -39,7 +39,8 @@ class Field extends Equatable {
   }
 
   factory Field.fromMap(Map<String, dynamic> map) {
-    final isMultivalued = map['type']?.contains(RegExp(r'\[\]$')) ?? false;
+    final isMultivalued =
+        map['type']?.contains(_multivaluedExpression) ?? false;
 
     return Field(
       map['name'],
@@ -68,6 +69,28 @@ class Field extends Equatable {
 
   @override
   List<Object> get props => [name, type, isMultivalued];
+}
+
+class DroppableField extends Field {
+  DroppableField(
+    super.name,
+    super.type, {
+    super.isOptional,
+    super.isFacetable,
+    super.isMultivalued,
+    super.shouldIndex,
+    this.shouldDrop = false,
+  });
+
+  /// If this field should be dropped during collection update operation.
+  final bool shouldDrop;
+
+  @override
+  Map<String, dynamic> toMap() {
+    final map = super.toMap();
+    map['drop'] = shouldDrop;
+    return map;
+  }
 }
 
 /// Enumerates the allowed field types.
@@ -115,3 +138,5 @@ extension _Type on Type {
       Type.values.firstWhere((type) => value == type.value(isMultiValued),
           orElse: () => throw ArgumentError('$value is not a defined Type.'));
 }
+
+final _multivaluedExpression = RegExp(r'\[\]$');
