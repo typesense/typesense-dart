@@ -83,6 +83,9 @@ class Field extends BaseField {
 }
 
 class CollectionUpdateField extends Field {
+  /// If this field should be dropped during collection update operation.
+  final bool shouldDrop;
+
   CollectionUpdateField(
     super.name,
     super.type, {
@@ -92,9 +95,6 @@ class CollectionUpdateField extends Field {
     super.shouldIndex,
     this.shouldDrop = false,
   });
-
-  /// If this field should be dropped during collection update operation.
-  final bool shouldDrop;
 
   @override
   Map<String, dynamic> toMap() {
