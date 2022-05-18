@@ -35,11 +35,12 @@ class Collection {
     return Schema.fromMap(await _apiCall.get(_endpointPath));
   }
 
-  Future<Schema> update(List<DroppableField> droppableFields) async {
+  /// Updates the existing schema according to the provided [schema].
+  Future<Schema> update(CollectionUpdateSchema schema) async {
     return Schema.fromMap(
       await _apiCall.patch(
         _endpointPath,
-        bodyParameters: droppableFields,
+        bodyParameters: schema,
       ),
     );
   }
