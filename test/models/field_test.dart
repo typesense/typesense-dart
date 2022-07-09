@@ -13,6 +13,9 @@ void main() {
         isMultivalued: false,
         isOptional: false,
         shouldIndex: true,
+        locale: 'en',
+        sort: true,
+        enableInfixSearch: true,
       );
       f2 = Field.fromMap({
         "name": "country",
@@ -20,9 +23,15 @@ void main() {
         "facet": true,
         "optional": false,
         "index": true,
+        "locale": "en",
+        "sort": true,
+        "infix": true,
       });
     });
 
+    test('extends BaseField', () {
+      expect(f1, isA<BaseField>());
+    });
     test('has a name field', () {
       expect(f1.name, equals('country'));
       expect(f2.name, equals('country'));
@@ -47,6 +56,18 @@ void main() {
       expect(f1.shouldIndex, isTrue);
       expect(f2.shouldIndex, isTrue);
     });
+    test('has a locale field', () {
+      expect(f1.locale, equals('en'));
+      expect(f2.locale, equals('en'));
+    });
+    test('has a sort field', () {
+      expect(f1.sort, isTrue);
+      expect(f2.sort, isTrue);
+    });
+    test('has an enableInfixSearch field', () {
+      expect(f1.enableInfixSearch, isTrue);
+      expect(f2.enableInfixSearch, isTrue);
+    });
     test('has a toMap method', () {
       final map = {
         'name': 'country',
@@ -54,6 +75,9 @@ void main() {
         'facet': true,
         'optional': false,
         'index': true,
+        'locale': 'en',
+        'sort': true,
+        'infix': true,
       };
       expect(f1.toMap(), equals(map));
       expect(f2.toMap(), equals(map));
@@ -195,24 +219,37 @@ void main() {
         "type": "auto",
       });
       expect(field.type, equals(Type.auto));
+      expect(field.isMultivalued, isFalse);
 
       field = Field.fromMap({
         "name": "name",
         "type": "string*",
       });
       expect(field.type, equals(Type.stringify));
+      expect(field.isMultivalued, isFalse);
 
       field = Field.fromMap({
         "name": "name",
         "type": "geopoint",
       });
       expect(field.type, equals(Type.geopoint));
+      expect(field.isMultivalued, isFalse);
+
+      field = Field.fromMap({
+        "name": "name",
+        "type": "geopoint[]",
+      });
+      expect(field.type, equals(Type.geopoint));
+      expect(field.isMultivalued, isTrue);
     });
     test('sets default values to fields when null', () {
       final field = Field.fromMap({"name": "num_employees", "type": "int32"});
       expect(field.isFacetable, isFalse);
       expect(field.shouldIndex, isTrue);
       expect(field.isOptional, isFalse);
+      expect(field.locale, isNull);
+      expect(field.sort, isFalse);
+      expect(field.enableInfixSearch, isFalse);
     });
   });
   group('Field toMap()', () {
@@ -256,6 +293,9 @@ void main() {
 
       field = Field('country', Type.bool, isMultivalued: true);
       expect(field.toMap()['type'], equals('bool[]'));
+
+      field = Field('country', Type.geopoint, isMultivalued: true);
+      expect(field.toMap()['type'], equals('geopoint[]'));
     });
     test(
         'does not suffix Type.auto and Type.stringify with "[]" regardless of isMultivalued',
@@ -269,11 +309,39 @@ void main() {
       expect(field.toMap()['type'], equals('string*'));
       field = Field('country', Type.stringify, isMultivalued: true);
       expect(field.toMap()['type'], equals('string*'));
+    });
+  });
 
-      field = Field('country', Type.geopoint);
-      expect(field.toMap()['type'], equals('geopoint'));
-      field = Field('country', Type.geopoint, isMultivalued: true);
-      expect(field.toMap()['type'], equals('geopoint'));
+  group('CollectionUpdateField', () {
+    late CollectionUpdateField field;
+
+    setUp(() {
+      field = CollectionUpdateField(
+        'num_employees',
+        Type.int32,
+        shouldDrop: true,
+      );
+    });
+
+    test('extends BaseField', () {
+      expect(field, isA<BaseField>());
+    });
+
+    test('has a shouldDrop field', () {
+      expect(field.shouldDrop, isTrue);
+    });
+    test('has a toMap method', () {
+      final map = {
+        'name': 'num_employees',
+        'type': 'int32',
+        'facet': false,
+        'optional': false,
+        'index': true,
+        'sort': false,
+        'infix': false,
+        'drop': true,
+      };
+      expect(field.toMap(), equals(map));
     });
   });
 
