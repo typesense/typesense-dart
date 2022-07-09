@@ -35,6 +35,16 @@ class Collection {
     return Schema.fromMap(await _apiCall.get(_endpointPath));
   }
 
+  /// Updates the existing schema according to the provided [schema].
+  Future<Schema> update(CollectionUpdateSchema schema) async {
+    return Schema.fromMap(
+      await _apiCall.patch(
+        _endpointPath,
+        bodyParameters: schema,
+      ),
+    );
+  }
+
   /// Deletes the specified collection.
   Future<Schema> delete() async {
     return Schema.fromMap(await _apiCall.delete(_endpointPath));
