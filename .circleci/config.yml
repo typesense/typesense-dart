@@ -20,7 +20,7 @@ commands:
 jobs:
   test:
     docker:
-      - image: dart:2.17.0
+      - image: google/dart:2.13.1
     steps:
       - dependencies:
           shell: "/bin/bash -eo pipefail"
