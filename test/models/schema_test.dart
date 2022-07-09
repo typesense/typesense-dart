@@ -94,7 +94,7 @@ void main() {
   group('Schema initialization', () {
     test('with empty name throws', () {
       expect(
-        () => CollectionCreateSchema(
+        () => Schema(
           '',
           {
             Field('company_name', Type.string),
@@ -114,7 +114,7 @@ void main() {
     });
     test('with empty fields throws', () {
       expect(
-        () => CollectionCreateSchema(
+        () => Schema(
           'companies',
           {},
           defaultSortingField: Field('num_employees', Type.int32),
@@ -130,7 +130,7 @@ void main() {
     });
     test('with defaultSortingField that is not present in fields throws', () {
       expect(
-        () => CollectionCreateSchema(
+        () => Schema(
           'companies',
           {
             Field('company_name', Type.string),
@@ -152,7 +152,7 @@ void main() {
     test('with defaultSortingField\'s type other than int32 and float throws',
         () {
       expect(
-        () => CollectionCreateSchema(
+        () => Schema(
           'companies',
           {
             Field('company_name', Type.string),
