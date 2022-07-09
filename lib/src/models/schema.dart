@@ -1,14 +1,14 @@
 part of models;
 
 abstract class BaseSchema {
-  /// [fields] used for querying, filtering and faceting.
-  final Set<BaseField> fields;
-
   BaseSchema(this.fields) {
     if (fields.isEmpty) {
       throw ArgumentError('Ensure Schema.fields is not empty');
     }
   }
+
+  /// [fields] used for querying, filtering and faceting.
+  final Set<BaseField> fields;
 
   Map<String, dynamic> toMap();
 }
@@ -79,15 +79,15 @@ class CollectionCreateSchema extends BaseSchema {
 }
 
 class Schema extends CollectionCreateSchema {
-  /// Number of documents currently in the collection [name].
-  final int documentCount;
-
   Schema(
     super.name,
     super.fields, {
     super.defaultSortingField,
     required this.documentCount,
   });
+
+  /// Number of documents currently in the collection [name].
+  final int documentCount;
 
   factory Schema.fromMap(Map<String, dynamic> map) {
     final collectionCreateSchema = CollectionCreateSchema.fromMap(map);
