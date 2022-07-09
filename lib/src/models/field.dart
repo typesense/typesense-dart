@@ -1,6 +1,6 @@
 part of models;
 
-class Field extends Equatable {
+abstract class BaseField extends Equatable {
   /// [name] of the field.
   final String name;
 
@@ -25,30 +25,26 @@ class Field extends Equatable {
   /// when used along with auto schema detection.
   final bool shouldIndex;
 
-  Field(
+  final String? locale;
+
+  final bool sort;
+
+  final bool enableInfixSearch;
+
+  BaseField(
     this.name,
     this.type, {
     this.isOptional = false,
     this.isFacetable = false,
     this.isMultivalued = false,
     this.shouldIndex = true,
+    this.locale,
+    this.sort = false,
+    this.enableInfixSearch = false,
   }) {
     if (name.isEmpty) {
       throw ArgumentError('Ensure Field.name is set');
     }
-  }
-
-  factory Field.fromMap(Map<String, dynamic> map) {
-    final isMultivalued = map['type']?.contains(RegExp(r'\[\]$')) ?? false;
-
-    return Field(
-      map['name'],
-      _Type.fromValue(map['type'], isMultivalued),
-      isFacetable: map['facet'] ?? false,
-      isOptional: map['optional'] ?? false,
-      shouldIndex: map['index'] ?? true,
-      isMultivalued: isMultivalued,
-    );
   }
 
   Map<String, dynamic> toMap() {
@@ -58,6 +54,11 @@ class Field extends Equatable {
     map['facet'] = isFacetable;
     map['optional'] = isOptional;
     map['index'] = shouldIndex;
+    if (locale is String) {
+      map['locale'] = locale;
+    }
+    map['sort'] = sort;
+    map['infix'] = enableInfixSearch;
     return map;
   }
 
@@ -68,6 +69,59 @@ class Field extends Equatable {
 
   @override
   List<Object> get props => [name, type, isMultivalued];
+}
+
+class Field extends BaseField {
+  Field(
+    super.name,
+    super.type, {
+    super.isOptional = false,
+    super.isFacetable = false,
+    super.isMultivalued = false,
+    super.shouldIndex = true,
+    super.locale,
+    super.sort,
+    super.enableInfixSearch,
+  });
+
+  factory Field.fromMap(Map<String, dynamic> map) {
+    final isMultivalued =
+        map['type']?.contains(_multivaluedExpression) ?? false;
+
+    return Field(
+      map['name'],
+      _Type.fromValue(map['type'], isMultivalued),
+      isFacetable: map['facet'] ?? false,
+      isOptional: map['optional'] ?? false,
+      shouldIndex: map['index'] ?? true,
+      isMultivalued: isMultivalued,
+      locale: map['locale'],
+      sort: map['sort'] ?? false,
+      enableInfixSearch: map['infix'] ?? false,
+    );
+  }
+}
+
+class CollectionUpdateField extends Field {
+  /// If this field should be dropped during collection update operation.
+  final bool shouldDrop;
+
+  CollectionUpdateField(
+    super.name,
+    super.type, {
+    super.isOptional,
+    super.isFacetable,
+    super.isMultivalued,
+    super.shouldIndex,
+    this.shouldDrop = false,
+  });
+
+  @override
+  Map<String, dynamic> toMap() {
+    final map = super.toMap();
+    map['drop'] = shouldDrop;
+    return map;
+  }
 }
 
 /// Enumerates the allowed field types.
@@ -82,7 +136,16 @@ class Field extends Equatable {
 /// singular and multi-value/array values) as string.
 ///
 /// [Type.geopoint] is used to index locations, filter and sort on them.
-enum Type { string, int32, int64, float, bool, auto, stringify, geopoint }
+enum Type {
+  string,
+  int32,
+  int64,
+  float,
+  bool,
+  auto,
+  stringify,
+  geopoint,
+}
 
 extension _Type on Type {
   String value(bool isMultivalued) {
@@ -92,6 +155,7 @@ extension _Type on Type {
       case Type.int64:
       case Type.float:
       case Type.bool:
+      case Type.geopoint:
         final description = toString(),
             indexOfDot = description.indexOf('.'),
             value = description.substring(indexOfDot + 1);
@@ -104,8 +168,6 @@ extension _Type on Type {
       case Type.stringify:
         return 'string*';
 
-      case Type.geopoint:
-        return 'geopoint';
       default:
         return '';
     }
@@ -115,3 +177,5 @@ extension _Type on Type {
       Type.values.firstWhere((type) => value == type.value(isMultiValued),
           orElse: () => throw ArgumentError('$value is not a defined Type.'));
 }
+
+final _multivaluedExpression = RegExp(r'\[\]$');
