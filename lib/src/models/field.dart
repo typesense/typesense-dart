@@ -1,6 +1,6 @@
 part of models;
 
-abstract class BaseField extends Equatable {
+class Field extends Equatable {
   /// [name] of the field.
   final String name;
 
@@ -25,7 +25,7 @@ abstract class BaseField extends Equatable {
   /// when used along with auto schema detection.
   final bool shouldIndex;
 
-  BaseField(
+  Field(
     this.name,
     this.type, {
     this.isOptional = false,
@@ -36,6 +36,20 @@ abstract class BaseField extends Equatable {
     if (name.isEmpty) {
       throw ArgumentError('Ensure Field.name is set');
     }
+  }
+
+  factory Field.fromMap(Map<String, dynamic> map) {
+    final isMultivalued =
+        map['type']?.contains(_multivaluedExpression) ?? false;
+
+    return Field(
+      map['name'],
+      _Type.fromValue(map['type'], isMultivalued),
+      isFacetable: map['facet'] ?? false,
+      isOptional: map['optional'] ?? false,
+      shouldIndex: map['index'] ?? true,
+      isMultivalued: isMultivalued,
+    );
   }
 
   Map<String, dynamic> toMap() {
@@ -57,33 +71,8 @@ abstract class BaseField extends Equatable {
   List<Object> get props => [name, type, isMultivalued];
 }
 
-class Field extends BaseField {
-  Field(
-    super.name,
-    super.type, {
-    super.isOptional = false,
-    super.isFacetable = false,
-    super.isMultivalued = false,
-    super.shouldIndex = true,
-  });
-
-  factory Field.fromMap(Map<String, dynamic> map) {
-    final isMultivalued =
-        map['type']?.contains(_multivaluedExpression) ?? false;
-
-    return Field(
-      map['name'],
-      _Type.fromValue(map['type'], isMultivalued),
-      isFacetable: map['facet'] ?? false,
-      isOptional: map['optional'] ?? false,
-      shouldIndex: map['index'] ?? true,
-      isMultivalued: isMultivalued,
-    );
-  }
-}
-
-class CollectionUpdateField extends Field {
-  CollectionUpdateField(
+class DroppableField extends Field {
+  DroppableField(
     super.name,
     super.type, {
     super.isOptional,

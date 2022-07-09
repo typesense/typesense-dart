@@ -13,8 +13,8 @@ Future<void> runExample(Client client) async {
   await delete(client);
 }
 
-Future<void> create(Client client, [CollectionCreateSchema? schema]) async {
-  final _schema = CollectionCreateSchema(
+Future<void> create(Client client, [Schema? schema]) async {
+  final _schema = Schema(
         'companies',
         {
           Field('company_name', Type.string),
