@@ -15,7 +15,7 @@ commands:
       - run:
           name: Download deps
           shell: << parameters.shell >>
-          command: dart pub get
+          command: pub get
 
 jobs:
   test:
@@ -28,7 +28,7 @@ jobs:
           name: Run tests
           command: |
             dart run build_runner build
-            dart run test
+            pub run test
 
 workflows:
   version: 2.1
