@@ -106,7 +106,7 @@ Future<void> geosearch(Client client) async {
   try {
     await collections.create(
         client,
-        CollectionCreateSchema(
+        Schema(
           'places',
           {
             Field('title', Type.string),
