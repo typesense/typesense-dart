@@ -35,15 +35,6 @@ class Collection {
     return Schema.fromMap(await _apiCall.get(_endpointPath));
   }
 
-  Future<Schema> update(List<DroppableField> droppableFields) async {
-    return Schema.fromMap(
-      await _apiCall.patch(
-        _endpointPath,
-        bodyParameters: droppableFields,
-      ),
-    );
-  }
-
   /// Deletes the specified collection.
   Future<Schema> delete() async {
     return Schema.fromMap(await _apiCall.delete(_endpointPath));
