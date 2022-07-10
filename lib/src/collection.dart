@@ -40,7 +40,7 @@ class Collection {
     return Schema.fromMap(
       await _apiCall.patch(
         _endpointPath,
-        bodyParameters: schema,
+        bodyParameters: schema.toMap(),
       ),
     );
   }
