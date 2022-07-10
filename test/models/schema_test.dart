@@ -2,10 +2,10 @@ import 'package:test/test.dart';
 import 'package:typesense/src/models/models.dart';
 
 void main() {
-  group('Schema', () {
-    late Schema s1, s2;
+  group('CollectionCreateSchema', () {
+    late CollectionCreateSchema s1, s2;
     setUp(() {
-      s1 = Schema(
+      s1 = CollectionCreateSchema(
         'companies',
         {
           Field('company_name', Type.string),
@@ -13,11 +13,9 @@ void main() {
           Field('country', Type.string, isFacetable: true),
         },
         defaultSortingField: Field('num_employees', Type.int32),
-        documentCount: 0,
       );
-      s2 = Schema.fromMap({
+      s2 = CollectionCreateSchema.fromMap({
         "name": "companies",
-        "num_documents": 0,
         "fields": [
           {"name": "company_name", "type": "string"},
           {"name": "num_employees", "type": "int32"},
@@ -27,6 +25,9 @@ void main() {
       });
     });
 
+    test('extends BaseSchema', () {
+      expect(s1, isA<BaseSchema>());
+    });
     test('has a name field', () {
       expect(s1.name, equals('companies'));
       expect(s2.name, equals('companies'));
@@ -53,10 +54,6 @@ void main() {
       expect(
           s2.defaultSortingField, equals(Field('num_employees', Type.int32)));
     });
-    test('has a documentCount field', () {
-      expect(s1.documentCount, equals(0));
-      expect(s2.documentCount, equals(0));
-    });
     test('has a toMap method', () {
       final map = {
         'name': 'companies',
@@ -67,6 +64,8 @@ void main() {
             'facet': false,
             'optional': false,
             'index': true,
+            'sort': false,
+            'infix': false,
           },
           {
             'name': 'num_employees',
@@ -74,6 +73,8 @@ void main() {
             'facet': false,
             'optional': false,
             'index': true,
+            'sort': false,
+            'infix': false,
           },
           {
             'name': 'country',
@@ -81,6 +82,8 @@ void main() {
             'facet': true,
             'optional': false,
             'index': true,
+            'sort': false,
+            'infix': false,
           }
         ],
         'default_sorting_field': 'num_employees',
@@ -91,7 +94,7 @@ void main() {
     });
   });
 
-  group('Schema initialization', () {
+  group('CollectionCreateSchema initialization', () {
     test('with empty name throws', () {
       expect(
         () => CollectionCreateSchema(
@@ -107,7 +110,7 @@ void main() {
           isA<ArgumentError>().having(
             (e) => e.message,
             'message',
-            'Ensure Schema.name is not empty',
+            'Ensure CollectionCreateSchema.name is not empty',
           ),
         ),
       );
@@ -123,7 +126,7 @@ void main() {
           isA<ArgumentError>().having(
             (e) => e.message,
             'message',
-            'Ensure Schema.fields is not empty',
+            'Ensure BaseSchema.fields is not empty',
           ),
         ),
       );
@@ -144,7 +147,7 @@ void main() {
           isA<ArgumentError>().having(
             (e) => e.message,
             'message',
-            'Ensure Schema.defaultSortingField "num_employees" is present in Schema.fields',
+            'Ensure CollectionCreateSchema.defaultSortingField "num_employees" is present in CollectionCreateSchema.fields',
           ),
         ),
       );
@@ -166,18 +169,17 @@ void main() {
           isA<ArgumentError>().having(
             (e) => e.message,
             'message',
-            'Ensure type of Schema.defaultSortingField "company_name" is int32 / float',
+            'Ensure type of CollectionCreateSchema.defaultSortingField "company_name" is int32 / float',
           ),
         ),
       );
     });
   });
 
-  group('Schema.fromMap initialization', () {
+  group('CollectionCreateSchema.fromMap initialization', () {
     test('with null/empty name throws', () {
       expect(
-        () => Schema.fromMap({
-          "num_documents": 0,
+        () => CollectionCreateSchema.fromMap({
           "fields": [
             {"name": "company_name", "type": "string"},
             {"name": "num_employees", "type": "int32"},
@@ -190,9 +192,8 @@ void main() {
         ),
       );
       expect(
-        () => Schema.fromMap({
+        () => CollectionCreateSchema.fromMap({
           "name": "",
-          "num_documents": 0,
           "fields": [
             {"name": "company_name", "type": "string"},
             {"name": "num_employees", "type": "int32"},
@@ -204,28 +205,24 @@ void main() {
           isA<ArgumentError>().having(
             (e) => e.message,
             'message',
-            'Ensure Schema.name is not empty',
+            'Ensure CollectionCreateSchema.name is not empty',
           ),
         ),
       );
     });
     test('with null/empty fields throws', () {
       expect(
-        () => Schema.fromMap({
-          "name": "companies",
-          "num_documents": 0,
-          "default_sorting_field": "num_employees"
-        }),
+        () => CollectionCreateSchema.fromMap(
+            {"name": "companies", "default_sorting_field": "num_employees"}),
         throwsA(isA<ArgumentError>().having(
           (e) => e.message,
           'message',
-          'Ensure Schema.fields is set',
+          'Ensure CollectionCreateSchema.fields is set',
         )),
       );
       expect(
-        () => Schema.fromMap({
+        () => CollectionCreateSchema.fromMap({
           "name": "companies",
-          "num_documents": 0,
           "fields": [],
           "default_sorting_field": "num_employees"
         }),
@@ -233,15 +230,14 @@ void main() {
           isA<ArgumentError>().having(
             (e) => e.message,
             'message',
-            'Ensure Schema.fields is not empty',
+            'Ensure BaseSchema.fields is not empty',
           ),
         ),
       );
     });
     test("with null/empty defaultSortingField is successful", () {
-      var schema = Schema.fromMap({
+      var schema = CollectionCreateSchema.fromMap({
         "name": "companies",
-        "num_documents": 0,
         "fields": [
           {"name": "company_name", "type": "string"},
           {"name": "num_employees", "type": "int32"},
@@ -252,9 +248,8 @@ void main() {
       expect(schema.name, equals('companies'));
       expect(schema.defaultSortingField, isNull);
 
-      schema = Schema.fromMap({
+      schema = CollectionCreateSchema.fromMap({
         "name": "companies",
-        "num_documents": 0,
         "fields": [
           {"name": "company_name", "type": "string"},
           {"name": "num_employees", "type": "int32"},
@@ -266,9 +261,8 @@ void main() {
     });
     test('with invalid defaultSortingField throws', () {
       expect(
-        () => Schema.fromMap({
+        () => CollectionCreateSchema.fromMap({
           "name": "companies",
-          "num_documents": 0,
           "fields": [
             {"name": "company_name", "type": "string"},
             {"name": "num_employees", "type": "int32"},
@@ -280,7 +274,7 @@ void main() {
           isA<ArgumentError>().having(
             (e) => e.message,
             'message',
-            'Ensure Schema.defaultSortingField "not_present" is present in Schema.fields',
+            'Ensure CollectionCreateSchema.defaultSortingField "not_present" is present in CollectionCreateSchema.fields',
           ),
         ),
       );
@@ -288,9 +282,8 @@ void main() {
     test('with defaultSortingField\'s type other than int32 and float throws',
         () {
       expect(
-        () => Schema.fromMap({
+        () => CollectionCreateSchema.fromMap({
           "name": "companies",
-          "num_documents": 0,
           "fields": [
             {"name": "company_name", "type": "string"},
             {"name": "num_employees", "type": "int32"},
@@ -302,10 +295,45 @@ void main() {
           isA<ArgumentError>().having(
             (e) => e.message,
             'message',
-            'Ensure type of Schema.defaultSortingField "company_name" is int32 / float',
+            'Ensure type of CollectionCreateSchema.defaultSortingField "company_name" is int32 / float',
           ),
         ),
       );
+    });
+  });
+
+  group('Schema', () {
+    late Schema s1, s2;
+
+    setUp(() {
+      s1 = Schema(
+        'companies',
+        {
+          Field('company_name', Type.string),
+          Field('num_employees', Type.int32),
+          Field('country', Type.string, isFacetable: true),
+        },
+        defaultSortingField: Field('num_employees', Type.int32),
+        documentCount: 0,
+      );
+      s2 = Schema.fromMap({
+        "name": "companies",
+        "fields": [
+          {"name": "company_name", "type": "string"},
+          {"name": "num_employees", "type": "int32"},
+          {"name": "country", "type": "string", "facet": true}
+        ],
+        "default_sorting_field": "num_employees",
+        "num_documents": 0,
+      });
+    });
+
+    test('extends CollectionCreateSchema', () {
+      expect(s1, isA<CollectionCreateSchema>());
+    });
+    test('has a documentCount field', () {
+      expect(s1.documentCount, equals(0));
+      expect(s2.documentCount, equals(0));
     });
   });
 }

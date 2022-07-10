@@ -6,7 +6,7 @@ abstract class BaseSchema {
 
   BaseSchema(this.fields) {
     if (fields.isEmpty) {
-      throw ArgumentError('Ensure Schema.fields is not empty');
+      throw ArgumentError('Ensure BaseSchema.fields is not empty');
     }
   }
 
@@ -28,7 +28,7 @@ class CollectionCreateSchema extends BaseSchema {
     this.defaultSortingField,
   }) : super(fields) {
     if (name.isEmpty) {
-      throw ArgumentError('Ensure Schema.name is not empty');
+      throw ArgumentError('Ensure CollectionCreateSchema.name is not empty');
     }
     if (defaultSortingField != null && defaultSortingField!.name.isNotEmpty) {
       if (!fields.contains(defaultSortingField)) {
@@ -37,7 +37,7 @@ class CollectionCreateSchema extends BaseSchema {
       if (!(defaultSortingField!.type == Type.int32 ||
           defaultSortingField!.type == Type.float)) {
         throw ArgumentError(
-            'Ensure type of Schema.defaultSortingField "${defaultSortingField!.name}" is int32 / float');
+            'Ensure type of CollectionCreateSchema.defaultSortingField "${defaultSortingField!.name}" is int32 / float');
       }
     }
   }
@@ -45,7 +45,7 @@ class CollectionCreateSchema extends BaseSchema {
   factory CollectionCreateSchema.fromMap(Map<String, dynamic> map) {
     final Set<Field> fields = (map['fields'] != null)
         ? (map['fields'] as List).map((field) => Field.fromMap(field)).toSet()
-        : throw ArgumentError('Ensure Schema.fields is set');
+        : throw ArgumentError('Ensure CollectionCreateSchema.fields is set');
 
     final String? sortingFieldName = map['default_sorting_field'];
     final Field? defaultSortingField = (fields.isNotEmpty &&
@@ -53,8 +53,9 @@ class CollectionCreateSchema extends BaseSchema {
             sortingFieldName.isNotEmpty)
         ? fields.firstWhere(
             (field) => map['default_sorting_field'] == field.name,
-            orElse: () =>
-                throw _defaultSortingFieldNotInSchema(sortingFieldName),
+            orElse: () => throw _defaultSortingFieldNotInSchema(
+              sortingFieldName,
+            ),
           )
         : null;
 
@@ -70,7 +71,9 @@ class CollectionCreateSchema extends BaseSchema {
     final map = <String, dynamic>{};
     map['name'] = name;
     map['fields'] = fields.map((field) => field.toMap()).toList();
-    map['default_sorting_field'] = defaultSortingField?.name ?? '';
+    if (defaultSortingField is Field) {
+      map['default_sorting_field'] = defaultSortingField!.name;
+    }
     return map;
   }
 
@@ -113,4 +116,4 @@ class CollectionUpdateSchema extends BaseSchema {
 }
 
 ArgumentError _defaultSortingFieldNotInSchema(String name) => ArgumentError(
-    'Ensure Schema.defaultSortingField "$name" is present in Schema.fields');
+    'Ensure CollectionCreateSchema.defaultSortingField "$name" is present in CollectionCreateSchema.fields');
