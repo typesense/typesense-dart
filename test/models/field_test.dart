@@ -323,8 +323,8 @@ void main() {
       );
     });
 
-    test('extends BaseField', () {
-      expect(field, isA<BaseField>());
+    test('extends Field', () {
+      expect(field, isA<Field>());
     });
 
     test('has a shouldDrop field', () {
