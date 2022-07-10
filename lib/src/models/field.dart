@@ -16,7 +16,8 @@ abstract class BaseField extends Equatable {
   /// If this field is an array containing multiple values.
   ///
   /// Applicable to the field with the [type]:
-  /// [Type.string], [Type.int32], [Type.int64], [Type.float] or [Type.bool]
+  /// [Type.string], [Type.int32], [Type.int64],
+  /// [Type.float], [Type.bool] or [Type.geopoint]
   final bool isMultivalued;
 
   /// Declaring a field as non-indexable
