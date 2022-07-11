@@ -34,7 +34,7 @@ Future<void> runExample(Client client) async {
   await collections.delete(client, 'users');
 }
 
-final _schema = Schema(
+final _schema = CollectionCreateSchema(
   'users',
   {
     Field('company_id', Type.int32),

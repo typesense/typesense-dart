@@ -83,3 +83,6 @@ pubspec.lock
 
 # Ignore generated mocks
 *.mocks.dart
+
+# Ignore test coverage
+coverage/

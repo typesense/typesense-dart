@@ -55,6 +55,7 @@ void main() {
       expect(schema.defaultSortingField,
           equals(Field('num_employees', Type.int32)));
     });
+
     test('delete() calls ApiCall.delete()', () async {
       when(
         mockApiCall.delete(
@@ -75,6 +76,40 @@ void main() {
       expect(schema.defaultSortingField,
           equals(Field('num_employees', Type.int32)));
     });
+
+    test('update() calls ApiCall.patch()', () async {
+      when(
+        mockApiCall.patch('/collections/companies', bodyParameters: {
+          "fields": [
+            {"name": "company_category", "type": "string"},
+            {"name": "num_employees", "drop": true}
+          ]
+        }),
+      ).thenAnswer((realInvocation) => Future.value({
+            "fields": [
+              {
+                "name": "company_category",
+                "facet": false,
+                "index": true,
+                "infix": false,
+                "locale": "",
+                "optional": false,
+                "sort": false,
+                "type": "string"
+              },
+              {"drop": true, "name": "num_employees"}
+            ]
+          }));
+
+      final updateSchema = CollectionUpdateSchema(
+        {
+          CollectionUpdateField('company_category', Type.string),
+          CollectionUpdateField('num_employees', Type.int32, shouldDrop: true),
+        },
+      );
+      final schema = await collection.update(updateSchema);
+    });
+
     test('has a documents getter', () {
       expect(collection.documents, isA<Documents>());
     });
