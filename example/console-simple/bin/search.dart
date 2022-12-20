@@ -106,14 +106,14 @@ Future<void> geosearch(Client client) async {
   try {
     await collections.create(
         client,
-        CollectionCreateSchema(
+        CreateSchema(
           'places',
           {
-            Field('title', Type.string),
-            Field('points', Type.int32),
-            Field('location', Type.geopoint),
+            CreateField('title', type: Type.string),
+            CreateField('points', type: Type.int32),
+            CreateField('location', type: Type.geopoint),
           },
-          defaultSortingField: Field('points', Type.int32),
+          defaultSortingField: CreateField('points', type: Type.int32),
         ));
     await documents.importDocs(client, 'places', [
       {

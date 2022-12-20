@@ -53,24 +53,24 @@ void main() {
       expect(
           schemas[0].fields,
           equals({
-            Field('company_name', Type.string),
-            Field('num_employees', Type.int32),
-            Field('country', Type.string, isFacetable: true),
+            Field('company_name', type: Type.string),
+            Field('num_employees', type: Type.int32),
+            Field('country', type: Type.string, isFacetable: true),
           }));
       expect(schemas[0].defaultSortingField,
-          equals(Field('num_employees', Type.int32)));
+          equals(Field('num_employees', type: Type.int32)));
 
       expect(schemas[1].name, equals('ceos'));
       expect(schemas[1].documentCount, equals(1250));
       expect(
           schemas[1].fields,
           equals({
-            Field('company_name', Type.string),
-            Field('from_year', Type.int32),
-            Field('full_name', Type.string),
+            Field('company_name', type: Type.string),
+            Field('from_year', type: Type.int32),
+            Field('full_name', type: Type.string),
           }));
       expect(schemas[1].defaultSortingField,
-          equals(Field('from_year', Type.int32)));
+          equals(Field('from_year', type: Type.int32)));
     });
     test('create() calls ApiCall.post()', () async {
       when(mockApiCall.post(
@@ -81,23 +81,15 @@ void main() {
             {
               "name": "company_name",
               "type": "string",
-              'facet': false,
-              'optional': false,
-              'index': true,
             },
             {
               "name": "num_employees",
               "type": "int32",
-              'facet': false,
-              'optional': false,
-              'index': true,
             },
             {
               "name": "country",
               "type": "string",
               'facet': true,
-              'optional': false,
-              'index': true,
             }
           ],
           "default_sorting_field": "num_employees"
@@ -114,14 +106,14 @@ void main() {
           }));
 
       final schema = await collections.create(
-        CollectionCreateSchema(
+        CreateSchema(
           'companies',
           {
-            Field('company_name', Type.string),
-            Field('num_employees', Type.int32),
-            Field('country', Type.string, isFacetable: true),
+            CreateField('company_name', type: Type.string),
+            CreateField('num_employees', type: Type.int32),
+            CreateField('country', type: Type.string, isFacetable: true),
           },
-          defaultSortingField: Field('num_employees', Type.int32),
+          defaultSortingField: CreateField('num_employees', type: Type.int32),
         ),
       );
 
@@ -129,12 +121,12 @@ void main() {
       expect(
           schema.fields,
           equals({
-            Field('company_name', Type.string),
-            Field('num_employees', Type.int32),
-            Field('country', Type.string, isFacetable: true),
+            Field('company_name', type: Type.string),
+            Field('num_employees', type: Type.int32),
+            Field('country', type: Type.string, isFacetable: true),
           }));
       expect(schema.defaultSortingField,
-          equals(Field('num_employees', Type.int32)));
+          equals(Field('num_employees', type: Type.int32)));
       expect(schema.documentCount, equals(0));
     });
   });

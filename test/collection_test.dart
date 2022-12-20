@@ -47,15 +47,16 @@ void main() {
       expect(schema.documentCount, equals(1250));
       expect(
           schema.fields,
-          equals({
-            Field('company_name', Type.string),
-            Field('num_employees', Type.int32),
-            Field('country', Type.string, isFacetable: true),
-          }));
+          equals(
+            {
+              Field('company_name', type: Type.string),
+              Field('num_employees', type: Type.int32),
+              Field('country', type: Type.string, isFacetable: true),
+            },
+          ));
       expect(schema.defaultSortingField,
-          equals(Field('num_employees', Type.int32)));
+          equals(Field('num_employees', type: Type.int32)));
     });
-
     test('delete() calls ApiCall.delete()', () async {
       when(
         mockApiCall.delete(
@@ -69,47 +70,64 @@ void main() {
       expect(
           schema.fields,
           equals({
-            Field('company_name', Type.string),
-            Field('num_employees', Type.int32),
-            Field('country', Type.string, isFacetable: true),
+            Field('company_name', type: Type.string),
+            Field('num_employees', type: Type.int32),
+            Field('country', type: Type.string, isFacetable: true),
           }));
       expect(schema.defaultSortingField,
-          equals(Field('num_employees', Type.int32)));
+          equals(Field('num_employees', type: Type.int32)));
     });
-
     test('update() calls ApiCall.patch()', () async {
       when(
         mockApiCall.patch('/collections/companies', bodyParameters: {
           "fields": [
-            {"name": "company_category", "type": "string"},
-            {"name": "num_employees", "drop": true}
+            {
+              "name": "company_category",
+              "type": "string",
+            },
+            {
+              "name": "num_employees",
+              "type": "int32",
+              "drop": true,
+            }
           ]
         }),
-      ).thenAnswer((realInvocation) => Future.value({
-            "fields": [
-              {
-                "name": "company_category",
-                "facet": false,
-                "index": true,
-                "infix": false,
-                "locale": "",
-                "optional": false,
-                "sort": false,
-                "type": "string"
-              },
-              {"drop": true, "name": "num_employees"}
-            ]
-          }));
+      ).thenAnswer(
+        (realInvocation) => Future.value({
+          "fields": [
+            {
+              "name": "company_category",
+              "facet": false,
+              "index": true,
+              "infix": false,
+              "locale": "",
+              "optional": false,
+              "sort": false,
+              "type": "string"
+            },
+            {"drop": true, "name": "num_employees"}
+          ]
+        }),
+      );
 
-      final updateSchema = CollectionUpdateSchema(
+      final updateSchema = UpdateSchema(
         {
-          CollectionUpdateField('company_category', Type.string),
-          CollectionUpdateField('num_employees', Type.int32, shouldDrop: true),
+          UpdateField('company_category', type: Type.string),
+          UpdateField('num_employees', type: Type.int32, shouldDrop: true),
         },
       );
-      final schema = await collection.update(updateSchema);
-    });
+      final UpdateSchema schema = await collection.update(updateSchema);
 
+      expect(
+        schema.fields,
+        equals(
+          {
+            UpdateField('num_employees', shouldDrop: true),
+            UpdateField('company_category', type: Type.string, locale: '')
+          },
+        ),
+      );
+    });
     test('has a documents getter', () {
       expect(collection.documents, isA<Documents>());
     });
@@ -140,15 +158,15 @@ void main() {
   test(
       'Collection.override returns the same override object for a particular overrideId',
       () {
-    final document = collection.override('customize-apple');
+    final override = collection.override('customize-apple');
     expect(collection.override('customize-apple').hashCode,
-        equals(document.hashCode));
+        equals(override.hashCode));
   });
 
   test(
       'Collection.synonym returns the same synonym object for a particular synonymId',
       () {
-    final document = collection.synonym('employee');
-    expect(collection.synonym('employee').hashCode, equals(document.hashCode));
+    final synonym = collection.synonym('employee');
+    expect(collection.synonym('employee').hashCode, equals(synonym.hashCode));
   });
 }
