@@ -8,9 +8,9 @@ void main() {
     setUp(() {
       f1 = Field(
         'country',
-        Type.string,
-        isFacetable: true,
+        type: Type.string,
         isMultivalued: false,
+        isFacetable: true,
         isOptional: false,
         shouldIndex: true,
         locale: 'en',
@@ -29,9 +29,6 @@ void main() {
       });
     });
 
-    test('extends BaseField', () {
-      expect(f1, isA<BaseField>());
-    });
     test('has a name field', () {
       expect(f1.name, equals('country'));
       expect(f2.name, equals('country'));
@@ -40,13 +37,13 @@ void main() {
       expect(f1.type, equals(Type.string));
       expect(f2.type, equals(Type.string));
     });
-    test('has a isFacetable field', () {
-      expect(f1.isFacetable, isTrue);
-      expect(f2.isFacetable, isTrue);
-    });
     test('has a isMultivalued field', () {
       expect(f1.isMultivalued, isFalse);
       expect(f2.isMultivalued, isFalse);
+    });
+    test('has a isFacetable field', () {
+      expect(f1.isFacetable, isTrue);
+      expect(f2.isFacetable, isTrue);
     });
     test('has a isOptional field', () {
       expect(f1.isOptional, isFalse);
@@ -73,14 +70,15 @@ void main() {
         'name': 'country',
         'type': 'string',
         'facet': true,
-        'optional': false,
-        'index': true,
         'locale': 'en',
         'sort': true,
         'infix': true,
       };
       expect(f1.toMap(), equals(map));
       expect(f2.toMap(), equals(map));
+    });
+    test('is equatable', () {
+      expect(f1 == f2, isTrue);
     });
   });
 
@@ -89,7 +87,7 @@ void main() {
       expect(
         () => Field(
           '',
-          Type.string,
+          type: Type.string,
           isFacetable: true,
           isMultivalued: false,
           isOptional: false,
@@ -98,15 +96,25 @@ void main() {
           isA<ArgumentError>().having(
             (e) => e.message,
             'message',
-            'Ensure Field.name is set',
+            'Ensure Field.name is not empty',
           ),
         ),
+      );
+    });
+    // This is to maintain backward compatibility. Empty == "en"
+    test('does not throw with empty locale', () {
+      expect(
+        () => Field(
+          'country',
+          locale: '',
+        ),
+        returnsNormally,
       );
     });
   });
 
   group('Field.fromMap initialization', () {
-    test('with null/empty name throws', () {
+    test('with null name throws', () {
       expect(
         () => Field.fromMap({
           "type": "string",
@@ -118,30 +126,23 @@ void main() {
           isA<TypeError>(),
         ),
       );
+    });
+    test('with unknown type throws', () {
       expect(
-        () => Field.fromMap({
-          "name": "",
-          "type": "string",
-          "facet": true,
-          "optional": false,
-          "index": true,
-        }),
+        () => Field.fromMap(
+          {
+            "name": "country",
+            "type": "not_a_type",
+          },
+        ),
         throwsA(
           isA<ArgumentError>().having(
             (e) => e.message,
             'message',
-            'Ensure Field.name is set',
+            'not_a_type is not a defined Type.',
           ),
         ),
       );
-    });
-    test('with null/unknown type throws', () {
-      expect(
-          () => Field.fromMap({"name": "country"}), throwsA(isA<TypeError>()));
-      expect(
-          () => Field.fromMap({"name": "country", "type": "not_a_type"}),
-          throwsA(isA<ArgumentError>().having((e) => e.message, 'message',
-              'not_a_type is not a defined Type.')));
     });
     test('identifies type of the field', () {
       var field = Field.fromMap({
@@ -254,71 +255,120 @@ void main() {
   });
   group('Field toMap()', () {
     test('sets "type" according to the field type', () {
-      var field = Field('country', Type.string);
+      var field = Field('country', type: Type.string);
       expect(field.toMap()['type'], equals('string'));
 
-      field = Field('country', Type.int32);
+      field = Field('country', type: Type.int32);
       expect(field.toMap()['type'], equals('int32'));
 
-      field = Field('country', Type.int64);
+      field = Field('country', type: Type.int64);
       expect(field.toMap()['type'], equals('int64'));
 
-      field = Field('country', Type.float);
+      field = Field('country', type: Type.float);
       expect(field.toMap()['type'], equals('float'));
 
-      field = Field('country', Type.bool);
+      field = Field('country', type: Type.bool);
       expect(field.toMap()['type'], equals('bool'));
 
-      field = Field('country', Type.auto);
+      field = Field('country', type: Type.auto);
       expect(field.toMap()['type'], equals('auto'));
 
-      field = Field('country', Type.stringify);
+      field = Field('country', type: Type.stringify);
       expect(field.toMap()['type'], equals('string*'));
 
-      field = Field('country', Type.geopoint);
+      field = Field('country', type: Type.geopoint);
       expect(field.toMap()['type'], equals('geopoint'));
     });
     test('suffixes basic types with "[]" when isMultivalued set to true', () {
-      var field = Field('country', Type.string, isMultivalued: true);
+      var field = Field('country', type: Type.string, isMultivalued: true);
       expect(field.toMap()['type'], equals('string[]'));
 
-      field = Field('country', Type.int32, isMultivalued: true);
+      field = Field('country', type: Type.int32, isMultivalued: true);
       expect(field.toMap()['type'], equals('int32[]'));
 
-      field = Field('country', Type.int64, isMultivalued: true);
+      field = Field('country', type: Type.int64, isMultivalued: true);
       expect(field.toMap()['type'], equals('int64[]'));
 
-      field = Field('country', Type.float, isMultivalued: true);
+      field = Field('country', type: Type.float, isMultivalued: true);
       expect(field.toMap()['type'], equals('float[]'));
 
-      field = Field('country', Type.bool, isMultivalued: true);
+      field = Field('country', type: Type.bool, isMultivalued: true);
       expect(field.toMap()['type'], equals('bool[]'));
 
-      field = Field('country', Type.geopoint, isMultivalued: true);
+      field = Field('country', type: Type.geopoint, isMultivalued: true);
       expect(field.toMap()['type'], equals('geopoint[]'));
     });
     test(
         'does not suffix Type.auto and Type.stringify with "[]" regardless of isMultivalued',
         () {
-      var field = Field('country', Type.auto);
+      var field = Field('country', type: Type.auto);
       expect(field.toMap()['type'], equals('auto'));
-      field = Field('country', Type.auto, isMultivalued: true);
+      field = Field('country', type: Type.auto, isMultivalued: true);
       expect(field.toMap()['type'], equals('auto'));
 
-      field = Field('country', Type.stringify);
+      field = Field('country', type: Type.stringify);
       expect(field.toMap()['type'], equals('string*'));
-      field = Field('country', Type.stringify, isMultivalued: true);
+      field = Field('country', type: Type.stringify, isMultivalued: true);
       expect(field.toMap()['type'], equals('string*'));
+    });
+    test('does not add default values', () {
+      final field = Field('country');
+      expect(field.toMap(), equals({'name': 'country'}));
     });
   });
 
-  group('CollectionUpdateField', () {
-    late CollectionUpdateField field;
+  group('CreateField', () {
+    test('extends Field', () {
+      final field = CreateField(
+        'num_employees',
+        type: Type.int32,
+      );
+      expect(field, isA<Field>());
+    });
+    test(
+      'initialization throws when null type is passed',
+      () {
+        expect(
+          () => CreateField(
+            'num_employees',
+            type: null,
+          ),
+          throwsA(
+            isA<ArgumentError>().having(
+              (e) => e.message,
+              'message',
+              'Ensure CreateField.type is not null',
+            ),
+          ),
+        );
+      },
+    );
+    test('fromMap initialization', () {
+      final CreateField field = CreateField.fromMap(
+        {
+          'name': 'publication_year',
+          'type': 'int32',
+        },
+      );
+
+      expect(
+        field,
+        equals(
+          CreateField(
+            ('publication_year'),
+            type: Type.int32,
+          ),
+        ),
+      );
+    });
+  });
+
+  group('UpdateField', () {
+    late UpdateField field;
 
     setUp(() {
-      field = CollectionUpdateField(
+      field = UpdateField(
         'num_employees',
-        Type.int32,
         shouldDrop: true,
       );
     });
@@ -333,33 +383,27 @@ void main() {
     test('has a toMap method', () {
       final map = {
         'name': 'num_employees',
-        'type': 'int32',
-        'facet': false,
-        'optional': false,
-        'index': true,
-        'sort': false,
-        'infix': false,
         'drop': true,
       };
       expect(field.toMap(), equals(map));
     });
   });
 
-  test('Fields are equatable', () {
-    final f1 = Field(
-          'country',
-          Type.string,
-          isFacetable: true,
-          isMultivalued: false,
-          isOptional: false,
-        ),
-        f2 = Field(
-          'country',
-          Type.string,
-          isFacetable: true,
-          isMultivalued: false,
-          isOptional: false,
-        );
-    expect(f1 == f2, isTrue);
+  test('UpdateField.fromMap initialization', () {
+    final f1 = UpdateField.fromMap({"drop": true, "name": "num_employees"}),
+        f2 = UpdateField.fromMap({
+          "name": "company_category",
+          "facet": false,
+          "index": true,
+          "infix": false,
+          "locale": "",
+          "optional": false,
+          "sort": false,
+          "type": "string"
+        });
+
+    expect(f1, equals(UpdateField('num_employees', shouldDrop: true)));
+    expect(f2,
+        equals(UpdateField('company_category', type: Type.string, locale: '')));
   });
 }

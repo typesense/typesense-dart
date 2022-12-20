@@ -1,17 +1,11 @@
 part of models;
 
-abstract class BaseField extends Equatable {
+class Field {
   /// [name] of the field.
   final String name;
 
   /// [Type] of field.
-  final Type type;
-
-  /// If this field can be ommited in a document.
-  final bool isOptional;
-
-  /// If this field will be used in faceted search.
-  final bool isFacetable;
+  final Type? type;
 
   /// If this field is an array containing multiple values.
   ///
@@ -19,6 +13,12 @@ abstract class BaseField extends Equatable {
   /// [Type.string], [Type.int32], [Type.int64],
   /// [Type.float], [Type.bool] or [Type.geopoint]
   final bool isMultivalued;
+
+  /// If this field can be ommited in a document.
+  final bool isOptional;
+
+  /// If this field will be used in faceted search.
+  final bool isFacetable;
 
   /// Declaring a field as non-indexable
   ///
@@ -28,62 +28,32 @@ abstract class BaseField extends Equatable {
 
   final String? locale;
 
+  /// Enable sorting on a string field.
+  ///
+  /// Sorting is enabled by default on numerical and boolean fields.
   final bool sort;
 
+  /// Enable infix search on a string field.
+  ///
+  /// Since infix searching requires an additional data structure it has to
+  /// be enabled on a per-field basis.
   final bool enableInfixSearch;
 
-  BaseField(
-    this.name,
-    this.type, {
+  Field(
+    this.name, {
+    this.type,
+    this.isMultivalued = false,
     this.isOptional = false,
     this.isFacetable = false,
-    this.isMultivalued = false,
     this.shouldIndex = true,
     this.locale,
     this.sort = false,
     this.enableInfixSearch = false,
   }) {
     if (name.isEmpty) {
-      throw ArgumentError('Ensure Field.name is set');
+      throw ArgumentError('Ensure Field.name is not empty');
     }
   }
-
-  Map<String, dynamic> toMap() {
-    final map = <String, dynamic>{};
-    map['name'] = name;
-    map['type'] = type.value(isMultivalued);
-    map['facet'] = isFacetable;
-    map['optional'] = isOptional;
-    map['index'] = shouldIndex;
-    if (locale is String) {
-      map['locale'] = locale;
-    }
-    map['sort'] = sort;
-    map['infix'] = enableInfixSearch;
-    return map;
-  }
-
-  @override
-  String toString() {
-    return '$name(${type.value(isMultivalued)}), facetable: $isFacetable, optional: $isOptional, indexed: $shouldIndex';
-  }
-
-  @override
-  List<Object> get props => [name, type, isMultivalued];
-}
-
-class Field extends BaseField {
-  Field(
-    super.name,
-    super.type, {
-    super.isOptional = false,
-    super.isFacetable = false,
-    super.isMultivalued = false,
-    super.shouldIndex = true,
-    super.locale,
-    super.sort,
-    super.enableInfixSearch,
-  });
 
   factory Field.fromMap(Map<String, dynamic> map) {
     final isMultivalued =
@@ -91,37 +61,190 @@ class Field extends BaseField {
 
     return Field(
       map['name'],
-      _Type.fromValue(map['type'], isMultivalued),
-      isFacetable: map['facet'] ?? false,
-      isOptional: map['optional'] ?? false,
-      shouldIndex: map['index'] ?? true,
+      type: map['type'] != null
+          ? _Type.fromValue(map['type'], isMultivalued)
+          : null,
       isMultivalued: isMultivalued,
+      isOptional: map['optional'] ?? false,
+      isFacetable: map['facet'] ?? false,
+      shouldIndex: map['index'] ?? true,
       locale: map['locale'],
       sort: map['sort'] ?? false,
       enableInfixSearch: map['infix'] ?? false,
     );
   }
+
+  Map<String, dynamic> toMap() {
+    final map = <String, dynamic>{};
+    map['name'] = name;
+    if (type != null) {
+      map['type'] = type!.value(isMultivalued);
+    }
+    if (isOptional) {
+      map['optional'] = true;
+    }
+    if (isFacetable) {
+      map['facet'] = true;
+    }
+    if (!shouldIndex) {
+      map['index'] = false;
+    }
+    if (locale != null) {
+      map['locale'] = locale;
+    }
+    if (sort) {
+      map['sort'] = true;
+    }
+    if (enableInfixSearch) {
+      map['infix'] = true;
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return '$name(${type?.value(isMultivalued) ?? ''})';
+  }
+
+  @override
+  int get hashCode =>
+      name.hashCode ^
+      type.hashCode ^
+      isMultivalued.hashCode ^
+      isOptional.hashCode ^
+      isFacetable.hashCode ^
+      shouldIndex.hashCode ^
+      locale.hashCode ^
+      sort.hashCode ^
+      enableInfixSearch.hashCode;
+
+  @override
+  bool operator ==(Object other) {
+    return other is Field &&
+        other.runtimeType == runtimeType &&
+        other.name == name &&
+        other.type == type &&
+        other.isMultivalued == isMultivalued &&
+        other.isOptional == isOptional &&
+        other.isFacetable == isFacetable &&
+        other.shouldIndex == shouldIndex &&
+        other.locale == locale &&
+        other.sort == sort &&
+        other.enableInfixSearch == enableInfixSearch;
+  }
 }
 
-class CollectionUpdateField extends Field {
+class CreateField extends Field {
+  CreateField(
+    super.name, {
+    required super.type,
+    super.isMultivalued,
+    super.isOptional,
+    super.isFacetable,
+    super.shouldIndex,
+    super.locale,
+    super.sort,
+    super.enableInfixSearch,
+  }) {
+    if (super.type == null) {
+      throw ArgumentError('Ensure CreateField.type is not null');
+    }
+  }
+
+  factory CreateField.fromMap(Map<String, dynamic> map) {
+    final field = Field.fromMap(map);
+    return CreateField(
+      field.name,
+      type: field.type,
+      isMultivalued: field.isMultivalued,
+      isOptional: field.isOptional,
+      isFacetable: field.isFacetable,
+      shouldIndex: field.shouldIndex,
+      locale: field.locale,
+      sort: field.sort,
+      enableInfixSearch: field.enableInfixSearch,
+    );
+  }
+
+  @override
+  Type get type => super.type!;
+}
+
+/// Used to update a colletion's fields.
+///
+/// Since Typesense currently only supports adding/deleting a field,
+/// any modifications to an existing field should be expressed as a drop + add
+/// operation.
+class UpdateField extends Field {
   /// If this field should be dropped during collection update operation.
   final bool shouldDrop;
 
-  CollectionUpdateField(
-    super.name,
-    super.type, {
+  UpdateField(
+    super.name, {
+    super.type,
+    super.isMultivalued,
     super.isOptional,
     super.isFacetable,
-    super.isMultivalued,
     super.shouldIndex,
+    super.locale,
+    super.sort,
+    super.enableInfixSearch,
     this.shouldDrop = false,
   });
 
   @override
   Map<String, dynamic> toMap() {
     final map = super.toMap();
-    map['drop'] = shouldDrop;
+    if (shouldDrop) {
+      map['drop'] = true;
+    }
     return map;
+  }
+
+  factory UpdateField.fromMap(Map<String, dynamic> map) {
+    final field = Field.fromMap(map);
+
+    return UpdateField(
+      field.name,
+      type: field.type,
+      isMultivalued: field.isMultivalued,
+      isOptional: field.isOptional,
+      isFacetable: field.isFacetable,
+      shouldIndex: field.shouldIndex,
+      locale: field.locale,
+      sort: field.sort,
+      enableInfixSearch: field.enableInfixSearch,
+      shouldDrop: map['drop'] ?? false,
+    );
+  }
+
+  @override
+  int get hashCode =>
+      name.hashCode ^
+      type.hashCode ^
+      isMultivalued.hashCode ^
+      isOptional.hashCode ^
+      isFacetable.hashCode ^
+      shouldIndex.hashCode ^
+      locale.hashCode ^
+      sort.hashCode ^
+      enableInfixSearch.hashCode ^
+      shouldDrop.hashCode;
+
+  @override
+  bool operator ==(Object other) {
+    return other is UpdateField &&
+        other.runtimeType == runtimeType &&
+        other.name == name &&
+        other.type == type &&
+        other.isMultivalued == isMultivalued &&
+        other.isOptional == isOptional &&
+        other.isFacetable == isFacetable &&
+        other.shouldIndex == shouldIndex &&
+        other.locale == locale &&
+        other.sort == sort &&
+        other.enableInfixSearch == enableInfixSearch &&
+        other.shouldDrop == shouldDrop;
   }
 }
 
@@ -161,7 +284,7 @@ extension _Type on Type {
             indexOfDot = description.indexOf('.'),
             value = description.substring(indexOfDot + 1);
 
-        return isMultivalued ? value + '[]' : value;
+        return isMultivalued ? '$value[]' : value;
 
       case Type.auto:
         return 'auto';

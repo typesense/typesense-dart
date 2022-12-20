@@ -34,7 +34,7 @@ final _hungerGamesBook = {
 Future<void> init(Client client) async {
   await collections.create(
       client,
-      Schema.fromMap({
+      CreateSchema.fromMap({
         'name': 'books_january',
         'fields': [
           {'name': 'title', 'type': 'string'},

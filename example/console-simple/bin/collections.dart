@@ -13,15 +13,15 @@ Future<void> runExample(Client client) async {
   await delete(client);
 }
 
-Future<void> create(Client client, [CollectionCreateSchema? schema]) async {
-  final _schema = CollectionCreateSchema(
+Future<void> create(Client client, [CreateSchema? schema]) async {
+  final _schema = CreateSchema(
         'companies',
         {
-          Field('company_name', Type.string),
-          Field('num_employees', Type.int32),
-          Field('country', Type.string, isFacetable: true),
+          CreateField('company_name', type: Type.string),
+          CreateField('num_employees', type: Type.int32),
+          CreateField('country', type: Type.string, isFacetable: true),
         },
-        defaultSortingField: Field('num_employees', Type.int32),
+        defaultSortingField: CreateField('num_employees', type: Type.int32),
       ),
       collectionName = schema == null ? 'companies' : schema.name;
 
