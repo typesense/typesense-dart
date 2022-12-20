@@ -36,8 +36,8 @@ class Collection {
   }
 
   /// Updates the existing schema according to the provided [schema].
-  Future<Schema> update(CollectionUpdateSchema schema) async {
-    return Schema.fromMap(
+  Future<UpdateSchema> update(UpdateSchema schema) async {
+    return UpdateSchema.fromMap(
       await _apiCall.patch(
         _endpointPath,
         bodyParameters: schema.toMap(),

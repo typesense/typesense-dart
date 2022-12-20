@@ -1,6 +1,5 @@
 library models;
 
-import 'package:equatable/equatable.dart';
 import 'package:http/http.dart' as http;
 import '../exceptions/exceptions.dart';
 
