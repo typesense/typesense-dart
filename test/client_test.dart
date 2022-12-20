@@ -1,6 +1,5 @@
 import 'package:test/test.dart';
 
-import 'package:typesense/src/client.dart';
 import 'package:typesense/src/collections.dart';
 import 'package:typesense/src/collection.dart';
 import 'package:typesense/src/aliases.dart';
@@ -13,6 +12,7 @@ import 'package:typesense/src/stats.dart';
 import 'package:typesense/src/health.dart';
 import 'package:typesense/src/operations.dart';
 import 'package:typesense/src/multi_search.dart';
+import 'package:typesense/typesense.dart';
 
 import 'test_utils.dart';
 
@@ -25,7 +25,7 @@ void main() {
 
   group('Client', () {
     test('has a config field', () {
-      expect(client.config, equals(ConfigurationFactory.withNearestNode()));
+      expect(client.config, isA<Configuration>());
     });
     test('has a collections field', () {
       expect(client.collections, isA<Collections>());
