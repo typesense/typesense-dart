@@ -1,8 +1,7 @@
 import 'package:test/test.dart';
-
-import 'package:typesense/src/search_client.dart';
-import 'package:typesense/src/multi_search.dart';
 import 'package:typesense/src/collection.dart';
+import 'package:typesense/src/multi_search.dart';
+import 'package:typesense/typesense.dart';
 
 import 'test_utils.dart';
 
@@ -15,10 +14,7 @@ void main() {
 
   group('SearchClient', () {
     test('has a config field', () {
-      expect(
-          searchClient.config,
-          equals(ConfigurationFactory.withNearestNode(
-              sendApiKeyAsQueryParam: true)));
+      expect(searchClient.config, isA<Configuration>());
     });
     test('has a multiSearch getter', () {
       expect(searchClient.multiSearch, isA<MultiSearch>());

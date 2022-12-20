@@ -1,10 +1,5 @@
 import 'package:test/test.dart';
-import 'package:equatable/equatable.dart';
 
-import 'package:typesense/src/configuration.dart';
-import 'package:typesense/src/models/models.dart';
-import 'package:typesense/src/exceptions/exceptions.dart'
-    show MissingConfiguration;
 import 'package:typesense/typesense.dart';
 
 import 'test_utils.dart';
@@ -217,9 +212,5 @@ void main() {
       );
       expect(config.sendApiKeyAsQueryParam, isFalse);
     });
-  });
-
-  test('Configuration extends Equatable', () {
-    expect(config, isA<Equatable>());
   });
 }

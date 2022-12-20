@@ -1,9 +1,7 @@
-import 'package:equatable/equatable.dart';
-
 import 'exceptions/exceptions.dart' show MissingConfiguration;
 import 'models/models.dart';
 
-class Configuration extends Equatable {
+class Configuration {
   final String apiKey;
   final Set<Node>? nodes;
   final Node? nearestNode;
@@ -82,19 +80,4 @@ class Configuration extends Equatable {
   Send api key in query: $sendApiKeyAsQueryParam
 }
 ''';
-
-  @override
-  List<Object> get props {
-    return [
-      apiKey,
-      nodes ?? '',
-      nearestNode ?? '',
-      numRetries,
-      retryInterval,
-      connectionTimeout,
-      healthcheckInterval,
-      cachedSearchResultsTTL,
-      sendApiKeyAsQueryParam,
-    ];
-  }
 }
