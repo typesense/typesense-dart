@@ -134,42 +134,6 @@ class Field {
   }
 }
 
-class CreateField extends Field {
-  CreateField(
-    super.name, {
-    required super.type,
-    super.isMultivalued,
-    super.isOptional,
-    super.isFacetable,
-    super.shouldIndex,
-    super.locale,
-    super.sort,
-    super.enableInfixSearch,
-  }) {
-    if (super.type == null) {
-      throw ArgumentError('Ensure CreateField.type is not null');
-    }
-  }
-
-  factory CreateField.fromMap(Map<String, dynamic> map) {
-    final field = Field.fromMap(map);
-    return CreateField(
-      field.name,
-      type: field.type,
-      isMultivalued: field.isMultivalued,
-      isOptional: field.isOptional,
-      isFacetable: field.isFacetable,
-      shouldIndex: field.shouldIndex,
-      locale: field.locale,
-      sort: field.sort,
-      enableInfixSearch: field.enableInfixSearch,
-    );
-  }
-
-  @override
-  Type get type => super.type!;
-}
-
 /// Used to update a colletion's fields.
 ///
 /// Since Typesense currently only supports adding/deleting a field,
