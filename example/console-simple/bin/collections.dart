@@ -9,6 +9,7 @@ Future<void> runExample(Client client) async {
   logInfoln(log, '--Collections example--');
   await create(client);
   await retrieve(client);
+  await update(client);
   await retrieveAll(client);
   await delete(client);
 }
@@ -72,6 +73,27 @@ Future<void> retrieveAll(Client client) async {
   try {
     logInfoln(log, 'Retrieving all collections.');
     log.fine(await client.collections.retrieve());
+  } on RequestException catch (e, stackTrace) {
+    log.severe(e.message, e, stackTrace);
+  } catch (e, stackTrace) {
+    log.severe(e, stackTrace);
+  }
+}
+
+Future<void> update(Client client) async {
+  try {
+    logInfoln(log, 'Updating "companies" collection.');
+    log.fine(
+      await client.collection('companies').update(
+            UpdateSchema(
+              {
+                UpdateField('company_category', type: Type.string),
+                UpdateField('num_employees', shouldDrop: true)
+              },
+            ),
+          ),
+    );
+    await writePropagationDelay();
   } on RequestException catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
   } catch (e, stackTrace) {

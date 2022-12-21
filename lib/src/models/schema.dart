@@ -15,6 +15,9 @@ abstract class BaseSchema {
     map['fields'] = fields.map((field) => field.toMap()).toList();
     return map;
   }
+
+  @override
+  String toString() => toMap().toString();
 }
 
 class Schema extends BaseSchema {
@@ -143,9 +146,6 @@ class CreateSchema extends BaseSchema {
     }
     return map;
   }
-
-  @override
-  String toString() => toMap().toString();
 }
 
 class UpdateSchema extends BaseSchema {
