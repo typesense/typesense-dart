@@ -1,5 +1,4 @@
 import 'package:test/test.dart';
-import 'package:typesense/src/collection.dart';
 import 'package:typesense/src/multi_search.dart';
 import 'package:typesense/typesense.dart';
 

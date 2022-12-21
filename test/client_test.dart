@@ -1,7 +1,5 @@
 import 'package:test/test.dart';
 
-import 'package:typesense/src/collections.dart';
-import 'package:typesense/src/collection.dart';
 import 'package:typesense/src/aliases.dart';
 import 'package:typesense/src/alias.dart';
 import 'package:typesense/src/keys.dart';
