@@ -3,8 +3,7 @@
 * Added support for collection update ([#118](https://github.com/typesense/typesense-dart/issues/118)).
 * Updated models ([#120](https://github.com/typesense/typesense-dart/issues/120), [#125](https://github.com/typesense/typesense-dart/issues/125)).
 * **Breaking Changes**
-  * `Collections.create` method expects newly added `CreateSchema` model instead of `Schema`.
-  * `Field.type` is an optional field now. (To enforce mentioning type during creation of schema, a new class `CreateField` is added which will throw an `ArgumentError` if type is omitted.)
+  * `Field.type` is an optional field now.
 
 # 0.2.0
 

@@ -20,7 +20,7 @@ class Collections {
   }
 
   /// Creates a new collection with the [schema].
-  Future<Schema> create(CreateSchema schema) async {
+  Future<Schema> create(Schema schema) async {
     return Schema.fromMap(await _apicall.post(
       resourcepath,
       bodyParameters: schema.toMap(),

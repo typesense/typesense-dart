@@ -317,52 +317,6 @@ void main() {
     });
   });
 
-  group('CreateField', () {
-    test('extends Field', () {
-      final field = CreateField(
-        'num_employees',
-        type: Type.int32,
-      );
-      expect(field, isA<Field>());
-    });
-    test(
-      'initialization throws when null type is passed',
-      () {
-        expect(
-          () => CreateField(
-            'num_employees',
-            type: null,
-          ),
-          throwsA(
-            isA<ArgumentError>().having(
-              (e) => e.message,
-              'message',
-              'Ensure CreateField.type is not null',
-            ),
-          ),
-        );
-      },
-    );
-    test('fromMap initialization', () {
-      final CreateField field = CreateField.fromMap(
-        {
-          'name': 'publication_year',
-          'type': 'int32',
-        },
-      );
-
-      expect(
-        field,
-        equals(
-          CreateField(
-            ('publication_year'),
-            type: Type.int32,
-          ),
-        ),
-      );
-    });
-  });
-
   group('UpdateField', () {
     late UpdateField field;
 

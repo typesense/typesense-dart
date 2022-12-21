@@ -106,14 +106,14 @@ void main() {
           }));
 
       final schema = await collections.create(
-        CreateSchema(
+        Schema(
           'companies',
           {
-            CreateField('company_name', type: Type.string),
-            CreateField('num_employees', type: Type.int32),
-            CreateField('country', type: Type.string, isFacetable: true),
+            Field('company_name', type: Type.string),
+            Field('num_employees', type: Type.int32),
+            Field('country', type: Type.string, isFacetable: true),
           },
-          defaultSortingField: CreateField('num_employees', type: Type.int32),
+          defaultSortingField: Field('num_employees', type: Type.int32),
         ),
       );
 
