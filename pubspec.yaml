@@ -1,6 +1,6 @@
 name: typesense
 description: Dart client library for accessing the HTTP API of Typesense search engine.
-version: 0.2.0
+version: 0.3.0
 homepage: https://typesense.org/
 repository: https://github.com/typesense/typesense-dart
 

@@ -10,7 +10,7 @@ Add `typesense` as a [dependency in your pubspec.yaml file](https://flutter.dev/
 
 ```@yaml
 dependencies:
-  typesense: ^0.2.0
+  typesense: ^0.3.0
 ```
 
 ## Usage
@@ -33,6 +33,7 @@ Make sure to [README](example/console-simple/README.md) beforehand.
 
 | Typesense Server | typesense-dart |
 |------------------|----------------|
+| \>= v0.22.0 | \>= v0.3.0 |
 | \>= v0.21.0 | \>= v0.1.1 |
 
 ## Contributing
