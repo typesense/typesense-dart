@@ -34,15 +34,15 @@ Future<void> runExample(Client client) async {
   await collections.delete(client, 'users');
 }
 
-final _schema = CreateSchema(
+final _schema = Schema(
   'users',
   {
-    CreateField('company_id', type: Type.int32),
-    CreateField('user_name', type: Type.string),
-    CreateField('login_count', type: Type.int32),
-    CreateField('country', type: Type.string, isFacetable: true),
+    Field('company_id', type: Type.int32),
+    Field('user_name', type: Type.string),
+    Field('login_count', type: Type.int32),
+    Field('country', type: Type.string, isFacetable: true),
   },
-  defaultSortingField: CreateField('company_id', type: Type.int32),
+  defaultSortingField: Field('company_id', type: Type.int32),
 );
 
 final _documents = [
