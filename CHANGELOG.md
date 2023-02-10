@@ -1,3 +1,7 @@
+# 0.3.0+1
+
+* Update README.
+
 # 0.3.0
 
 * Added support for collection update ([#118](https://github.com/typesense/typesense-dart/issues/118)).
