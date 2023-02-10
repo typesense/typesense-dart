@@ -27,6 +27,55 @@ See [Configuration](lib/src/configuration.dart) class for a list of all client c
 
 ### Examples
 
+
+```dart
+import 'dart:io';
+
+import 'package:typesense/typesense.dart';
+
+
+void main() async {
+  // Replace with your configuration
+  final host = InternetAddress.loopbackIPv4.address, protocol = Protocol.http;
+  final config = Configuration(
+    // Api key
+    'xyz',
+    nodes: {
+      Node(
+        protocol,
+        host,
+        port: 7108,
+      ),
+      Node.withUri(
+        Uri(
+          scheme: 'http',
+          host: host,
+          port: 8108,
+        ),
+      ),
+      Node(
+        protocol,
+        host,
+        port: 9108,
+      ),
+    },
+    numRetries: 3, // A total of 4 tries (1 original try + 3 retries)
+    connectionTimeout: const Duration(seconds: 2),
+  );
+
+  final client = Client(config);
+
+  final searchParameters = {
+    'q': 'stark',
+    'query_by': 'company_name',
+    'filter_by': 'num_employees:>100',
+    'sort_by': 'num_employees:desc'
+  };
+
+  await client.collection('companies').documents.search(searchParameters);
+}
+```
+
 The examples that walk you through on how to use the client: [main.dart](example/console-simple/bin/main.dart)
 
 Make sure to [README](example/console-simple/README.md) beforehand.
