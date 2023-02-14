@@ -1,6 +1,6 @@
 # Typesense
 
- [![pub package][pubShield]][package] [![CircleCI][CircleCIShield]][CircleCI] [![pub likes][pubLikesBadge]][pubScore] [![pub points][pubScoreBadge]][pubScore] [![codecov][codecovBadge]][codecov]
+ [![pub package][pubShield]][package] [![github actions status][githubBadge]][githubActions] [![pub likes][pubLikesBadge]][pubScore] [![pub points][pubScoreBadge]][pubScore]
 
 Dart client library for accessing the HTTP API of [Typesense][typesense] search engine.
 
@@ -101,10 +101,10 @@ This library is authored and maintained by our awesome community of contributors
 
 [nnbd]: https://github.com/typesense/typesense-dart/issues/37
 [docs]: https://typesense.org/docs/api/
+[githubBadge]: https://github.com/typesense/typesense-dart/actions/workflows/dart.yml/badge.svg
+[githubActions]: https://github.com/typesense/typesense-dart/actions
 [pubShield]: https://img.shields.io/pub/v/typesense.svg
 [package]: https://pub.dev/packages/typesense
-[CircleCIShield]: https://circleci.com/gh/typesense/typesense-dart.svg?style=shield
-[CircleCI]: https://circleci.com/gh/typesense/typesense-dart
 [codecovBadge]: https://codecov.io/gh/typesense/typesense-dart/branch/master/graph/badge.svg?token=UV6MPDKS07
 [codecov]: https://codecov.io/gh/typesense/typesense-dart
 [pubScoreBadge]: https://img.shields.io/pub/points/typesense
