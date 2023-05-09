@@ -14,6 +14,10 @@ class Field {
   /// [Type.float], [Type.bool] or [Type.geopoint]
   final bool isMultivalued;
 
+  /// Used in case of a vector field. Represents the number of dimensions
+  /// (length of the float array) that your embeddings contain.
+  final int dimensions;
+
   /// If this field can be ommited in a document.
   final bool isOptional;
 
@@ -43,6 +47,7 @@ class Field {
     this.name, {
     this.type,
     this.isMultivalued = false,
+    this.dimensions = 0,
     this.isOptional = false,
     this.isFacetable = false,
     this.shouldIndex = true,
@@ -65,6 +70,7 @@ class Field {
           ? _Type.fromValue(map['type'], isMultivalued)
           : null,
       isMultivalued: isMultivalued,
+      dimensions: map['num_dim'] ?? 0,
       isOptional: map['optional'] ?? false,
       isFacetable: map['facet'] ?? false,
       shouldIndex: map['index'] ?? true,
@@ -79,6 +85,9 @@ class Field {
     map['name'] = name;
     if (type != null) {
       map['type'] = type!.value(isMultivalued);
+    }
+    if (dimensions > 0) {
+      map['num_dim'] = dimensions;
     }
     if (isOptional) {
       map['optional'] = true;
@@ -111,6 +120,7 @@ class Field {
       name.hashCode ^
       type.hashCode ^
       isMultivalued.hashCode ^
+      dimensions.hashCode ^
       isOptional.hashCode ^
       isFacetable.hashCode ^
       shouldIndex.hashCode ^
@@ -125,6 +135,7 @@ class Field {
         other.name == name &&
         other.type == type &&
         other.isMultivalued == isMultivalued &&
+        other.dimensions == dimensions &&
         other.isOptional == isOptional &&
         other.isFacetable == isFacetable &&
         other.shouldIndex == shouldIndex &&
@@ -147,6 +158,7 @@ class UpdateField extends Field {
     super.name, {
     super.type,
     super.isMultivalued,
+    super.dimensions,
     super.isOptional,
     super.isFacetable,
     super.shouldIndex,
@@ -172,6 +184,7 @@ class UpdateField extends Field {
       field.name,
       type: field.type,
       isMultivalued: field.isMultivalued,
+      dimensions: field.dimensions,
       isOptional: field.isOptional,
       isFacetable: field.isFacetable,
       shouldIndex: field.shouldIndex,
@@ -187,6 +200,7 @@ class UpdateField extends Field {
       name.hashCode ^
       type.hashCode ^
       isMultivalued.hashCode ^
+      dimensions.hashCode ^
       isOptional.hashCode ^
       isFacetable.hashCode ^
       shouldIndex.hashCode ^
@@ -202,6 +216,7 @@ class UpdateField extends Field {
         other.name == name &&
         other.type == type &&
         other.isMultivalued == isMultivalued &&
+        other.dimensions == dimensions &&
         other.isOptional == isOptional &&
         other.isFacetable == isFacetable &&
         other.shouldIndex == shouldIndex &&
