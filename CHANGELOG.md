@@ -1,3 +1,7 @@
+# 0.3.1
+
+* Added `dimensions` field to support creating a vector field in schema.
+
 # 0.3.0+1
 
 * Update README.

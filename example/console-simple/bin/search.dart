@@ -12,6 +12,7 @@ Future<void> runExample(Client client) async {
   await init(client);
   await search(client);
   await geosearch(client);
+  await vectorsearch(client);
   await multisearch(client);
   await collections.delete(client);
 }
@@ -132,6 +133,41 @@ Future<void> geosearch(Client client) async {
     }));
 
     await collections.delete(client, 'places');
+  } on RequestException catch (e, stackTrace) {
+    log.severe(e.message, e, stackTrace);
+  } catch (e, stackTrace) {
+    log.severe(e, stackTrace);
+  }
+}
+
+Future<void> vectorsearch(Client client) async {
+  try {
+    await collections.create(
+        client,
+        Schema(
+          'docs',
+          {
+            Field('title', type: Type.string),
+            Field('points', type: Type.int32),
+            Field('vec', type: Type.float, isMultivalued: true, dimensions: 4),
+          },
+          defaultSortingField: Field('points', type: Type.int32),
+        ));
+    await documents.importDocs(client, 'docs', [
+      {
+        'title': 'Louvre Museuem',
+        'points': 1,
+        'vec': [0.04, 0.234, 0.113, 0.001]
+      }
+    ]);
+
+    logInfoln(log, 'Vector search.');
+    log.fine(await client.collection('docs').documents.search({
+      'q': '*',
+      'vector_query': 'vec:([0.96826, 0.94, 0.39557, 0.306488], k:100)',
+    }));
+
+    await collections.delete(client, 'docs');
   } on RequestException catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
   } catch (e, stackTrace) {
