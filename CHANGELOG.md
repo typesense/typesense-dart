@@ -1,3 +1,9 @@
+# 0.4.0
+
+* Requires Dart 3.0 or later.
+* Added `Presets` support.
+* Updated dependencies.
+
 # 0.3.1
 
 * Added `dimensions` field to support creating a vector field in schema.

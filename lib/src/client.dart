@@ -15,6 +15,8 @@ import 'key.dart';
 import 'debug.dart';
 import 'stats.dart';
 import 'health.dart';
+import 'preset.dart';
+import 'presets.dart';
 import 'metrics.dart';
 import 'operations.dart';
 import 'multi_search.dart';
@@ -26,6 +28,7 @@ class Client {
   final Collections collections;
   final Aliases aliases;
   final Keys keys;
+  final Presets presets;
   final Debug debug;
   final Stats stats;
   final Health health;
@@ -34,7 +37,8 @@ class Client {
   final MultiSearch multiSearch;
   final _individualCollections = HashMap<String, Collection>(),
       _individualAliases = HashMap<String, Alias>(),
-      _individualKeys = HashMap<int, Key>();
+      _individualKeys = HashMap<int, Key>(),
+      _individualPresets = HashMap<String, Preset>();
 
   Client._(
       this.config,
@@ -43,6 +47,7 @@ class Client {
       this.collections,
       this.aliases,
       this.keys,
+      this.presets,
       this.debug,
       this.stats,
       this.health,
@@ -68,6 +73,7 @@ class Client {
         Collections(apiCall, CollectionsApiCall(config, nodePool)),
         Aliases(apiCall),
         Keys(apiCall),
+        Presets(apiCall),
         Debug(apiCall),
         Stats(apiCall),
         Health(apiCall),
@@ -99,5 +105,12 @@ class Client {
       _individualKeys[id] = Key(id, _apiCall);
     }
     return _individualKeys[id]!;
+  }
+
+  Preset preset(String presetName) {
+    if (!_individualPresets.containsKey(presetName)) {
+      _individualPresets[presetName] = Preset(presetName, _apiCall);
+    }
+    return _individualPresets[presetName]!;
   }
 }

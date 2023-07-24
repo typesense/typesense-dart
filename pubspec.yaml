@@ -1,15 +1,15 @@
 name: typesense
 description: Dart client library for accessing the HTTP API of Typesense search engine.
-version: 0.3.1
+version: 0.4.0
 homepage: https://typesense.org/
 repository: https://github.com/typesense/typesense-dart
 
 environment:
-  sdk: ">=2.17.0 <3.0.0"
+  sdk: ^3.0.0
 
 dependencies:
-  http: ^0.13.4
-  crypto: ^3.0.2
+  http: ^1.1.0
+  crypto: ^3.0.3
 
 dev_dependencies:
   test: ^1.21.4
