@@ -10,6 +10,7 @@ import 'keys.dart' as keys;
 import 'overrides.dart' as overrides;
 import 'synonyms.dart' as synonyms;
 import 'aliases.dart' as aliases;
+import 'presets.dart' as presets;
 import 'cluster_operations.dart' as cluster_operations;
 import 'miscellaneous.dart' as miscellaneous;
 
@@ -57,6 +58,7 @@ void main() async {
   await overrides.runExample(client);
   await synonyms.runExample(client);
   await aliases.runExample(client);
+  await presets.runExample(client);
   await cluster_operations.runExample(client);
   await miscellaneous.runExample(client);
 }
