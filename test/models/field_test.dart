@@ -242,6 +242,20 @@ void main() {
       });
       expect(field.type, equals(Type.geopoint));
       expect(field.isMultivalued, isTrue);
+
+      field = Field.fromMap({
+        "name": "name",
+        "type": "object",
+      });
+      expect(field.type, equals(Type.object));
+      expect(field.isMultivalued, isFalse);
+
+      field = Field.fromMap({
+        "name": "name",
+        "type": "object[]",
+      });
+      expect(field.type, equals(Type.object));
+      expect(field.isMultivalued, isTrue);
     });
     test('sets default values to fields when null', () {
       final field = Field.fromMap({"name": "num_employees", "type": "int32"});
