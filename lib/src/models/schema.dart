@@ -28,12 +28,11 @@ class Schema extends BaseSchema {
   /// searching.
   final Field? defaultSortingField;
 
-  Schema(
-    this.name,
-    super.fields, {
-    this.defaultSortingField,
-    this.documentCount,
-  });
+  /// Boolean to enable nested fields on the schema, only available for typesense 0.24 or more
+  final bool? enableNestedFields;
+
+  Schema(this.name, super.fields,
+      {this.defaultSortingField, this.documentCount, this.enableNestedFields});
 
   factory Schema.fromMap(Map<String, dynamic> map) {
     if ((map['name'] as String).isEmpty) {
@@ -54,13 +53,12 @@ class Schema extends BaseSchema {
             ),
           )
         : null;
+    final bool? enableNestedFields = map["enable_nested_fields"];
 
-    return Schema(
-      map['name'],
-      fields,
-      documentCount: map['num_documents'] ?? 0,
-      defaultSortingField: defaultSortingField,
-    );
+    return Schema(map['name'], fields,
+        documentCount: map['num_documents'] ?? 0,
+        defaultSortingField: defaultSortingField,
+        enableNestedFields: enableNestedFields);
   }
 
   @override
@@ -72,6 +70,9 @@ class Schema extends BaseSchema {
     }
     if (documentCount != null) {
       map['num_documents'] = documentCount;
+    }
+    if (enableNestedFields != null) {
+      map['enable_nested_fields'] = enableNestedFields;
     }
     return map;
   }
