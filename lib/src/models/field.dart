@@ -248,6 +248,7 @@ enum Type {
   auto,
   stringify,
   geopoint,
+  object,
 }
 
 extension _Type on Type {
@@ -259,6 +260,7 @@ extension _Type on Type {
       case Type.float:
       case Type.bool:
       case Type.geopoint:
+      case Type.object:
         final description = toString(),
             indexOfDot = description.indexOf('.'),
             value = description.substring(indexOfDot + 1);
