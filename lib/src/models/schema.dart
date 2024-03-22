@@ -31,8 +31,13 @@ class Schema extends BaseSchema {
   /// Boolean to enable nested fields on the schema, only available for typesense 0.24 or more
   final bool? enableNestedFields;
 
-  Schema(this.name, super.fields,
-      {this.defaultSortingField, this.documentCount, this.enableNestedFields});
+  Schema(
+    this.name,
+    super.fields, {
+    this.defaultSortingField,
+    this.documentCount,
+    this.enableNestedFields,
+  });
 
   factory Schema.fromMap(Map<String, dynamic> map) {
     if ((map['name'] as String).isEmpty) {
