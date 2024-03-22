@@ -15,6 +15,7 @@ void main() {
         },
         defaultSortingField: Field('num_employees'),
         documentCount: 0,
+        enableNestedFields: true,
       );
       s2 = Schema.fromMap({
         "name": "companies",
@@ -25,6 +26,7 @@ void main() {
         ],
         "default_sorting_field": "num_employees",
         "num_documents": 0,
+        "enable_nested_fields": true,
       });
     });
 
@@ -54,6 +56,10 @@ void main() {
       expect(s2.defaultSortingField,
           equals(Field('num_employees', type: Type.int32)));
     });
+    test('has a enableNestedFields field', () {
+      expect(s1.enableNestedFields, equals(true));
+      expect(s2.enableNestedFields, equals(true));
+    });
     test('has a toMap method', () {
       final map = {
         "name": "companies",
@@ -64,6 +70,7 @@ void main() {
         ],
         "default_sorting_field": "num_employees",
         "num_documents": 0,
+        "enable_nested_fields": true,
       };
 
       expect(s1.toMap(), equals(map));
@@ -150,6 +157,32 @@ void main() {
           ),
         ),
       );
+    });
+    test("with null/empty enableNestedFields is successful", () {
+      var schema = Schema.fromMap({
+        "name": "companies",
+        "fields": [
+          {"name": "company_name", "type": "string"},
+          {"name": "num_employees", "type": "int32"},
+          {"name": "country", "type": "string", "facet": true}
+        ],
+        "default_sorting_field": "",
+        "num_documents": 0,
+      });
+      expect(schema.name, equals('companies'));
+      expect(schema.enableNestedFields, isNull);
+
+      schema = Schema.fromMap({
+        "name": "companies",
+        "fields": [
+          {"name": "company_name", "type": "string"},
+          {"name": "num_employees", "type": "int32"},
+          {"name": "country", "type": "string", "facet": true}
+        ],
+        "num_documents": 0,
+      });
+      expect(schema.name, equals('companies'));
+      expect(schema.enableNestedFields, isNull);
     });
   });
 
