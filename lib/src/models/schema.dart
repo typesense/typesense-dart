@@ -60,10 +60,13 @@ class Schema extends BaseSchema {
         : null;
     final bool? enableNestedFields = map["enable_nested_fields"];
 
-    return Schema(map['name'], fields,
-        documentCount: map['num_documents'] ?? 0,
-        defaultSortingField: defaultSortingField,
-        enableNestedFields: enableNestedFields);
+    return Schema(
+      map['name'],
+      fields,
+      documentCount: map['num_documents'] ?? 0,
+      defaultSortingField: defaultSortingField,
+      enableNestedFields: enableNestedFields,
+    );
   }
 
   @override

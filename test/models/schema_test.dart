@@ -7,15 +7,16 @@ void main() {
 
     setUp(() {
       s1 = Schema(
-          'companies',
-          {
-            Field('company_name', type: Type.string),
-            Field('num_employees', type: Type.int32),
-            Field('country', type: Type.string, isFacetable: true),
-          },
-          defaultSortingField: Field('num_employees'),
-          documentCount: 0,
-          enableNestedFields: true);
+        'companies',
+        {
+          Field('company_name', type: Type.string),
+          Field('num_employees', type: Type.int32),
+          Field('country', type: Type.string, isFacetable: true),
+        },
+        defaultSortingField: Field('num_employees'),
+        documentCount: 0,
+        enableNestedFields: true,
+      );
       s2 = Schema.fromMap({
         "name": "companies",
         "fields": [
