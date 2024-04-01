@@ -1,4 +1,4 @@
-part of models;
+part of 'models.dart';
 
 abstract class BaseSchema {
   /// [fields] used for querying, filtering and faceting.

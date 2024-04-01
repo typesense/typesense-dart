@@ -1,3 +1,8 @@
+# 0.5.0
+
+* Added support for nested object fields.
+* Updated dependencies.cd
+
 # 0.4.0
 
 * Requires Dart 3.0 or later.

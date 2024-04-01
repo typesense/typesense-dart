@@ -1,4 +1,4 @@
-part of exceptions;
+part of '../exceptions.dart';
 
 /// 400 Bad Request
 class RequestMalformed extends RequestException {

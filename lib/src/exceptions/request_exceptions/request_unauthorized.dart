@@ -1,4 +1,4 @@
-part of exceptions;
+part of '../exceptions.dart';
 
 /// 401 Unauthorized
 class RequestUnauthorized extends RequestException {
