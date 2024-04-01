@@ -43,6 +43,11 @@ class Field {
   /// be enabled on a per-field basis.
   final bool enableInfixSearch;
 
+  /// Connects a document to a field in another collection.
+  ///
+  /// Example value: `ReferencedCollectionName.fieldName`.
+  final String? reference;
+
   Field(
     this.name, {
     this.type,
@@ -54,6 +59,7 @@ class Field {
     this.locale,
     this.sort = false,
     this.enableInfixSearch = false,
+    this.reference,
   }) {
     if (name.isEmpty) {
       throw ArgumentError('Ensure Field.name is not empty');
@@ -77,6 +83,7 @@ class Field {
       locale: map['locale'],
       sort: map['sort'] ?? false,
       enableInfixSearch: map['infix'] ?? false,
+      reference: map['reference'],
     );
   }
 
@@ -107,6 +114,9 @@ class Field {
     if (enableInfixSearch) {
       map['infix'] = true;
     }
+    if (reference != null) {
+      map['reference'] = reference;
+    }
     return map;
   }
 
@@ -126,7 +136,8 @@ class Field {
       shouldIndex.hashCode ^
       locale.hashCode ^
       sort.hashCode ^
-      enableInfixSearch.hashCode;
+      enableInfixSearch.hashCode ^
+      reference.hashCode;
 
   @override
   bool operator ==(Object other) {
@@ -141,7 +152,8 @@ class Field {
         other.shouldIndex == shouldIndex &&
         other.locale == locale &&
         other.sort == sort &&
-        other.enableInfixSearch == enableInfixSearch;
+        other.enableInfixSearch == enableInfixSearch &&
+        other.reference == reference;
   }
 }
 

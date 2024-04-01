@@ -16,6 +16,7 @@ void main() {
         locale: 'en',
         sort: true,
         enableInfixSearch: true,
+        reference: 'RefColl.field',
       );
       f2 = Field.fromMap({
         "name": "country",
@@ -26,6 +27,7 @@ void main() {
         "locale": "en",
         "sort": true,
         "infix": true,
+        "reference": "RefColl.field",
       });
     });
 
@@ -65,6 +67,10 @@ void main() {
       expect(f1.enableInfixSearch, isTrue);
       expect(f2.enableInfixSearch, isTrue);
     });
+    test('has a reference field', () {
+      expect(f1.reference, 'RefColl.field');
+      expect(f2.reference, 'RefColl.field');
+    });
     test('has a toMap method', () {
       final map = {
         'name': 'country',
@@ -73,6 +79,7 @@ void main() {
         'locale': 'en',
         'sort': true,
         'infix': true,
+        'reference': 'RefColl.field',
       };
       expect(f1.toMap(), equals(map));
       expect(f2.toMap(), equals(map));
@@ -265,6 +272,7 @@ void main() {
       expect(field.locale, isNull);
       expect(field.sort, isFalse);
       expect(field.enableInfixSearch, isFalse);
+      expect(field.reference, isNull);
     });
   });
   group('Field toMap()', () {
