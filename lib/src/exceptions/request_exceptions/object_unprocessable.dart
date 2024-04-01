@@ -1,4 +1,4 @@
-part of exceptions;
+part of '../exceptions.dart';
 
 /// 422 Unprocessable Entity
 class ObjectUnprocessable extends RequestException {

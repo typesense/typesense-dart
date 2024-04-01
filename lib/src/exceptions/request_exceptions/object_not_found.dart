@@ -1,4 +1,4 @@
-part of exceptions;
+part of '../exceptions.dart';
 
 /// 404 Not Found
 class ObjectNotFound extends RequestException {

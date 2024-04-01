@@ -1,4 +1,4 @@
-part of exceptions;
+part of 'exceptions.dart';
 
 class MissingConfiguration implements TypesenseException {
   final String message;

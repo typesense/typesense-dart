@@ -33,8 +33,8 @@ class NodePool {
     } else if (_nodes != null) {
       _incrementNodeIndex(); // Keep rotating the nodes for each request.
 
-      for (var i = 0; i < _nodes!.length; i++, _incrementNodeIndex()) {
-        final candidateNode = _nodes![_index]..client ??= http.Client();
+      for (var i = 0; i < _nodes.length; i++, _incrementNodeIndex()) {
+        final candidateNode = _nodes[_index]..client ??= http.Client();
 
         if (_canUse(candidateNode)) {
           return candidateNode;
@@ -42,9 +42,9 @@ class NodePool {
       }
 
       // None of the nodes can be used, returning the next node.
-      return _nodes![_index];
+      return _nodes[_index];
     } else if (_nearestNode != null) {
-      return _nearestNode!;
+      return _nearestNode;
     }
 
     throw MissingConfiguration(

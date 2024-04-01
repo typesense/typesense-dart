@@ -1,4 +1,4 @@
-part of models;
+part of 'models.dart';
 
 class Field {
   /// [name] of the field.

@@ -1,4 +1,4 @@
-part of models;
+part of 'models.dart';
 
 class Node {
   late final Uri uri;
