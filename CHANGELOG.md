@@ -1,3 +1,7 @@
+# 0.5.1
+
+* Added `reference` property in `Field` class.
+
 # 0.5.0
 
 * Added support for nested object fields.
