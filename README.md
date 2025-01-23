@@ -1,6 +1,6 @@
 # Typesense
 
- [![pub package][pubShield]][package] [![github actions status][githubBadge]][githubActions] [![pub likes][pubLikesBadge]][pubScore] [![pub points][pubScoreBadge]][pubScore]
+ [![pub package][pubShield]][package] [![github actions status][githubBadge]][githubActions] [![pub likes][pubLikesBadge]][pubScore] [![pub points][pubScoreBadge]][pubScore] [![pub downloads][pubDownloadsBadge]][pubScore]
 
 Dart client library for accessing the HTTP API of [Typesense][typesense] search engine.
 
@@ -112,3 +112,4 @@ This library is authored and maintained by our awesome community of contributors
 [pubScore]: https://pub.dev/packages/typesense/score
 [typesense]: https://github.com/typesense/typesense
 [pubLikesBadge]: https://img.shields.io/pub/likes/typesense
+[pubDownloadsBadge]: https://img.shields.io/pub/dm/typesense
