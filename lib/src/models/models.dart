@@ -1,5 +1,3 @@
-library models;
-
 import 'package:http/http.dart' as http;
 import '../exceptions/exceptions.dart';
 

@@ -1,3 +1,8 @@
+# 0.5.2
+
+* Fixed dart analyze issues.
+* Updated dependencies.
+
 # 0.5.1
 
 * Added `reference` property in `Field` class.
@@ -5,7 +10,7 @@
 # 0.5.0
 
 * Added support for nested object fields.
-* Updated dependencies.cd
+* Updated dependencies.
 
 # 0.4.0
 

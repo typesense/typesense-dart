@@ -4,12 +4,12 @@ version: 0.2.0
 publish_to: none
 
 environment:
-  sdk: '>=2.17.0 <3.0.0'
+  sdk: ^3.6.1
 
 dependencies:
   typesense:
     path: ../../
-  logging: ^1.0.1
+  logging: ^1.3.0
 
 dev_dependencies:
-  flutter_lints: ^1.0.4
+  lints: ^5.1.1

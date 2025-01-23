@@ -1,5 +1,3 @@
-library typesense;
-
 export 'src/client.dart';
 export 'src/search_client.dart';
 export 'src/configuration.dart';

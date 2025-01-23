@@ -87,7 +87,7 @@ class Schema extends BaseSchema {
 }
 
 class UpdateSchema extends BaseSchema {
-  UpdateSchema(Set<UpdateField> fields) : super(fields);
+  UpdateSchema(Set<UpdateField> super.fields);
 
   factory UpdateSchema.fromMap(Map<String, dynamic> map) {
     final Set<UpdateField> fields = (map['fields'] != null)

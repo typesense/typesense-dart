@@ -9,8 +9,6 @@ import 'package:typesense/src/models/models.dart';
 import 'package:typesense/src/services/api_call.dart';
 import 'package:typesense/src/services/documents_api_call.dart';
 import 'package:typesense/src/services/collections_api_call.dart';
-import 'package:typesense/src/services/request_cache.dart';
-import 'package:typesense/src/services/node_pool.dart';
 
 final String host = InternetAddress.loopbackIPv4.address;
 const protocol = Protocol.http,
@@ -118,22 +116,19 @@ class ConfigurationFactory {
     customMocks: [MockSpec<GenerateMockApiCall>(as: #MockApiCall)])
 class GenerateMockApiCall extends ApiCall {
   GenerateMockApiCall(
-      Configuration config, NodePool nodePool, RequestCache requestCache)
-      : super(config, nodePool, requestCache);
+      super.config, super.nodePool, super.requestCache);
 }
 
 @GenerateMocks([], customMocks: [
   MockSpec<GenerateMockCollectionsApiCall>(as: #MockCollectionsApiCall)
 ])
 class GenerateMockCollectionsApiCall extends CollectionsApiCall {
-  GenerateMockCollectionsApiCall(Configuration config, NodePool nodePool)
-      : super(config, nodePool);
+  GenerateMockCollectionsApiCall(super.config, super.nodePool);
 }
 
 @GenerateMocks([], customMocks: [
   MockSpec<GenerateMockDocumentsApiCall>(as: #MockDocumentsApiCall)
 ])
 class GenerateMockDocumentsApiCall extends DocumentsApiCall {
-  GenerateMockDocumentsApiCall(Configuration config, NodePool nodePool)
-      : super(config, nodePool);
+  GenerateMockDocumentsApiCall(super.config, super.nodePool);
 }
