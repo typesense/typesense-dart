@@ -15,7 +15,7 @@ Future<void> runExample(Client client) async {
 }
 
 Future<void> create(Client client, [Schema? schema]) async {
-  final _schema = Schema(
+  final s = Schema(
         'companies',
         {
           Field('company_name', type: Type.string),
@@ -28,7 +28,7 @@ Future<void> create(Client client, [Schema? schema]) async {
 
   try {
     logInfoln(log, 'Creating "$collectionName" collection.');
-    log.fine(await client.collections.create(schema ?? _schema));
+    log.fine(await client.collections.create(schema ?? s));
 
     await writePropagationDelay();
   } on RequestException catch (e, stackTrace) {
