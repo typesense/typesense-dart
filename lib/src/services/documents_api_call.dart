@@ -1,15 +1,12 @@
 import 'dart:async';
 
 import './base_api_call.dart';
-import './node_pool.dart';
-import '../configuration.dart';
 
 export './base_api_call.dart' show contentType;
 
 /// Handles requests that expect JSONL data of `String` type from the server.
 class DocumentsApiCall extends BaseApiCall<String> {
-  DocumentsApiCall(Configuration config, NodePool nodePool)
-      : super(config, nodePool);
+  DocumentsApiCall(super.config, super.nodePool);
 
   /// Sends an HTTP GET request to the URL constructed using the [Node.uri],
   /// [endpoint] and [queryParams].

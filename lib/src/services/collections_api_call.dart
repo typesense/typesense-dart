@@ -2,16 +2,13 @@ import 'dart:async';
 import 'dart:convert';
 
 import './base_api_call.dart';
-import './node_pool.dart';
-import '../configuration.dart';
 
 export './base_api_call.dart' show contentType;
 
 /// Handles requests that expect JSON data of `List<Map<String, dynamic>>` type
 /// from the server.
 class CollectionsApiCall extends BaseApiCall<List<Map<String, dynamic>>> {
-  CollectionsApiCall(Configuration config, NodePool nodePool)
-      : super(config, nodePool);
+  CollectionsApiCall(super.config, super.nodePool);
 
   /// Sends an HTTP GET request to the URL constructed using the [Node.uri],
   /// [endpoint] and [queryParams].

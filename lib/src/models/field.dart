@@ -284,9 +284,6 @@ extension _Type on Type {
 
       case Type.stringify:
         return 'string*';
-
-      default:
-        return '';
     }
   }
 

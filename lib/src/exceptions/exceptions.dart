@@ -1,5 +1,3 @@
-library exceptions;
-
 part 'typesense_exception.dart';
 
 part 'import_error.dart';

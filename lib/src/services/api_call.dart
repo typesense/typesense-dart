@@ -5,7 +5,6 @@ import 'dart:collection';
 import 'package:http/http.dart' as http;
 
 import 'base_api_call.dart';
-import 'node_pool.dart';
 import 'request_cache.dart';
 import '../configuration.dart';
 import '../models/models.dart';
@@ -17,9 +16,8 @@ export 'base_api_call.dart' show contentType;
 class ApiCall extends BaseApiCall<Map<String, dynamic>> {
   final RequestCache _requestCache;
 
-  ApiCall(Configuration config, NodePool nodePool, RequestCache requestCache)
-      : _requestCache = requestCache,
-        super(config, nodePool);
+  ApiCall(super.config, super.nodePool, RequestCache requestCache)
+      : _requestCache = requestCache;
 
   /// Sends an HTTP GET request to the URL constructed using the [Node.uri],
   /// [endpoint] and [queryParams].

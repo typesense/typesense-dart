@@ -2,7 +2,7 @@ part of '../exceptions.dart';
 
 /// 5xx server errors
 class ServerError extends RequestException {
-  ServerError(String message, int statusCode) : super(message, statusCode);
+  ServerError(super.message, super.statusCode);
 
   @override
   String toString() {
