@@ -250,7 +250,8 @@ class UpdateField extends Field {
 /// - [Type.stringify] (`string*`) is a way to store the field value (both
 /// singular and multi-value/array values) as string.
 ///
-/// [Type.geopoint] is used to index locations, filter and sort on them.
+/// [Type.geopoint] and [Type.geopolygon] are used to index locations, filter
+/// and sort on them.
 enum Type {
   string,
   int32,
@@ -260,6 +261,7 @@ enum Type {
   auto,
   stringify,
   geopoint,
+  geopolygon,
   object,
 }
 
@@ -272,6 +274,7 @@ extension _Type on Type {
       case Type.float:
       case Type.bool:
       case Type.geopoint:
+      case Type.geopolygon:
       case Type.object:
         final description = toString(),
             indexOfDot = description.indexOf('.'),
@@ -288,8 +291,10 @@ extension _Type on Type {
   }
 
   static Type fromValue(String value, bool isMultiValued) =>
-      Type.values.firstWhere((type) => value == type.value(isMultiValued),
-          orElse: () => throw ArgumentError('$value is not a defined Type.'));
+      Type.values.firstWhere(
+        (type) => value == type.value(isMultiValued),
+        orElse: () => throw ArgumentError('$value is not a defined Type.'),
+      );
 }
 
 final _multivaluedExpression = RegExp(r'\[\]$');
