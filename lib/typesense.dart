@@ -14,3 +14,5 @@ export 'src/stemming_dictionaries.dart';
 export 'src/stemming_dictionary.dart';
 export 'src/conversations_models.dart';
 export 'src/conversation_model.dart';
+export 'src/nl_search_models.dart';
+export 'src/nl_search_model.dart';

@@ -29,6 +29,8 @@ import 'synonym_set.dart';
 import 'stemming.dart';
 import 'conversations_models.dart';
 import 'conversation_model.dart';
+import 'nl_search_models.dart';
+import 'nl_search_model.dart';
 
 class Client {
   final Configuration config;
@@ -49,6 +51,7 @@ class Client {
   final SynonymSets synonymSets;
   final Stemming stemming;
   final ConversationsModels conversationsModels;
+  final NLSearchModels nlSearchModels;
   final _individualCollections = HashMap<String, Collection>(),
       _individualAliases = HashMap<String, Alias>(),
       _individualKeys = HashMap<int, Key>(),
@@ -75,7 +78,8 @@ class Client {
       this.curationSets,
       this.synonymSets,
       this.stemming,
-      this.conversationsModels);
+      this.conversationsModels,
+      this.nlSearchModels);
 
   factory Client(Configuration config) {
     // ApiCall, DocumentsApiCall, and CollectionsApiCall share the same NodePool.
@@ -106,7 +110,8 @@ class Client {
         CurationSets(apiCall),
         SynonymSets(apiCall),
         Stemming(apiCall),
-        ConversationsModels(apiCall));
+        ConversationsModels(apiCall),
+        NLSearchModels(apiCall));
   }
 
   /// Perform operation on an individual collection having [collectionName].
@@ -167,5 +172,9 @@ class Client {
 
   ConversationModel conversationModel(String modelId) {
     return conversationsModels[modelId];
+  }
+
+  NLSearchModel nlSearchModel(String modelId) {
+    return nlSearchModels[modelId];
   }
 }
