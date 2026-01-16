@@ -4,3 +4,4 @@ import '../exceptions/exceptions.dart';
 part 'field.dart';
 part 'schema.dart';
 part 'node.dart';
+part 'stopwords.dart';
