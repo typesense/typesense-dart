@@ -26,6 +26,7 @@ import 'curation_sets.dart';
 import 'curation_set.dart';
 import 'synonym_sets.dart';
 import 'synonym_set.dart';
+import 'stemming.dart';
 
 class Client {
   final Configuration config;
@@ -44,6 +45,7 @@ class Client {
   final Stopwords stopwords;
   final CurationSets curationSets;
   final SynonymSets synonymSets;
+  final Stemming stemming;
   final _individualCollections = HashMap<String, Collection>(),
       _individualAliases = HashMap<String, Alias>(),
       _individualKeys = HashMap<int, Key>(),
@@ -68,7 +70,8 @@ class Client {
       this.multiSearch,
       this.stopwords,
       this.curationSets,
-      this.synonymSets);
+      this.synonymSets,
+      this.stemming);
 
   factory Client(Configuration config) {
     // ApiCall, DocumentsApiCall, and CollectionsApiCall share the same NodePool.
@@ -97,7 +100,8 @@ class Client {
         MultiSearch(apiCall),
         Stopwords(apiCall),
         CurationSets(apiCall),
-        SynonymSets(apiCall));
+        SynonymSets(apiCall),
+        Stemming(apiCall));
   }
 
   /// Perform operation on an individual collection having [collectionName].

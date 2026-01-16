@@ -9,3 +9,6 @@ export 'src/curation_sets.dart';
 export 'src/curation_set.dart';
 export 'src/synonym_sets.dart';
 export 'src/synonym_set.dart';
+export 'src/stemming.dart';
+export 'src/stemming_dictionaries.dart';
+export 'src/stemming_dictionary.dart';
