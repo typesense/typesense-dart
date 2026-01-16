@@ -140,6 +140,22 @@ class ApiCall extends BaseApiCall<Map<String, dynamic>> {
     }
   }
 
+  /// Sends an HTTP POST request with a raw string body and returns raw text.
+  Future<String> postRaw(
+    String endpoint, {
+    Map<String, dynamic>? queryParams,
+    Map<String, String>? additionalHeaders,
+    String? bodyParameters,
+  }) async {
+    final headers = {...defaultHeaders, ...?additionalHeaders};
+    final response = await sendRaw((node) => node.client!.post(
+          getRequestUri(node, endpoint, queryParams: queryParams),
+          headers: headers,
+          body: bodyParameters,
+        ));
+    return response.body;
+  }
+
   /// Sends an HTTP PUT request with the given [bodyParameters] to the URL
   /// constructed using the [Node.uri], [endpoint] and [queryParams].
   ///
