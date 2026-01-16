@@ -8,3 +8,4 @@ part 'stopwords.dart';
 part 'curation_sets.dart';
 part 'synonym_sets.dart';
 part 'stemming.dart';
+part 'conversations_model.dart';
