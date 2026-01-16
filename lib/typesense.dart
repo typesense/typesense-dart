@@ -12,3 +12,5 @@ export 'src/synonym_set.dart';
 export 'src/stemming.dart';
 export 'src/stemming_dictionaries.dart';
 export 'src/stemming_dictionary.dart';
+export 'src/conversations_models.dart';
+export 'src/conversation_model.dart';
