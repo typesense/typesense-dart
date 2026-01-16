@@ -6,3 +6,4 @@ part 'schema.dart';
 part 'node.dart';
 part 'stopwords.dart';
 part 'curation_sets.dart';
+part 'synonym_sets.dart';
