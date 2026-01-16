@@ -31,6 +31,8 @@ import 'conversations_models.dart';
 import 'conversation_model.dart';
 import 'nl_search_models.dart';
 import 'nl_search_model.dart';
+import 'conversations.dart';
+import 'conversation.dart';
 
 class Client {
   final Configuration config;
@@ -52,6 +54,7 @@ class Client {
   final Stemming stemming;
   final ConversationsModels conversationsModels;
   final NLSearchModels nlSearchModels;
+  final Conversations conversations;
   final _individualCollections = HashMap<String, Collection>(),
       _individualAliases = HashMap<String, Alias>(),
       _individualKeys = HashMap<int, Key>(),
@@ -59,6 +62,7 @@ class Client {
       _individualStopwords = HashMap<String, Stopword>(),
       _individualCurationSets = HashMap<String, CurationSet>(),
       _individualSynonymSets = HashMap<String, SynonymSet>();
+  final _individualConversations = HashMap<String, Conversation>();
 
   Client._(
       this.config,
@@ -79,7 +83,8 @@ class Client {
       this.synonymSets,
       this.stemming,
       this.conversationsModels,
-      this.nlSearchModels);
+      this.nlSearchModels,
+      this.conversations);
 
   factory Client(Configuration config) {
     // ApiCall, DocumentsApiCall, and CollectionsApiCall share the same NodePool.
@@ -111,7 +116,8 @@ class Client {
         SynonymSets(apiCall),
         Stemming(apiCall),
         ConversationsModels(apiCall),
-        NLSearchModels(apiCall));
+        NLSearchModels(apiCall),
+        Conversations(apiCall));
   }
 
   /// Perform operation on an individual collection having [collectionName].
@@ -176,5 +182,12 @@ class Client {
 
   NLSearchModel nlSearchModel(String modelId) {
     return nlSearchModels[modelId];
+  }
+
+  Conversation conversation(String id) {
+    if (!_individualConversations.containsKey(id)) {
+      _individualConversations[id] = Conversation(id, _apiCall);
+    }
+    return _individualConversations[id]!;
   }
 }

@@ -16,3 +16,5 @@ export 'src/conversations_models.dart';
 export 'src/conversation_model.dart';
 export 'src/nl_search_models.dart';
 export 'src/nl_search_model.dart';
+export 'src/conversations.dart';
+export 'src/conversation.dart';
