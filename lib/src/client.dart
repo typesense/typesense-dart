@@ -20,6 +20,8 @@ import 'presets.dart';
 import 'metrics.dart';
 import 'operations.dart';
 import 'multi_search.dart';
+import 'stopword.dart';
+import 'stopwords.dart';
 
 class Client {
   final Configuration config;
@@ -35,10 +37,12 @@ class Client {
   final Metrics metrics;
   final Operations operations;
   final MultiSearch multiSearch;
+  final Stopwords stopwords;
   final _individualCollections = HashMap<String, Collection>(),
       _individualAliases = HashMap<String, Alias>(),
       _individualKeys = HashMap<int, Key>(),
-      _individualPresets = HashMap<String, Preset>();
+      _individualPresets = HashMap<String, Preset>(),
+      _individualStopwords = HashMap<String, Stopword>();
 
   Client._(
       this.config,
@@ -53,7 +57,8 @@ class Client {
       this.health,
       this.metrics,
       this.operations,
-      this.multiSearch);
+      this.multiSearch,
+      this.stopwords);
 
   factory Client(Configuration config) {
     // ApiCall, DocumentsApiCall, and CollectionsApiCall share the same NodePool.
@@ -79,7 +84,8 @@ class Client {
         Health(apiCall),
         Metrics(apiCall),
         Operations(apiCall),
-        MultiSearch(apiCall));
+        MultiSearch(apiCall),
+        Stopwords(apiCall));
   }
 
   /// Perform operation on an individual collection having [collectionName].
@@ -112,5 +118,13 @@ class Client {
       _individualPresets[presetName] = Preset(presetName, _apiCall);
     }
     return _individualPresets[presetName]!;
+  }
+
+  /// Perform operation on an individual stopwords set having [stopwordId].
+  Stopword stopword(String stopwordId) {
+    if (!_individualStopwords.containsKey(stopwordId)) {
+      _individualStopwords[stopwordId] = Stopword(stopwordId, _apiCall);
+    }
+    return _individualStopwords[stopwordId]!;
   }
 }
