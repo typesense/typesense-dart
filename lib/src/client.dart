@@ -33,6 +33,7 @@ import 'nl_search_models.dart';
 import 'nl_search_model.dart';
 import 'conversations.dart';
 import 'conversation.dart';
+import 'analytics.dart';
 
 class Client {
   final Configuration config;
@@ -55,6 +56,7 @@ class Client {
   final ConversationsModels conversationsModels;
   final NLSearchModels nlSearchModels;
   final Conversations conversations;
+  final Analytics analytics;
   final _individualCollections = HashMap<String, Collection>(),
       _individualAliases = HashMap<String, Alias>(),
       _individualKeys = HashMap<int, Key>(),
@@ -84,7 +86,8 @@ class Client {
       this.stemming,
       this.conversationsModels,
       this.nlSearchModels,
-      this.conversations);
+      this.conversations,
+      this.analytics);
 
   factory Client(Configuration config) {
     // ApiCall, DocumentsApiCall, and CollectionsApiCall share the same NodePool.
@@ -117,7 +120,8 @@ class Client {
         Stemming(apiCall),
         ConversationsModels(apiCall),
         NLSearchModels(apiCall),
-        Conversations(apiCall));
+        Conversations(apiCall),
+        Analytics(apiCall));
   }
 
   /// Perform operation on an individual collection having [collectionName].

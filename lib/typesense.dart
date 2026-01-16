@@ -18,3 +18,7 @@ export 'src/nl_search_models.dart';
 export 'src/nl_search_model.dart';
 export 'src/conversations.dart';
 export 'src/conversation.dart';
+export 'src/analytics.dart';
+export 'src/analytics_rules.dart';
+export 'src/analytics_rule.dart';
+export 'src/analytics_events.dart';
