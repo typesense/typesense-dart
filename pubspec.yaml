@@ -13,6 +13,6 @@ dependencies:
 dev_dependencies:
   test: ^1.25.14
   mockito: ^5.4.5
-  lints: ^5.1.1
+  lints: ^6.0.0
   build_runner: ^2.4.14
-  analyzer: ^7.2.0
+  analyzer: ^10.0.0
