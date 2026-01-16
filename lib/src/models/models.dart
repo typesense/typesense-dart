@@ -9,3 +9,4 @@ part 'curation_sets.dart';
 part 'synonym_sets.dart';
 part 'stemming.dart';
 part 'conversations_model.dart';
+part 'nl_search_model.dart';
