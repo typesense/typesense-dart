@@ -22,6 +22,8 @@ import 'operations.dart';
 import 'multi_search.dart';
 import 'stopword.dart';
 import 'stopwords.dart';
+import 'curation_sets.dart';
+import 'curation_set.dart';
 
 class Client {
   final Configuration config;
@@ -38,11 +40,13 @@ class Client {
   final Operations operations;
   final MultiSearch multiSearch;
   final Stopwords stopwords;
+  final CurationSets curationSets;
   final _individualCollections = HashMap<String, Collection>(),
       _individualAliases = HashMap<String, Alias>(),
       _individualKeys = HashMap<int, Key>(),
       _individualPresets = HashMap<String, Preset>(),
-      _individualStopwords = HashMap<String, Stopword>();
+      _individualStopwords = HashMap<String, Stopword>(),
+      _individualCurationSets = HashMap<String, CurationSet>();
 
   Client._(
       this.config,
@@ -58,7 +62,8 @@ class Client {
       this.metrics,
       this.operations,
       this.multiSearch,
-      this.stopwords);
+      this.stopwords,
+      this.curationSets);
 
   factory Client(Configuration config) {
     // ApiCall, DocumentsApiCall, and CollectionsApiCall share the same NodePool.
@@ -85,7 +90,8 @@ class Client {
         Metrics(apiCall),
         Operations(apiCall),
         MultiSearch(apiCall),
-        Stopwords(apiCall));
+        Stopwords(apiCall),
+        CurationSets(apiCall));
   }
 
   /// Perform operation on an individual collection having [collectionName].
@@ -126,5 +132,13 @@ class Client {
       _individualStopwords[stopwordId] = Stopword(stopwordId, _apiCall);
     }
     return _individualStopwords[stopwordId]!;
+  }
+
+  /// Perform operation on an individual curation set having [name].
+  CurationSet curationSet(String name) {
+    if (!_individualCurationSets.containsKey(name)) {
+      _individualCurationSets[name] = CurationSet(name, _apiCall);
+    }
+    return _individualCurationSets[name]!;
   }
 }

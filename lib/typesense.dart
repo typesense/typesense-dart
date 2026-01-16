@@ -5,3 +5,5 @@ export 'src/models/models.dart';
 export 'src/collection.dart';
 export 'src/collections.dart';
 export 'src/exceptions/exceptions.dart';
+export 'src/curation_sets.dart';
+export 'src/curation_set.dart';
