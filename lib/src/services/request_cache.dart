@@ -8,6 +8,7 @@ import '../models/models.dart';
 class RequestCache {
   final Duration cacheTTL;
   final _cachedResponses = HashMap<String, _CachedResult>();
+  final _cachedListResponses = HashMap<String, _CachedListResult>();
 
   RequestCache(this.cacheTTL);
 
@@ -37,6 +38,29 @@ class RequestCache {
 
   bool _isCacheValid(_CachedResult cache) =>
       cache.validTill.difference(DateTime.now()) > Duration.zero;
+
+  Future<List<dynamic>> cacheList(
+    String key,
+    Future<List<dynamic>> Function(Future<http.Response> Function(Node)) send,
+    Future<http.Response> Function(Node) request,
+  ) async {
+    if (_cachedListResponses.containsKey(key)) {
+      if (_isCacheValidList(_cachedListResponses[key]!)) {
+        return Future.value(_cachedListResponses[key]!.data);
+      } else {
+        _cachedListResponses.remove(key);
+      }
+    }
+
+    final response = await send(request);
+    _cachedListResponses[key] =
+        _CachedListResult(response, DateTime.now().add(cacheTTL));
+    return response;
+  }
+
+  bool _isCacheValidList(_CachedListResult cache) =>
+      cache.validTill.difference(DateTime.now()) > Duration.zero;
+
 }
 
 class _CachedResult {
@@ -44,4 +68,11 @@ class _CachedResult {
   final DateTime validTill;
 
   const _CachedResult(this.data, this.validTill);
+}
+
+class _CachedListResult {
+  final List<dynamic> data;
+  final DateTime validTill;
+
+  const _CachedListResult(this.data, this.validTill);
 }

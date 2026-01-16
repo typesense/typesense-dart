@@ -53,6 +53,33 @@ class ApiCall extends BaseApiCall<Map<String, dynamic>> {
     }
   }
 
+  /// Sends an HTTP GET request that expects a JSON array response.
+  /// Logic mirrors [get], only the response decoding differs.
+  Future<List<dynamic>> getList(
+    String endpoint, {
+    Map<String, dynamic>? queryParams,
+    bool shouldCacheResult = false,
+  }) {
+    if (shouldCacheResult && config.cachedSearchResultsTTL != Duration.zero) {
+      final queryParamsSplay =
+          queryParams == null ? null : SplayTreeMap.from(queryParams);
+
+      return _requestCache.cacheList(
+        '$endpoint${queryParamsSplay ?? ''}',
+        sendList,
+        (node) => node.client!.get(
+          getRequestUri(node, endpoint, queryParams: queryParams),
+          headers: defaultHeaders,
+        ),
+      );
+    } else {
+      return sendList((node) => node.client!.get(
+            getRequestUri(node, endpoint, queryParams: queryParams),
+            headers: defaultHeaders,
+          ));
+    }
+  }
+
   /// Sends an HTTP DELETE request to the URL constructed using the [Node.uri],
   /// [endpoint] and [queryParams].
   Future<Map<String, dynamic>> delete(
@@ -156,6 +183,18 @@ class ApiCall extends BaseApiCall<Map<String, dynamic>> {
   /// The [responseBody] is parsed as JSON and returned if no exceptions are
   /// raised.
   @override
+  @override
   Map<String, dynamic> decode(String responseBody) =>
-      responseBody.isEmpty ? {} : json.decode(responseBody);
+      responseBody.isEmpty
+          ? {}
+          : json.decode(responseBody) as Map<String, dynamic>;
+
+  List<dynamic> decodeList(String responseBody) =>
+      responseBody.isEmpty ? [] : json.decode(responseBody) as List<dynamic>;
+
+  Future<List<dynamic>> sendList(
+      Future<http.Response> Function(Node) request) async {
+    final response = await sendRaw(request);
+    return decodeList(response.body);
+  }
 }

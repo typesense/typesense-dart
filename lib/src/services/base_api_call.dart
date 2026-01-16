@@ -52,6 +52,12 @@ abstract class BaseApiCall<R> {
   /// Also sets the health status of nodes after each request so it can be put
   /// in/out of [NodePool]'s circulation.
   Future<R> send(Future<http.Response> Function(Node) request) async {
+    final response = await sendRaw(request);
+    return decode(response.body);
+  }
+
+  Future<http.Response> sendRaw(
+      Future<http.Response> Function(Node) request) async {
     http.Response response;
     Node node;
     for (var triesLeft = config.numRetries;;) {
@@ -71,7 +77,7 @@ abstract class BaseApiCall<R> {
 
         if (response.statusCode >= 200 && response.statusCode < 300) {
           // If response is 2xx return a resolved promise.
-          return decode(response.body);
+          return response;
         } else if (response.statusCode < 500) {
           // Next, if response is anything but 5xx, don't retry, return a custom
           // error.
