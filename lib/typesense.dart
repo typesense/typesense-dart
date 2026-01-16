@@ -7,3 +7,5 @@ export 'src/collections.dart';
 export 'src/exceptions/exceptions.dart';
 export 'src/curation_sets.dart';
 export 'src/curation_set.dart';
+export 'src/synonym_sets.dart';
+export 'src/synonym_set.dart';

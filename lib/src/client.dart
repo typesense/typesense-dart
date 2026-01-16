@@ -24,6 +24,8 @@ import 'stopword.dart';
 import 'stopwords.dart';
 import 'curation_sets.dart';
 import 'curation_set.dart';
+import 'synonym_sets.dart';
+import 'synonym_set.dart';
 
 class Client {
   final Configuration config;
@@ -41,12 +43,14 @@ class Client {
   final MultiSearch multiSearch;
   final Stopwords stopwords;
   final CurationSets curationSets;
+  final SynonymSets synonymSets;
   final _individualCollections = HashMap<String, Collection>(),
       _individualAliases = HashMap<String, Alias>(),
       _individualKeys = HashMap<int, Key>(),
       _individualPresets = HashMap<String, Preset>(),
       _individualStopwords = HashMap<String, Stopword>(),
-      _individualCurationSets = HashMap<String, CurationSet>();
+      _individualCurationSets = HashMap<String, CurationSet>(),
+      _individualSynonymSets = HashMap<String, SynonymSet>();
 
   Client._(
       this.config,
@@ -63,7 +67,8 @@ class Client {
       this.operations,
       this.multiSearch,
       this.stopwords,
-      this.curationSets);
+      this.curationSets,
+      this.synonymSets);
 
   factory Client(Configuration config) {
     // ApiCall, DocumentsApiCall, and CollectionsApiCall share the same NodePool.
@@ -91,7 +96,8 @@ class Client {
         Operations(apiCall),
         MultiSearch(apiCall),
         Stopwords(apiCall),
-        CurationSets(apiCall));
+        CurationSets(apiCall),
+        SynonymSets(apiCall));
   }
 
   /// Perform operation on an individual collection having [collectionName].
@@ -140,5 +146,13 @@ class Client {
       _individualCurationSets[name] = CurationSet(name, _apiCall);
     }
     return _individualCurationSets[name]!;
+  }
+
+  /// Perform operation on an individual synonym set having [name].
+  SynonymSet synonymSet(String name) {
+    if (!_individualSynonymSets.containsKey(name)) {
+      _individualSynonymSets[name] = SynonymSet(name, _apiCall);
+    }
+    return _individualSynonymSets[name]!;
   }
 }
