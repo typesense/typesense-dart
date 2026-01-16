@@ -11,3 +11,4 @@ part 'stemming.dart';
 part 'conversations_model.dart';
 part 'nl_search_model.dart';
 part 'conversations.dart';
+part 'analytics.dart';
