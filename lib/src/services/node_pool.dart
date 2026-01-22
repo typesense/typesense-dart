@@ -52,7 +52,8 @@ class NodePool {
   }
 
   /// Sets [node]'s health as [isHealthy] along with it's last [accessTime].
-  static setNodeHealthStatus(Node node, bool isHealthy, DateTime accessTime) {
+  static void setNodeHealthStatus(
+      Node node, bool isHealthy, DateTime accessTime) {
     node.isHealthy = isHealthy;
     node.lastAccessTimestamp = accessTime;
   }
