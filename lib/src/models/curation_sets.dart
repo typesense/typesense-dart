@@ -41,12 +41,18 @@ class CurationRuleSchema {
   final String? match;
   final String? filterBy;
   final List<String>? tags;
+  final bool? synonyms;
+  final bool? stem;
+  final String? stemmingDictionary;
 
   CurationRuleSchema({
     this.query,
     this.match,
     this.filterBy,
     this.tags,
+    this.synonyms,
+    this.stem,
+    this.stemmingDictionary,
   });
 
   factory CurationRuleSchema.fromJson(Map<String, dynamic> json) =>
@@ -55,6 +61,9 @@ class CurationRuleSchema {
         match: json['match'] as String?,
         filterBy: json['filter_by'] as String?,
         tags: (json['tags'] as List?)?.cast<String>(),
+        synonyms: json['synonyms'] as bool?,
+        stem: json['stem'] as bool?,
+        stemmingDictionary: json['stemming_dictionary'] as String?,
       );
 
   Map<String, dynamic> toJson() => {
@@ -62,6 +71,55 @@ class CurationRuleSchema {
         if (match != null) 'match': match,
         if (filterBy != null) 'filter_by': filterBy,
         if (tags != null) 'tags': tags,
+        if (synonyms != null) 'synonyms': synonyms,
+        if (stem != null) 'stem': stem,
+        if (stemmingDictionary != null)
+          'stemming_dictionary': stemmingDictionary,
+      };
+}
+
+class CurationDiversitySimilarityMetricSchema {
+  final String field;
+  final String method;
+  final double weight;
+
+  CurationDiversitySimilarityMetricSchema({
+    required this.field,
+    required this.method,
+    required this.weight,
+  });
+
+  factory CurationDiversitySimilarityMetricSchema.fromJson(
+          Map<String, dynamic> json) =>
+      CurationDiversitySimilarityMetricSchema(
+        field: json['field'] as String,
+        method: json['method'] as String,
+        weight: (json['weight'] as num).toDouble(),
+      );
+
+  Map<String, dynamic> toJson() => {
+        'field': field,
+        'method': method,
+        'weight': weight,
+      };
+}
+
+class CurationDiversitySchema {
+  final List<CurationDiversitySimilarityMetricSchema> similarityMetric;
+
+  CurationDiversitySchema({required this.similarityMetric});
+
+  factory CurationDiversitySchema.fromJson(Map<String, dynamic> json) =>
+      CurationDiversitySchema(
+        similarityMetric: (json['similarity_metric'] as List? ?? [])
+            .map((item) => CurationDiversitySimilarityMetricSchema.fromJson(
+                Map<String, dynamic>.from(item as Map)))
+            .toList(),
+      );
+
+  Map<String, dynamic> toJson() => {
+        'similarity_metric':
+            similarityMetric.map((metric) => metric.toJson()).toList(),
       };
 }
 
@@ -75,7 +133,10 @@ class CurationObjectSchema {
   final String? replaceQuery;
   final bool? removeMatchedTokens;
   final bool? filterCuratedHits;
+  final int? effectiveFromTs;
+  final int? effectiveToTs;
   final bool? stopProcessing;
+  final CurationDiversitySchema? diversity;
   final Map<String, dynamic>? metadata;
 
   CurationObjectSchema({
@@ -88,7 +149,10 @@ class CurationObjectSchema {
     this.replaceQuery,
     this.removeMatchedTokens,
     this.filterCuratedHits,
+    this.effectiveFromTs,
+    this.effectiveToTs,
     this.stopProcessing,
+    this.diversity,
     this.metadata,
   });
 
@@ -113,7 +177,14 @@ class CurationObjectSchema {
         replaceQuery: json['replace_query'] as String?,
         removeMatchedTokens: json['remove_matched_tokens'] as bool?,
         filterCuratedHits: json['filter_curated_hits'] as bool?,
+        effectiveFromTs: json['effective_from_ts'] as int?,
+        effectiveToTs: json['effective_to_ts'] as int?,
         stopProcessing: json['stop_processing'] as bool?,
+        diversity: json['diversity'] == null
+            ? null
+            : CurationDiversitySchema.fromJson(
+                Map<String, dynamic>.from(json['diversity'] as Map),
+              ),
         metadata: (json['metadata'] as Map?)?.cast<String, dynamic>(),
       );
 
@@ -128,7 +199,10 @@ class CurationObjectSchema {
         if (removeMatchedTokens != null)
           'remove_matched_tokens': removeMatchedTokens,
         if (filterCuratedHits != null) 'filter_curated_hits': filterCuratedHits,
+        if (effectiveFromTs != null) 'effective_from_ts': effectiveFromTs,
+        if (effectiveToTs != null) 'effective_to_ts': effectiveToTs,
         if (stopProcessing != null) 'stop_processing': stopProcessing,
+        if (diversity != null) 'diversity': diversity!.toJson(),
         if (metadata != null) 'metadata': metadata,
       };
 }
