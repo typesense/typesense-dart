@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'models/models.dart';
 import 'services/api_call.dart';
 import 'analytics_rule.dart';
@@ -9,24 +11,32 @@ class AnalyticsRules {
 
   AnalyticsRules(ApiCall apiCall) : _apiCall = apiCall;
 
-  Future<dynamic> create(Object rule) async {
-    final body = rule is List<AnalyticsRuleCreateSchema>
-        ? rule.map((item) => item.toJson()).toList()
-        : (rule as AnalyticsRuleCreateSchema).toJson();
-    final Object response =
-        await _apiCall.post(resourcepath, bodyParameters: body);
-    if (response is List) {
-      return response.map((item) {
-        final map = Map<String, dynamic>.from(item as Map);
-        if (map.containsKey('error')) {
-          return map;
-        }
-        return AnalyticsRuleSchema.fromJson(map);
-      }).toList();
-    }
+  /// Creates a single analytics rule.
+  Future<AnalyticsRuleSchema> create(AnalyticsRuleCreateSchema rule) async {
+    final response = await _apiCall.post(
+      resourcepath,
+      bodyParameters: rule.toJson(),
+    );
     return AnalyticsRuleSchema.fromJson(
       Map<String, dynamic>.from(response as Map),
     );
+  }
+
+  /// Creates multiple analytics rules.
+  Future<List<AnalyticsRuleSchema>> createMany(
+      List<AnalyticsRuleCreateSchema> rules) async {
+    final body = rules.map((item) => item.toJson()).toList();
+    final encodedBody = json.encode(body);
+    final response = await _apiCall.sendList((node) => node.client!.post(
+          _apiCall.getRequestUri(node, resourcepath),
+          headers: _apiCall.defaultHeaders,
+          body: encodedBody,
+        ));
+    return response.map((item) {
+      return AnalyticsRuleSchema.fromJson(
+        Map<String, dynamic>.from(item as Map),
+      );
+    }).toList();
   }
 
   Future<List<AnalyticsRuleSchema>> retrieve({String? ruleTag}) async {

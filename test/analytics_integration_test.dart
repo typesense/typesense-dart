@@ -82,6 +82,50 @@ void main() {
     expect(deleted.name, equals(ruleName));
   });
 
+  test('analytics rules createMany', () async {
+    const ruleName1 = '${ruleName}_1';
+    const ruleName2 = '${ruleName}_2';
+    try {
+      await client.analytics.rule(ruleName1).delete();
+    } catch (_) {}
+    try {
+      await client.analytics.rule(ruleName2).delete();
+    } catch (_) {}
+
+    final created = await client.analytics.rules().createMany([
+      AnalyticsRuleCreateSchema(
+        name: ruleName1,
+        type: 'nohits_queries',
+        collection: companiesCollection,
+        eventType: 'search',
+        params: AnalyticsRuleParams(
+          destinationCollection: queriesCollection,
+          limit: 1000,
+        ),
+      ),
+      AnalyticsRuleCreateSchema(
+        name: ruleName2,
+        type: 'log',
+        collection: companiesCollection,
+        eventType: 'click',
+        params: AnalyticsRuleParams(),
+      ),
+    ]);
+    expect(created, isA<List<AnalyticsRuleSchema>>());
+    expect(created.length, equals(2));
+    expect(created[0], isA<AnalyticsRuleSchema>());
+    expect(created[1], isA<AnalyticsRuleSchema>());
+    expect(created[0].name, equals(ruleName1));
+    expect(created[1].name, equals(ruleName2));
+
+    try {
+      await client.analytics.rule(ruleName1).delete();
+    } catch (_) {}
+    try {
+      await client.analytics.rule(ruleName2).delete();
+    } catch (_) {}
+  });
+
   test('analytics events create, retrieve, status, flush', () async {
     try {
       await client.analytics.rule(ruleName).delete();
