@@ -20,7 +20,7 @@ class StemmingDictionaries {
   /// Creates or updates a stemming dictionary from JSONL payload.
   Future<String> upsertRaw(String dictionaryId, String jsonl) async {
     final response = await _apiCall.postRaw(
-      '${resourcepath}/import',
+      '$resourcepath/import',
       queryParams: {'id': dictionaryId},
       bodyParameters: jsonl,
       additionalHeaders: {contentType: 'text/plain'},

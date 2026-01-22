@@ -62,10 +62,8 @@ class ConversationModelCreateSchema {
 }
 
 class ConversationModelSchema extends ConversationModelCreateSchema {
-  final String id;
-
   ConversationModelSchema({
-    required this.id,
+    required String id,
     required super.modelName,
     super.apiKey,
     super.systemPrompt,
@@ -78,6 +76,9 @@ class ConversationModelSchema extends ConversationModelCreateSchema {
     super.openaiUrl,
     super.openaiPath,
   }) : super(id: id);
+
+  @override
+  String get id => super.id!;
 
   factory ConversationModelSchema.fromJson(Map<String, dynamic> json) =>
       ConversationModelSchema(

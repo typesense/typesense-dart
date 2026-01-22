@@ -67,8 +67,8 @@ class SynonymSetSchema extends SynonymSetCreateSchema {
 
   SynonymSetSchema({
     required this.name,
-    required List<SynonymItemSchema> items,
-  }) : super(items: items);
+    required super.items,
+  });
 
   factory SynonymSetSchema.fromJson(Map<String, dynamic> json) =>
       SynonymSetSchema(
@@ -81,8 +81,7 @@ class SynonymSetSchema extends SynonymSetCreateSchema {
 }
 
 class SynonymSetRetrieveSchema extends SynonymSetCreateSchema {
-  SynonymSetRetrieveSchema({required List<SynonymItemSchema> items})
-      : super(items: items);
+  SynonymSetRetrieveSchema({required super.items});
 
   factory SynonymSetRetrieveSchema.fromJson(Map<String, dynamic> json) =>
       SynonymSetRetrieveSchema(

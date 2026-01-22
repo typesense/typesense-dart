@@ -1,6 +1,5 @@
 import 'models/models.dart';
 import 'services/api_call.dart';
-import 'conversation.dart';
 import 'conversations_models.dart';
 import 'conversation_model.dart';
 
