@@ -1,3 +1,14 @@
+# 0.6.0
+
+* Added support for Synonym Sets (v30.0+)
+* Added support for Curation Sets (v30.0+)
+* Added support for Refactored Analytics (v30.0+)
+* Added support for Stopwords
+* Added support for Conversations & Conversational Models
+* Added support for Natural Language Search Models
+* Added support for Stemming Dictionaries
+* Updated dependencies
+
 # 0.5.2
 
 * Fixed dart analyze issues.
