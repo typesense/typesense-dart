@@ -84,6 +84,7 @@ Make sure to [README](example/console-simple/README.md) beforehand.
 
 | Typesense Server | typesense-dart |
 |------------------|----------------|
+| \>= v30.0   | \>= v0.6.0 |
 | \>= v0.24.0 | \>= v0.5.0 |
 | \>= v0.22.0 | \>= v0.3.0 |
 | \>= v0.21.0 | \>= v0.1.1 |
