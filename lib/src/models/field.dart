@@ -48,6 +48,39 @@ class Field {
   /// Example value: `ReferencedCollectionName.fieldName`.
   final String? reference;
 
+  /// Enable stemming for this string field.
+  final bool stem;
+
+  /// Whether to store the field value on disk.
+  ///
+  /// When set to `false`, the field value won't be stored on disk.
+  final bool store;
+
+  /// Enable range index for this numerical field.
+  ///
+  /// Useful for efficient range queries on numerical fields.
+  final bool rangeIndex;
+
+  /// List of characters to use as token separators for this field.
+  ///
+  /// Overrides the collection-level token_separators setting for this field.
+  final List<String>? tokenSeparators;
+
+  /// List of special characters to index as part of tokens for this field.
+  ///
+  /// Overrides the collection-level symbols_to_index setting for this field.
+  final List<String>? symbolsToIndex;
+
+  /// Custom stem dictionary for this field.
+  ///
+  /// Allows specifying custom stemming rules for this field.
+  final String? stemDictionary;
+
+  /// Maximum length to truncate the field value to.
+  ///
+  /// Token values longer than this will be truncated.
+  final int? truncateLen;
+
   Field(
     this.name, {
     this.type,
@@ -60,6 +93,13 @@ class Field {
     this.sort = false,
     this.enableInfixSearch = false,
     this.reference,
+    this.stem = false,
+    this.store = true,
+    this.rangeIndex = false,
+    this.tokenSeparators,
+    this.symbolsToIndex,
+    this.stemDictionary,
+    this.truncateLen,
   }) {
     if (name.isEmpty) {
       throw ArgumentError('Ensure Field.name is not empty');
@@ -84,6 +124,13 @@ class Field {
       sort: map['sort'] ?? false,
       enableInfixSearch: map['infix'] ?? false,
       reference: map['reference'],
+      stem: map['stem'] ?? false,
+      store: map['store'] ?? true,
+      rangeIndex: map['range_index'] ?? false,
+      tokenSeparators: (map['token_separators'] as List?)?.cast<String>(),
+      symbolsToIndex: (map['symbols_to_index'] as List?)?.cast<String>(),
+      stemDictionary: map['stem_dictionary'],
+      truncateLen: map['truncate_len'],
     );
   }
 
@@ -117,6 +164,27 @@ class Field {
     if (reference != null) {
       map['reference'] = reference;
     }
+    if (stem) {
+      map['stem'] = true;
+    }
+    if (!store) {
+      map['store'] = false;
+    }
+    if (rangeIndex) {
+      map['range_index'] = true;
+    }
+    if (tokenSeparators != null) {
+      map['token_separators'] = tokenSeparators;
+    }
+    if (symbolsToIndex != null) {
+      map['symbols_to_index'] = symbolsToIndex;
+    }
+    if (stemDictionary != null && stemDictionary!.isNotEmpty) {
+      map['stem_dictionary'] = stemDictionary;
+    }
+    if (truncateLen != null) {
+      map['truncate_len'] = truncateLen;
+    }
     return map;
   }
 
@@ -137,7 +205,14 @@ class Field {
       locale.hashCode ^
       sort.hashCode ^
       enableInfixSearch.hashCode ^
-      reference.hashCode;
+      reference.hashCode ^
+      stem.hashCode ^
+      store.hashCode ^
+      rangeIndex.hashCode ^
+      tokenSeparators.hashCode ^
+      symbolsToIndex.hashCode ^
+      stemDictionary.hashCode ^
+      truncateLen.hashCode;
 
   @override
   bool operator ==(Object other) {
@@ -153,8 +228,25 @@ class Field {
         other.locale == locale &&
         other.sort == sort &&
         other.enableInfixSearch == enableInfixSearch &&
-        other.reference == reference;
+        other.reference == reference &&
+        other.stem == stem &&
+        other.store == store &&
+        other.rangeIndex == rangeIndex &&
+        _listEquals(other.tokenSeparators, tokenSeparators) &&
+        _listEquals(other.symbolsToIndex, symbolsToIndex) &&
+        other.stemDictionary == stemDictionary &&
+        other.truncateLen == truncateLen;
   }
+}
+
+bool _listEquals<T>(List<T>? a, List<T>? b) {
+  if (a == null && b == null) return true;
+  if (a == null || b == null) return false;
+  if (a.length != b.length) return false;
+  for (int i = 0; i < a.length; i++) {
+    if (a[i] != b[i]) return false;
+  }
+  return true;
 }
 
 /// Used to update a colletion's fields.
@@ -177,6 +269,14 @@ class UpdateField extends Field {
     super.locale,
     super.sort,
     super.enableInfixSearch,
+    super.reference,
+    super.stem,
+    super.store,
+    super.rangeIndex,
+    super.tokenSeparators,
+    super.symbolsToIndex,
+    super.stemDictionary,
+    super.truncateLen,
     this.shouldDrop = false,
   });
 
@@ -203,6 +303,14 @@ class UpdateField extends Field {
       locale: field.locale,
       sort: field.sort,
       enableInfixSearch: field.enableInfixSearch,
+      reference: field.reference,
+      stem: field.stem,
+      store: field.store,
+      rangeIndex: field.rangeIndex,
+      tokenSeparators: field.tokenSeparators,
+      symbolsToIndex: field.symbolsToIndex,
+      stemDictionary: field.stemDictionary,
+      truncateLen: field.truncateLen,
       shouldDrop: map['drop'] ?? false,
     );
   }
@@ -263,6 +371,7 @@ enum Type {
   geopoint,
   geopolygon,
   object,
+  image,
 }
 
 extension _Type on Type {
@@ -276,6 +385,7 @@ extension _Type on Type {
       case Type.geopoint:
       case Type.geopolygon:
       case Type.object:
+      case Type.image:
         final description = toString(),
             indexOfDot = description.indexOf('.'),
             value = description.substring(indexOfDot + 1);
