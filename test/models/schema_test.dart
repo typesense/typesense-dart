@@ -68,6 +68,9 @@ void main() {
           {"name": "num_employees", "type": "int32"},
           {"name": "country", "type": "string", "facet": true}
         ],
+        'synonym_sets': [],
+        'curation_sets': [],
+        'metadata': {},
         "default_sorting_field": "num_employees",
         "num_documents": 0,
         "enable_nested_fields": true,
