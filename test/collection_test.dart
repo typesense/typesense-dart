@@ -90,10 +90,7 @@ void main() {
               "type": "int32",
               "drop": true,
             }
-          ],
-          "synonym_sets": [],
-          "curation_sets": [],
-          "metadata": {}
+          ]
         }),
       ).thenAnswer(
         (realInvocation) => Future.value({

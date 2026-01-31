@@ -92,10 +92,7 @@ void main() {
               'facet': true,
             }
           ],
-          "default_sorting_field": "num_employees",
-          "synonym_sets": [],
-          "curation_sets": [],
-          "metadata": {},
+          "default_sorting_field": "num_employees"
         },
       )).thenAnswer((realInvocation) => Future.value({
             "name": "companies",
