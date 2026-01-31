@@ -42,6 +42,8 @@ class SynonymItemDeleteSchema {
       SynonymItemDeleteSchema(
         id: json['id'] as String,
       );
+
+  Map<String, dynamic> toJson() => {'id': id};
 }
 
 class SynonymSetCreateSchema {
@@ -56,8 +58,8 @@ class SynonymSetCreateSchema {
   factory SynonymSetCreateSchema.fromJson(Map<String, dynamic> json) =>
       SynonymSetCreateSchema(
         items: (json['items'] as List? ?? [])
-            .map((item) =>
-                SynonymItemSchema.fromJson(Map<String, dynamic>.from(item as Map)))
+            .map((item) => SynonymItemSchema.fromJson(
+                Map<String, dynamic>.from(item as Map)))
             .toList(),
       );
 }
@@ -74,8 +76,8 @@ class SynonymSetSchema extends SynonymSetCreateSchema {
       SynonymSetSchema(
         name: json['name'] as String,
         items: (json['items'] as List? ?? [])
-            .map((item) =>
-                SynonymItemSchema.fromJson(Map<String, dynamic>.from(item as Map)))
+            .map((item) => SynonymItemSchema.fromJson(
+                Map<String, dynamic>.from(item as Map)))
             .toList(),
       );
 }
@@ -86,8 +88,8 @@ class SynonymSetRetrieveSchema extends SynonymSetCreateSchema {
   factory SynonymSetRetrieveSchema.fromJson(Map<String, dynamic> json) =>
       SynonymSetRetrieveSchema(
         items: (json['items'] as List? ?? [])
-            .map((item) =>
-                SynonymItemSchema.fromJson(Map<String, dynamic>.from(item as Map)))
+            .map((item) => SynonymItemSchema.fromJson(
+                Map<String, dynamic>.from(item as Map)))
             .toList(),
       );
 }

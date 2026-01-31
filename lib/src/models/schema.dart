@@ -4,11 +4,32 @@ abstract class BaseSchema {
   /// [fields] used for querying, filtering and faceting.
   final Set<Field> fields;
 
-  BaseSchema(this.fields);
+  /// The synonym sets feature allows you to define search terms that should
+  /// be considered equivalent.
+  final Set<String>? synonymSets;
+
+  /// List of curation set names associated with this collection.
+  final Set<String>? curationSets;
+
+  /// The fields within the metadata object are persisted and returned in the
+  /// GET /collections end-point.
+  final Map<String, String>? metadata;
+
+  BaseSchema(
+    this.fields, {
+    this.synonymSets,
+    this.curationSets,
+    this.metadata,
+  });
 
   Map<String, dynamic> toMap() {
     final map = <String, dynamic>{};
-    map['fields'] = fields.map((field) => field.toMap()).toList();
+    if (fields.isNotEmpty) {
+      map['fields'] = fields.map((field) => field.toMap()).toList();
+    }
+    map['synonym_sets'] = synonymSets?.toList() ?? [];
+    map['curation_sets'] = curationSets?.toList() ?? [];
+    map['metadata'] = metadata ?? {};
     return map;
   }
 
@@ -37,12 +58,6 @@ class Schema extends BaseSchema {
   /// Number of memory shards used by the collection.
   final int? numMemoryShards;
 
-  /// List of curation set names associated with this collection.
-  final List<String>? curationSets;
-
-  /// List of synonym set names associated with this collection.
-  final List<String>? synonymSets;
-
   /// List of special characters to index at the collection level.
   final List<String>? symbolsToIndex;
 
@@ -57,10 +72,11 @@ class Schema extends BaseSchema {
     this.enableNestedFields,
     this.createdAt,
     this.numMemoryShards,
-    this.curationSets,
-    this.synonymSets,
     this.symbolsToIndex,
     this.tokenSeparators,
+    super.curationSets,
+    super.synonymSets,
+    super.metadata,
   });
 
   factory Schema.fromMap(Map<String, dynamic> map) {
@@ -87,15 +103,16 @@ class Schema extends BaseSchema {
     return Schema(
       map['name'],
       fields,
-      documentCount: map['num_documents'] ?? 0,
       defaultSortingField: defaultSortingField,
+      documentCount: map['num_documents'] ?? 0,
       enableNestedFields: enableNestedFields,
       createdAt: map['created_at'],
       numMemoryShards: map['num_memory_shards'],
-      curationSets: (map['curation_sets'] as List?)?.cast<String>(),
-      synonymSets: (map['synonym_sets'] as List?)?.cast<String>(),
       symbolsToIndex: (map['symbols_to_index'] as List?)?.cast<String>(),
       tokenSeparators: (map['token_separators'] as List?)?.cast<String>(),
+      curationSets: (map['curation_sets'] as List?)?.cast<String>().toSet(),
+      synonymSets: (map['synonym_sets'] as List?)?.cast<String>().toSet(),
+      metadata: (map['metadata'] as Map?)?.cast<String, String>(),
     );
   }
 
@@ -118,12 +135,6 @@ class Schema extends BaseSchema {
     if (numMemoryShards != null) {
       map['num_memory_shards'] = numMemoryShards;
     }
-    if (curationSets != null) {
-      map['curation_sets'] = curationSets;
-    }
-    if (synonymSets != null) {
-      map['synonym_sets'] = synonymSets;
-    }
     if (symbolsToIndex != null) {
       map['symbols_to_index'] = symbolsToIndex;
     }
@@ -135,25 +146,8 @@ class Schema extends BaseSchema {
 }
 
 class UpdateSchema extends BaseSchema {
-  /// List of synonym set IDs to associate with the collection.
-  final List<String>? synonymSets;
-
-  /// List of curation set IDs to associate with the collection.
-  final List<String>? curationSets;
-
-  /// List of special characters to index at the collection level.
-  final List<String>? symbolsToIndex;
-
-  /// List of characters to use as token separators at the collection level.
-  final List<String>? tokenSeparators;
-
-  UpdateSchema(
-    Set<UpdateField> super.fields, {
-    this.synonymSets,
-    this.curationSets,
-    this.symbolsToIndex,
-    this.tokenSeparators,
-  });
+  UpdateSchema(Set<UpdateField> super.fields,
+      {super.synonymSets, super.curationSets, super.metadata});
 
   factory UpdateSchema.fromMap(Map<String, dynamic> map) {
     final Set<UpdateField> fields = (map['fields'] != null)
@@ -164,30 +158,20 @@ class UpdateSchema extends BaseSchema {
 
     return UpdateSchema(
       fields,
-      synonymSets: (map['synonym_sets'] as List?)?.cast<String>(),
-      curationSets: (map['curation_sets'] as List?)?.cast<String>(),
-      symbolsToIndex: (map['symbols_to_index'] as List?)?.cast<String>(),
-      tokenSeparators: (map['token_separators'] as List?)?.cast<String>(),
+      synonymSets: (map['synonym_sets'] as List?)?.cast<String>().toSet(),
+      curationSets: (map['curation_sets'] as List?)?.cast<String>().toSet(),
+      metadata: (map['metadata'] as Map?)?.cast<String, String>(),
     );
   }
 
   @override
   Map<String, dynamic> toMap() {
     final map = super.toMap();
-    if (synonymSets != null) {
-      map['synonym_sets'] = synonymSets;
-    }
-    if (curationSets != null) {
-      map['curation_sets'] = curationSets;
-    }
-    if (symbolsToIndex != null) {
-      map['symbols_to_index'] = symbolsToIndex;
-    }
-    if (tokenSeparators != null) {
-      map['token_separators'] = tokenSeparators;
-    }
     return map;
   }
+
+  @override
+  String toString() => toMap().toString();
 }
 
 ArgumentError _defaultSortingFieldNotInSchema(String name) =>
