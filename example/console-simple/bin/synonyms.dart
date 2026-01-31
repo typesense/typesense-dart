@@ -63,15 +63,26 @@ Future<void> init(Client client) async {
 Future<void> createMultiWay(Client client) async {
   try {
     logInfoln(log, 'Creating multi-way synonym "synonyms-doofenshmirtz".');
-    log.fine(
-      await client.collection('companies').synonyms.upsert(
-        'synonyms-doofenshmirtz',
-        {
-          'synonyms': ['Doofenshmirtz', 'Heinz', 'Evil']
-        },
-      ),
-    );
+    final response = await client.synonymSet('set_name').upsert(
+          SynonymSetCreateSchema(
+            items: [
+              SynonymItemSchema(
+                  id: 'synonyms-doofenshmirtz',
+                  synonyms: ['Doofenshmirtz', 'Heinz', 'Evil'])
+            ],
+          ),
+        );
+    log.fine(response.toJson());
+    await writePropagationDelay();
 
+    logInfoln(log, 'Adding "set_name" to "companies" collection.');
+    final updateResponse = await client.collection('companies').update(
+          UpdateSchema(
+            {},
+            synonymSets: {"set_name"},
+          ),
+        );
+    log.fine(updateResponse);
     await writePropagationDelay();
   } on RequestException catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
@@ -99,15 +110,18 @@ Future<void> search(Client client, String query) async {
 Future<void> createOneWay(Client client) async {
   try {
     logInfoln(log, 'Upserting synonym "synonyms-doofenshmirtz" to be one-way.');
-    log.fine(
-      await client.collection('companies').synonyms.upsert(
-        'synonyms-doofenshmirtz',
-        {
-          'root': 'Evil',
-          'synonyms': ['Doofenshmirtz', 'Heinz']
-        },
-      ),
-    );
+    final response = await client.synonymSet('set_name').upsert(
+          SynonymSetCreateSchema(
+            items: [
+              SynonymItemSchema(
+                id: 'synonyms-doofenshmirtz',
+                synonyms: ['Doofenshmirtz', 'Heinz'],
+                root: 'Evil',
+              )
+            ],
+          ),
+        );
+    log.fine(response.toJson());
 
     await writePropagationDelay();
   } on RequestException catch (e, stackTrace) {
@@ -119,8 +133,17 @@ Future<void> createOneWay(Client client) async {
 
 Future<void> retrieveAll(Client client) async {
   try {
-    logInfoln(log, 'Retrieving all synonyms.');
-    log.fine(await client.collection('companies').synonyms.retrieve());
+    logInfoln(log, 'Retrieving all synonyms of `set_name` synonym set.');
+    final response = await client.synonymSet('set_name').upsert(
+          SynonymSetCreateSchema(
+            items: [
+              SynonymItemSchema(
+                  id: 'synonyms-doofenshmirtz',
+                  synonyms: ['Doofenshmirtz', 'Heinz', 'Evil'])
+            ],
+          ),
+        );
+    log.fine(response.toJson());
   } on RequestException catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
   } catch (e, stackTrace) {
@@ -131,10 +154,9 @@ Future<void> retrieveAll(Client client) async {
 Future<void> retrieve(Client client) async {
   try {
     logInfoln(log, 'Retrieving synonym "synonyms-doofenshmirtz".');
-    log.fine(await client
-        .collection('companies')
-        .synonym('synonyms-doofenshmirtz')
-        .retrieve());
+    final response =
+        await client.synonymSet('set_name').getItem('synonyms-doofenshmirtz');
+    log.fine(response.toJson());
   } on RequestException catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
   } catch (e, stackTrace) {
@@ -145,10 +167,10 @@ Future<void> retrieve(Client client) async {
 Future<void> delete(Client client) async {
   try {
     logInfoln(log, 'Deleting synonym "synonyms-doofenshmirtz".');
-    log.fine(await client
-        .collection('companies')
-        .synonym('synonyms-doofenshmirtz')
-        .delete());
+    final response = await client
+        .synonymSet('set_name')
+        .deleteItem('synonyms-doofenshmirtz');
+    log.fine(response.toJson());
 
     await writePropagationDelay();
   } on RequestException catch (e, stackTrace) {
