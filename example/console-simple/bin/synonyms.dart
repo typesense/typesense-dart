@@ -134,16 +134,10 @@ Future<void> createOneWay(Client client) async {
 Future<void> retrieveAll(Client client) async {
   try {
     logInfoln(log, 'Retrieving all synonyms of `set_name` synonym set.');
-    final response = await client.synonymSet('set_name').upsert(
-          SynonymSetCreateSchema(
-            items: [
-              SynonymItemSchema(
-                  id: 'synonyms-doofenshmirtz',
-                  synonyms: ['Doofenshmirtz', 'Heinz', 'Evil'])
-            ],
-          ),
-        );
-    log.fine(response.toJson());
+    final response = await client.synonymSet('set_name').listItems();
+    for (final item in response) {
+      log.fine(item.toJson());
+    }
   } on RequestException catch (e, stackTrace) {
     log.severe(e.message, e, stackTrace);
   } catch (e, stackTrace) {
