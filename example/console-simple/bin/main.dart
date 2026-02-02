@@ -7,7 +7,7 @@ import 'collections.dart' as collections;
 import 'documents.dart' as documents;
 import 'search.dart' as search;
 import 'keys.dart' as keys;
-import 'overrides.dart' as overrides;
+import 'curations.dart' as curations;
 import 'synonyms.dart' as synonyms;
 import 'aliases.dart' as aliases;
 import 'presets.dart' as presets;
@@ -55,7 +55,7 @@ void main() async {
       Client(config.copyWith(connectionTimeout: const Duration(seconds: 120))));
   await search.runExample(client);
   await keys.runExample(client);
-  await overrides.runExample(client);
+  await curations.runExample(client);
   await synonyms.runExample(client);
   await aliases.runExample(client);
   await presets.runExample(client);
