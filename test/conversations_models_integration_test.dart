@@ -9,8 +9,7 @@ void main() {
   final host = env['TYPESENSE_HOST'] ?? '127.0.0.1';
   final port = int.tryParse(env['TYPESENSE_PORT'] ?? '8108') ?? 8108;
   final protocolValue = env['TYPESENSE_PROTOCOL'] ?? 'http';
-  final protocol =
-      protocolValue == 'https' ? Protocol.https : Protocol.http;
+  final protocol = protocolValue == 'https' ? Protocol.https : Protocol.http;
   final openAiApiKey = env['OPENAI_API_KEY'];
   final historyCollection =
       env['CONVERSATION_HISTORY_COLLECTION'] ?? 'conversations_history';
@@ -61,8 +60,7 @@ void main() {
     final created = await client.conversationsModels.create(
       ConversationModelCreateSchema(
         id: modelId,
-        modelName:
-            env['CONVERSATION_MODEL_NAME'] ?? 'openai/gpt-3.5-turbo',
+        modelName: env['CONVERSATION_MODEL_NAME'] ?? 'openai/gpt-3.5-turbo',
         apiKey: openAiApiKey,
         maxBytes: 16384,
         historyCollection: historyCollection,
@@ -76,16 +74,15 @@ void main() {
     expect(retrieved.id, equals(modelId));
 
     final updated = await client.conversationModel(modelId).update(
-      ConversationModelCreateSchema(
-        id: modelId,
-        modelName:
-            env['CONVERSATION_MODEL_NAME'] ?? 'openai/gpt-3.5-turbo',
-        apiKey: openAiApiKey,
-        maxBytes: 16384,
-        systemPrompt: 'This is meant for testing purposes',
-        historyCollection: historyCollection,
-      ),
-    );
+          ConversationModelCreateSchema(
+            id: modelId,
+            modelName: env['CONVERSATION_MODEL_NAME'] ?? 'openai/gpt-3.5-turbo',
+            apiKey: openAiApiKey,
+            maxBytes: 16384,
+            systemPrompt: 'This is meant for testing purposes',
+            historyCollection: historyCollection,
+          ),
+        );
     expect(updated, isA<ConversationModelCreateSchema>());
 
     final list = await client.conversationsModels.retrieve();

@@ -60,7 +60,6 @@ class RequestCache {
 
   bool _isCacheValidList(_CachedListResult cache) =>
       cache.validTill.difference(DateTime.now()) > Duration.zero;
-
 }
 
 class _CachedResult {

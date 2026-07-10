@@ -9,8 +9,7 @@ void main() {
   final host = env['TYPESENSE_HOST'] ?? '127.0.0.1';
   final port = int.tryParse(env['TYPESENSE_PORT'] ?? '8108') ?? 8108;
   final protocolValue = env['TYPESENSE_PROTOCOL'] ?? 'http';
-  final protocol =
-      protocolValue == 'https' ? Protocol.https : Protocol.http;
+  final protocol = protocolValue == 'https' ? Protocol.https : Protocol.http;
 
   late Client client;
   late String dictionaryId;
@@ -46,7 +45,8 @@ void main() {
     expect(list, isA<StemmingDictionariesRetrieveSchema>());
     expect(list.dictionaries.contains(dictionaryId), isTrue);
 
-    final dictionary = await client.stemming.dictionary(dictionaryId).retrieve();
+    final dictionary =
+        await client.stemming.dictionary(dictionaryId).retrieve();
     expect(dictionary, isA<StemmingDictionarySchema>());
     expect(dictionary.id, equals(dictionaryId));
   });

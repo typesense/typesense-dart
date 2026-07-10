@@ -191,8 +191,10 @@ class CurationObjectSchema {
   Map<String, dynamic> toJson() => {
         'id': id,
         if (rule != null) 'rule': rule!.toJson(),
-        if (includes != null) 'includes': includes!.map((e) => e.toJson()).toList(),
-        if (excludes != null) 'excludes': excludes!.map((e) => e.toJson()).toList(),
+        if (includes != null)
+          'includes': includes!.map((e) => e.toJson()).toList(),
+        if (excludes != null)
+          'excludes': excludes!.map((e) => e.toJson()).toList(),
         if (filterBy != null) 'filter_by': filterBy,
         if (sortBy != null) 'sort_by': sortBy,
         if (replaceQuery != null) 'replace_query': replaceQuery,
@@ -230,8 +232,8 @@ class CurationSetSchema {
       CurationSetSchema(
         name: json['name'] as String?,
         items: (json['items'] as List? ?? [])
-            .map((item) =>
-                CurationObjectSchema.fromJson(Map<String, dynamic>.from(item as Map)))
+            .map((item) => CurationObjectSchema.fromJson(
+                Map<String, dynamic>.from(item as Map)))
             .toList(),
       );
 }
@@ -249,8 +251,8 @@ class CurationSetsListEntrySchema {
       CurationSetsListEntrySchema(
         name: json['name'] as String,
         items: (json['items'] as List? ?? [])
-            .map((item) =>
-                CurationObjectSchema.fromJson(Map<String, dynamic>.from(item as Map)))
+            .map((item) => CurationObjectSchema.fromJson(
+                Map<String, dynamic>.from(item as Map)))
             .toList(),
       );
 }
@@ -271,7 +273,8 @@ class CurationItemDeleteResponseSchema {
 
   CurationItemDeleteResponseSchema({required this.id});
 
-  factory CurationItemDeleteResponseSchema.fromJson(Map<String, dynamic> json) =>
+  factory CurationItemDeleteResponseSchema.fromJson(
+          Map<String, dynamic> json) =>
       CurationItemDeleteResponseSchema(
         id: json['id'] as String,
       );

@@ -9,8 +9,7 @@ void main() {
   final host = env['TYPESENSE_HOST'] ?? '127.0.0.1';
   final port = int.tryParse(env['TYPESENSE_PORT'] ?? '8108') ?? 8108;
   final protocolValue = env['TYPESENSE_PROTOCOL'] ?? 'http';
-  final protocol =
-      protocolValue == 'https' ? Protocol.https : Protocol.http;
+  final protocol = protocolValue == 'https' ? Protocol.https : Protocol.http;
 
   late Client client;
   const companiesCollection = 'companies';
@@ -48,28 +47,28 @@ void main() {
 
   test('analytics rules create, update, retrieve, delete', () async {
     final created = await client.analytics.rules().create(
-      AnalyticsRuleCreateSchema(
-        name: ruleName,
-        type: 'nohits_queries',
-        collection: companiesCollection,
-        eventType: 'search',
-        params: AnalyticsRuleParams(
-          destinationCollection: queriesCollection,
-          limit: 1000,
-        ),
-      ),
-    );
+          AnalyticsRuleCreateSchema(
+            name: ruleName,
+            type: 'nohits_queries',
+            collection: companiesCollection,
+            eventType: 'search',
+            params: AnalyticsRuleParams(
+              destinationCollection: queriesCollection,
+              limit: 1000,
+            ),
+          ),
+        );
     expect(created, isA<AnalyticsRuleSchema>());
 
     final updated = await client.analytics.rules().upsert(
-      ruleName,
-      AnalyticsRuleUpsertSchema(
-        params: AnalyticsRuleParams(
-          destinationCollection: queriesCollection,
-          limit: 500,
-        ),
-      ),
-    );
+          ruleName,
+          AnalyticsRuleUpsertSchema(
+            params: AnalyticsRuleParams(
+              destinationCollection: queriesCollection,
+              limit: 500,
+            ),
+          ),
+        );
     expect(updated, isA<AnalyticsRuleSchema>());
     expect(updated.name, equals(ruleName));
 
@@ -132,14 +131,14 @@ void main() {
     } catch (_) {}
 
     await client.analytics.rules().create(
-      AnalyticsRuleCreateSchema(
-        name: ruleName,
-        type: 'log',
-        collection: companiesCollection,
-        eventType: 'click',
-        params: AnalyticsRuleParams(),
-      ),
-    );
+          AnalyticsRuleCreateSchema(
+            name: ruleName,
+            type: 'log',
+            collection: companiesCollection,
+            eventType: 'click',
+            params: AnalyticsRuleParams(),
+          ),
+        );
 
     final event = AnalyticsEventCreateSchema(
       name: ruleName,
@@ -153,10 +152,10 @@ void main() {
     expect(created.ok, isTrue);
 
     final retrieved = await client.analytics.events().retrieve(
-      userId: 'user-1',
-      name: ruleName,
-      n: 10,
-    );
+          userId: 'user-1',
+          name: ruleName,
+          n: 10,
+        );
     expect(retrieved, isA<AnalyticsEventsRetrieveSchema>());
 
     final status = await client.analytics.events().status();

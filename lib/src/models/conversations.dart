@@ -56,8 +56,8 @@ class ConversationsRetrieveSchema {
   factory ConversationsRetrieveSchema.fromJson(Map<String, dynamic> json) =>
       ConversationsRetrieveSchema(
         conversations: (json['conversations'] as List? ?? [])
-            .map((item) =>
-                ConversationSchema.fromJson(Map<String, dynamic>.from(item as Map)))
+            .map((item) => ConversationSchema.fromJson(
+                Map<String, dynamic>.from(item as Map)))
             .toList(),
       );
 }

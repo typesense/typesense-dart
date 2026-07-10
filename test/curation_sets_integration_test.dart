@@ -9,8 +9,7 @@ void main() {
   final host = env['TYPESENSE_HOST'] ?? '127.0.0.1';
   final port = int.tryParse(env['TYPESENSE_PORT'] ?? '8108') ?? 8108;
   final protocolValue = env['TYPESENSE_PROTOCOL'] ?? 'http';
-  final protocol =
-      protocolValue == 'https' ? Protocol.https : Protocol.http;
+  final protocol = protocolValue == 'https' ? Protocol.https : Protocol.http;
 
   late Client client;
   late String setName;
@@ -43,27 +42,27 @@ void main() {
 
   test('upsert and retrieve curation set', () async {
     final upserted = await client.curationSet(setName).upsert(
-      CurationSetUpsertSchema(
-        items: [
-          CurationObjectSchema(
-            id: itemId,
-            rule: CurationRuleSchema(
-              query: 'stark',
-              match: 'exact',
-            ),
-            includes: [
-              CurationIncludeSchema(
-                id: 'doc_1',
-                position: 1,
+          CurationSetUpsertSchema(
+            items: [
+              CurationObjectSchema(
+                id: itemId,
+                rule: CurationRuleSchema(
+                  query: 'stark',
+                  match: 'exact',
+                ),
+                includes: [
+                  CurationIncludeSchema(
+                    id: 'doc_1',
+                    position: 1,
+                  ),
+                ],
+                metadata: {
+                  'source': 'dart-tests',
+                },
               ),
             ],
-            metadata: {
-              'source': 'dart-tests',
-            },
           ),
-        ],
-      ),
-    );
+        );
 
     expect(upserted, isA<CurationSetSchema>());
     expect(upserted.items.any((item) => item.id == itemId), isTrue);
@@ -75,37 +74,37 @@ void main() {
 
   test('list, items, and item CRUD', () async {
     await client.curationSet(setName).upsert(
-      CurationSetUpsertSchema(
-        items: [
-          CurationObjectSchema(
-            id: itemId,
-            rule: CurationRuleSchema(
-              query: 'lannister',
-              match: 'contains',
-            ),
-            excludes: [
-              CurationExcludeSchema(
-                id: 'doc_2',
+          CurationSetUpsertSchema(
+            items: [
+              CurationObjectSchema(
+                id: itemId,
+                rule: CurationRuleSchema(
+                  query: 'lannister',
+                  match: 'contains',
+                ),
+                excludes: [
+                  CurationExcludeSchema(
+                    id: 'doc_2',
+                  ),
+                ],
               ),
             ],
           ),
-        ],
-      ),
-    );
-
+        );
 
     final allSets = await client.curationSets.retrieve();
     expect(allSets, isA<List<CurationSetsListEntrySchema>>());
     expect(allSets.any((set) => set.name == setName), isTrue);
 
     final items = await client.curationSet(setName).listItems(
-      limit: 10,
-      offset: 0,
-    );
+          limit: 10,
+          offset: 0,
+        );
     expect(items, isA<List<CurationObjectSchema>>());
     expect(items.any((item) => item.id == itemId), isTrue);
 
-    final retrievedItem = await client.curationSet(setName).item(itemId).retrieve();
+    final retrievedItem =
+        await client.curationSet(setName).item(itemId).retrieve();
     expect(retrievedItem, isA<CurationObjectSchema>());
     expect(retrievedItem.id, equals(itemId));
 

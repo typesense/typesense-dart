@@ -9,8 +9,7 @@ void main() {
   final host = env['TYPESENSE_HOST'] ?? '127.0.0.1';
   final port = int.tryParse(env['TYPESENSE_PORT'] ?? '8108') ?? 8108;
   final protocolValue = env['TYPESENSE_PROTOCOL'] ?? 'http';
-  final protocol =
-      protocolValue == 'https' ? Protocol.https : Protocol.http;
+  final protocol = protocolValue == 'https' ? Protocol.https : Protocol.http;
 
   late Client client;
   late String setName;
@@ -43,15 +42,15 @@ void main() {
 
   test('upsert and retrieve synonym set', () async {
     final upserted = await client.synonymSet(setName).upsert(
-      SynonymSetCreateSchema(
-        items: [
-          SynonymItemSchema(
-            id: itemId,
-            synonyms: ['sneakers', 'shoes'],
+          SynonymSetCreateSchema(
+            items: [
+              SynonymItemSchema(
+                id: itemId,
+                synonyms: ['sneakers', 'shoes'],
+              ),
+            ],
           ),
-        ],
-      ),
-    );
+        );
 
     expect(upserted, isA<SynonymSetCreateSchema>());
     expect(upserted.items.any((item) => item.id == itemId), isTrue);
@@ -63,24 +62,24 @@ void main() {
 
   test('list, items, and item CRUD', () async {
     await client.synonymSet(setName).upsert(
-      SynonymSetCreateSchema(
-        items: [
-          SynonymItemSchema(
-            id: itemId,
-            synonyms: ['nike', 'footwear'],
+          SynonymSetCreateSchema(
+            items: [
+              SynonymItemSchema(
+                id: itemId,
+                synonyms: ['nike', 'footwear'],
+              ),
+            ],
           ),
-        ],
-      ),
-    );
+        );
 
     final allSets = await client.synonymSets.retrieve();
     expect(allSets, isA<List<SynonymSetSchema>>());
     expect(allSets.any((set) => set.name == setName), isTrue);
 
     final items = await client.synonymSet(setName).listItems(
-      limit: 10,
-      offset: 0,
-    );
+          limit: 10,
+          offset: 0,
+        );
     expect(items, isA<List<SynonymItemSchema>>());
     expect(items.any((item) => item.id == itemId), isTrue);
 
@@ -89,8 +88,7 @@ void main() {
     expect(retrievedItem, isA<SynonymItemSchema>());
     expect(retrievedItem.id, equals(itemId));
 
-    final deleted =
-        await client.synonymSet(setName).item(itemId).delete();
+    final deleted = await client.synonymSet(setName).item(itemId).delete();
     expect(deleted, isA<SynonymItemDeleteSchema>());
     expect(deleted.id, equals(itemId));
   });

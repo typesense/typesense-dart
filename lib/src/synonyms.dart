@@ -28,8 +28,8 @@ class Synonyms {
   Future<Map<String, dynamic>> upsert(
       String synonymId, Map<String, dynamic> params) async {
     _warnDeprecated();
-    final response = await _apiCall.put('$_endpointPath/$synonymId',
-        bodyParameters: params);
+    final response =
+        await _apiCall.put('$_endpointPath/$synonymId', bodyParameters: params);
     return Map<String, dynamic>.from(response);
   }
 

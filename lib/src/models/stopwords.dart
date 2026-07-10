@@ -29,8 +29,7 @@ class StopwordSchema {
   factory StopwordSchema.fromJson(Map<String, dynamic> json) {
     final dynamic stopwordsValue = json['stopwords'];
     if (!json.containsKey('id') && stopwordsValue is Map) {
-      return StopwordSchema.fromJson(
-          Map<String, dynamic>.from(stopwordsValue));
+      return StopwordSchema.fromJson(Map<String, dynamic>.from(stopwordsValue));
     }
 
     return StopwordSchema(

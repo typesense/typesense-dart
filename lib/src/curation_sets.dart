@@ -12,8 +12,8 @@ class CurationSets {
   Future<List<CurationSetsListEntrySchema>> retrieve() async {
     final response = await _apiCall.getList(resourcepath);
     return response
-        .map((item) =>
-            CurationSetsListEntrySchema.fromJson(Map<String, dynamic>.from(item)))
+        .map((item) => CurationSetsListEntrySchema.fromJson(
+            Map<String, dynamic>.from(item)))
         .toList();
   }
 

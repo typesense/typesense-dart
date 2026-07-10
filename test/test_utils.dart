@@ -115,8 +115,7 @@ class ConfigurationFactory {
 @GenerateMocks([],
     customMocks: [MockSpec<GenerateMockApiCall>(as: #MockApiCall)])
 class GenerateMockApiCall extends ApiCall {
-  GenerateMockApiCall(
-      super.config, super.nodePool, super.requestCache);
+  GenerateMockApiCall(super.config, super.nodePool, super.requestCache);
 }
 
 @GenerateMocks([], customMocks: [

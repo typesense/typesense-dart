@@ -60,8 +60,8 @@ class AnalyticsEventsRetrieveSchema {
   factory AnalyticsEventsRetrieveSchema.fromJson(Map<String, dynamic> json) =>
       AnalyticsEventsRetrieveSchema(
         events: (json['events'] as List? ?? [])
-            .map((item) =>
-                AnalyticsEventItemSchema.fromJson(Map<String, dynamic>.from(item as Map)))
+            .map((item) => AnalyticsEventItemSchema.fromJson(
+                Map<String, dynamic>.from(item as Map)))
             .toList(),
       );
 }
@@ -96,7 +96,8 @@ class AnalyticsStatus {
     this.docCounterEvents,
   });
 
-  factory AnalyticsStatus.fromJson(Map<String, dynamic> json) => AnalyticsStatus(
+  factory AnalyticsStatus.fromJson(Map<String, dynamic> json) =>
+      AnalyticsStatus(
         popularPrefixQueries: json['popular_prefix_queries'] as int?,
         nohitsPrefixQueries: json['nohits_prefix_queries'] as int?,
         logPrefixQueries: json['log_prefix_queries'] as int?,
@@ -260,8 +261,8 @@ class AnalyticsRulesRetrieveSchema {
   factory AnalyticsRulesRetrieveSchema.fromJson(Map<String, dynamic> json) =>
       AnalyticsRulesRetrieveSchema(
         rules: (json['rules'] as List? ?? [])
-            .map((item) =>
-                AnalyticsRuleSchema.fromJson(Map<String, dynamic>.from(item as Map)))
+            .map((item) => AnalyticsRuleSchema.fromJson(
+                Map<String, dynamic>.from(item as Map)))
             .toList(),
       );
 }

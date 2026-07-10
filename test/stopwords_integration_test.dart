@@ -9,9 +9,7 @@ void main() {
   final host = env['TYPESENSE_HOST'] ?? '127.0.0.1';
   final port = int.tryParse(env['TYPESENSE_PORT'] ?? '8108') ?? 8108;
   final protocolValue = env['TYPESENSE_PROTOCOL'] ?? 'http';
-  final protocol =
-      protocolValue == 'https' ? Protocol.https : Protocol.http;
-
+  final protocol = protocolValue == 'https' ? Protocol.https : Protocol.http;
 
   late Client client;
   late String stopwordId;
@@ -28,8 +26,7 @@ void main() {
       },
     );
     client = Client(config);
-    stopwordId =
-        'stopwords_dart_test_${DateTime.now().millisecondsSinceEpoch}';
+    stopwordId = 'stopwords_dart_test_${DateTime.now().millisecondsSinceEpoch}';
   });
 
   tearDownAll(() async {

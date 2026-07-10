@@ -200,10 +200,9 @@ class ApiCall extends BaseApiCall<Map<String, dynamic>> {
   /// raised.
   @override
   @override
-  Map<String, dynamic> decode(String responseBody) =>
-      responseBody.isEmpty
-          ? {}
-          : json.decode(responseBody) as Map<String, dynamic>;
+  Map<String, dynamic> decode(String responseBody) => responseBody.isEmpty
+      ? {}
+      : json.decode(responseBody) as Map<String, dynamic>;
 
   List<dynamic> decodeList(String responseBody) =>
       responseBody.isEmpty ? [] : json.decode(responseBody) as List<dynamic>;
