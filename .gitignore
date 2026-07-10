@@ -86,3 +86,5 @@ pubspec.lock
 
 # Ignore test coverage
 coverage/
+
+/typesense-data
