@@ -70,4 +70,33 @@ void main() {
     expect(results['found'], equals(3));
     expect(results['hits'], hasLength(2));
   });
+
+  test('updateByFilter() updates the matching documents', () async {
+    final documents = client.collection(collectionName).documents;
+
+    expect(
+        await documents.updateByFilter(
+            {'company_name': 'Large'}, {'filter_by': 'num_employees:>1000'}),
+        equals({'num_updated': 2}));
+    expect(
+        (await documents.search({
+          'q': 'Large',
+          'query_by': 'company_name',
+        }))['found'],
+        equals(2));
+  });
+
+  test('update() with filter_by updates only the document with the id',
+      () async {
+    final documents = client.collection(collectionName).documents;
+
+    await documents.update({'id': '3', 'company_name': 'Large'},
+        options: {'filter_by': 'num_employees:>1000'});
+    expect(
+        (await documents.search({
+          'q': 'Large',
+          'query_by': 'company_name',
+        }))['found'],
+        equals(1));
+  });
 }

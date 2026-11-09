@@ -52,6 +52,16 @@ class Documents {
         queryParams: {...?options, "action": "update"});
   }
 
+  /// Updates every document that matches the `filter_by` in [queryParameters]
+  /// with the fields in [document].
+  ///
+  /// The response holds the count in `num_updated`.
+  Future<Map<String, dynamic>> updateByFilter(Map<String, dynamic> document,
+      Map<String, dynamic> queryParameters) async {
+    return await _apicall.patch(_endPoint,
+        bodyParameters: document, queryParams: queryParameters);
+  }
+
   /// Deletes all the documents the match the [queryParameters].
   Future<Map<String, dynamic>> delete(
       Map<String, String> queryParameters) async {
