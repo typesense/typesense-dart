@@ -107,6 +107,8 @@ abstract class BaseApiCall<R> {
 
   /// Constructs the final [Uri] by combining the [Node.uri] with [endpoint] and
   /// [queryParams].
+  ///
+  /// Number and bool values in [queryParams] are sent as strings.
   Uri getRequestUri(
     Node node,
     String endpoint, {
@@ -117,7 +119,11 @@ abstract class BaseApiCall<R> {
         host: node.host,
         port: node.port,
         path: '${node.path}$endpoint',
-        queryParameters: {..._defaultQueryParameters, ...?queryParams},
+        queryParameters: {
+          ..._defaultQueryParameters,
+          ...?queryParams?.map((key, value) =>
+              MapEntry(key, value is num || value is bool ? '$value' : value)),
+        },
       );
 
   /// Returns a [RequestException] according to [status] received in a response.

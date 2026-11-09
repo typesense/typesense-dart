@@ -213,6 +213,14 @@ void main() {
           ).toString(),
           equals(
               'http://$host:$nearestServerPort$pathToService/endpoint?howCool=isThat'));
+      expect(
+          ApiCall(config, nodePool, requestCache).getRequestUri(
+            NearestNode,
+            '/endpoint',
+            queryParams: {'truncate': true, 'batch_size': 100, 'q': 'x'},
+          ).toString(),
+          equals(
+              'http://$host:$nearestServerPort$pathToService/endpoint?truncate=true&batch_size=100&q=x'));
     });
   });
 
