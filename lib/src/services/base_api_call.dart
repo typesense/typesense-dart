@@ -78,17 +78,12 @@ abstract class BaseApiCall<R> {
         if (response.statusCode >= 200 && response.statusCode < 300) {
           // If response is 2xx return a resolved promise.
           return response;
-        } else if (response.statusCode < 500) {
-          // Next, if response is anything but 5xx, don't retry, return a custom
-          // error.
-          return Future.error(_exception(response.body, response.statusCode));
-        } else {
-          // Retry all other HTTP errors (HTTPStatus > 500).
-          // This will get caught by the catch block below.
+        } else if (response.statusCode >= 500) {
+          // Retry 5xx errors through the catch block below.
           throw ServerError(response.body, response.statusCode);
         }
       } catch (e) {
-        // This block handles retries for HTTPStatus > 500 and network layer
+        // This block handles retries for HTTPStatus >= 500 and network layer
         // issues like connection timeouts.
         NodePool.setNodeHealthStatus(node, false, DateTime.now());
 
@@ -97,8 +92,13 @@ abstract class BaseApiCall<R> {
           rethrow;
         } else {
           await Future.delayed(config.retryInterval);
+          continue;
         }
       }
+
+      // Any other status fails without a retry. Throwing here, outside the try
+      // block, skips the catch block above.
+      throw _exception(response.body, response.statusCode);
     }
   }
 
@@ -107,6 +107,8 @@ abstract class BaseApiCall<R> {
 
   /// Constructs the final [Uri] by combining the [Node.uri] with [endpoint] and
   /// [queryParams].
+  ///
+  /// Number and bool values in [queryParams] are sent as strings.
   Uri getRequestUri(
     Node node,
     String endpoint, {
@@ -117,7 +119,11 @@ abstract class BaseApiCall<R> {
         host: node.host,
         port: node.port,
         path: '${node.path}$endpoint',
-        queryParameters: {..._defaultQueryParameters, ...?queryParams},
+        queryParameters: {
+          ..._defaultQueryParameters,
+          ...?queryParams?.map((key, value) =>
+              MapEntry(key, value is num || value is bool ? '$value' : value)),
+        },
       );
 
   /// Returns a [RequestException] according to [status] received in a response.

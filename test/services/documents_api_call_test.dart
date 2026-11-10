@@ -127,6 +127,12 @@ void main() {
               queryParams: {'howCool': 'isThat'}).toString(),
           equals(
               'http://$host:$nearestServerPort$pathToService/endpoint?howCool=isThat'));
+      expect(
+          DocumentsApiCall(config, nodePool).getRequestUri(
+              NearestNode, '/endpoint',
+              queryParams: {'batch_size': 100, 'return_doc': false}).toString(),
+          equals(
+              'http://$host:$nearestServerPort$pathToService/endpoint?batch_size=100&return_doc=false'));
     });
   });
 

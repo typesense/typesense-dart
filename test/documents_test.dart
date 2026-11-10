@@ -57,6 +57,34 @@ void main() {
           .thenAnswer((realInvocation) => Future.value(document));
       expect(await documents.update(document), equals(document));
     });
+    test("update() with filter_by still calls ApiCall.post()", () async {
+      final document = {'id': '124', 'country': 'USA'};
+      when(mockApiCall.post("/collections/companies/documents",
+          bodyParameters: document,
+          queryParams: {
+            'filter_by': 'num_employees:>1000',
+            'action': 'update'
+          })).thenAnswer((realInvocation) => Future.value(document));
+      expect(
+          await documents
+              .update(document, options: {'filter_by': 'num_employees:>1000'}),
+          equals(document));
+      verifyNever(mockApiCall.patch(any,
+          bodyParameters: anyNamed('bodyParameters'),
+          queryParams: anyNamed('queryParams')));
+    });
+    test("updateByFilter() calls ApiCall.patch()", () async {
+      final document = {'country': 'USA'};
+      final queryParameters = {'filter_by': 'num_employees:>1000'};
+      when(mockApiCall.patch("/collections/companies/documents",
+              bodyParameters: document, queryParams: queryParameters))
+          .thenAnswer((realInvocation) => Future.value({"num_updated": 2}));
+      expect(await documents.updateByFilter(document, queryParameters),
+          equals({"num_updated": 2}));
+      verifyNever(mockApiCall.post(any,
+          bodyParameters: anyNamed('bodyParameters'),
+          queryParams: anyNamed('queryParams')));
+    });
     test("delete() calls ApiCall.post()", () async {
       when(mockApiCall.delete("/collections/companies/documents",
               queryParams: {'filter_by': 'num_employees:>100'}))
